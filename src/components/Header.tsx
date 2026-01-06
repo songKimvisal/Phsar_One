@@ -1,30 +1,48 @@
-import { Globe, Moon } from "phosphor-react-native";
+import { useTheme } from "@src/context/ThemeContext";
+import useThemeColor from "@src/hooks/useThemeColor";
+import { Globe, Moon, Sun } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/Colors";
 import { ThemedText } from "./ThemedText";
 export default function Header() {
   const { i18n, t } = useTranslation();
+  const { theme, setMode } = useTheme();
+  const themesColors = useThemeColor();
   const toggleLanguage = () => {
-    const nextLanguage = i18n.language === "en" ? "kh" : "en";
+    const nextLanguage = i18n.language === "kh" ? "en" : "kh";
     i18n.changeLanguage(nextLanguage);
   };
+  const toggleTheme = () => {
+    setMode(theme === "light" ? "dark" : "light");
+  };
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, { backgroundColor: themesColors.background }]}
+    >
       <View style={styles.logoContainer}>
         <Image
           source={require("../assets/icons/Main-logo-24.png")}
           style={styles.logoIcon}
         />
+
         <ThemedText style={styles.logoText}>PhsarOne</ThemedText>
       </View>
       <View style={styles.toggleBtn}>
-        <TouchableOpacity>
-          <Moon size={24} weight="duotone" />
+        <TouchableOpacity onPress={toggleTheme}>
+          {theme == "light" ? (
+            <Moon size={24} weight="duotone" color={themesColors.text} />
+          ) : (
+            <Sun size={24} weight="duotone" color={themesColors.text} />
+          )}
         </TouchableOpacity>
         <TouchableOpacity style={styles.languageIcon} onPress={toggleLanguage}>
-          <Globe size={24} weight="duotone" />
-          <ThemedText style={styles.languageTitle}>{t("lang_code")}</ThemedText>
+          {theme == "light" ? (
+            <Globe size={24} weight="duotone" color={themesColors.text} />
+          ) : (
+            <Globe size={24} weight="duotone" color={themesColors.text} />
+          )}
+          <ThemedText style={styles.languageTitle}>{t("toggle_language")}</ThemedText>
         </TouchableOpacity>
       </View>
     </View>
@@ -45,8 +63,8 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
   },
   logoIcon: {
-    width: 30,
-    height: 30,
+    width: 32,
+    height: 32,
   },
   logoText: {
     marginLeft: 5,
@@ -58,7 +76,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#ddd",
     borderRadius: 20,
     paddingHorizontal: 10,
     marginLeft: 10,
@@ -72,5 +89,7 @@ const styles = StyleSheet.create({
   toggleBtn: {
     flexDirection: "row",
     alignItems: "baseline",
+    padding: 8,
+    borderRadius: 50,
   },
 });

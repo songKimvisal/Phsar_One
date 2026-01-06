@@ -1,9 +1,27 @@
+import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
 import i18n from "@/src/i18n";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
+
+function MainLayout() {
+  const { theme } = useTheme();
+  return (
+    <>
+      <Stack>
+        <Stack.Screen
+          name="index"
+          options={{ headerShown: false }}
+        ></Stack.Screen>
+      </Stack>
+      <StatusBar style={theme === "light" ? "dark" : "light"} />
+    </>
+  );
+}
+
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     Oxygen: require("@src/assets/fonts/Oxygen-Regular.ttf"),
@@ -21,13 +39,10 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <I18nextProvider i18n={i18n}>
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{ headerShown: false }}
-        ></Stack.Screen>
-      </Stack>
-    </I18nextProvider>
+    <ThemeProvider>
+      <I18nextProvider i18n={i18n}>
+        <MainLayout />
+      </I18nextProvider>
+    </ThemeProvider>
   );
 }

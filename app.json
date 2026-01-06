@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "phsar_One",
+    "name": "PhsarOne",
     "slug": "phsar_One",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -40,7 +40,8 @@
         }
       ],
       "expo-font",
-      "expo-localization"
+      "expo-localization",
+      "expo-system-ui"
     ],
     "experiments": {
       "typedRoutes": true,
