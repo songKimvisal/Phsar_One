@@ -1,4 +1,4 @@
-import { Globe } from "phosphor-react-native";
+import { Globe, Moon } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/Colors";
@@ -18,10 +18,15 @@ export default function Header() {
         />
         <ThemedText style={styles.logoText}>PhsarOne</ThemedText>
       </View>
-      <TouchableOpacity style={styles.languageIcon} onPress={toggleLanguage}>
-        <Globe size={24} weight="duotone" />
-        <ThemedText style={styles.languageTitle}>{t("lang_code")}</ThemedText>
-      </TouchableOpacity>
+      <View style={styles.toggleBtn}>
+        <TouchableOpacity>
+          <Moon size={24} weight="duotone" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.languageIcon} onPress={toggleLanguage}>
+          <Globe size={24} weight="duotone" />
+          <ThemedText style={styles.languageTitle}>{t("lang_code")}</ThemedText>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -56,11 +61,16 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     borderRadius: 20,
     paddingHorizontal: 10,
+    marginLeft: 10,
     paddingVertical: 4,
   },
   languageTitle: {
     marginLeft: 5,
     fontWeight: "bold",
     fontSize: 14,
+  },
+  toggleBtn: {
+    flexDirection: "row",
+    alignItems: "baseline",
   },
 });

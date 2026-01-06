@@ -15,8 +15,5 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-  },
+  container: {},
 });
