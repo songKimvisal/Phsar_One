@@ -42,7 +42,9 @@ export default function Header() {
           ) : (
             <Globe size={24} weight="duotone" color={themesColors.text} />
           )}
-          <ThemedText style={styles.languageTitle}>{t("toggle_language")}</ThemedText>
+          <ThemedText style={styles.languageTitle}>
+            {t("toggle_language")}
+          </ThemedText>
         </TouchableOpacity>
       </View>
     </View>
@@ -88,7 +90,7 @@ const styles = StyleSheet.create({
   },
   toggleBtn: {
     flexDirection: "row",
-    alignItems: "baseline",
+    alignItems: "center",
     padding: 8,
     borderRadius: 50,
   },

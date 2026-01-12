@@ -1,5 +1,28 @@
 {
   "search": "ស្វែងរក",
-  "categories": "ប្រភេទ",
-  "toggle_language": "EN"
+  "categories": "ប្រភេទ​​​​​​ ទំនិញ",
+  "toggle_language": "EN",
+  "home": "ទំព័រដេីម",
+  "trade": "ផ្លាស់ប្តូរ",
+  "sell": "លក់",
+  "chat": "សារ",
+  "profile": "គណនី",
+  "upgrade": "ធ្វើឱ្យប្រសើរ",
+  "myLists": "បញ្ជីរបស់ខ្ញុំ",
+  "active": "កំពុងដំណើរការ",
+  "sold": "បានលក់",
+  "drafts": "សេចក្តីព្រាង",
+  "expired": "ផុតកំណត់",
+  "dashboard": "ផ្ទាំងគ្រប់គ្រង",
+  "overview": "ទិដ្ឋភាពទូទៅ",
+  "insight": "ការវិភាគ",
+  "myTrade": "ការដូររបស់ខ្ញុំ",
+  "performance": "ប្រសិទ្ធភាព",
+  "history": "ប្រវត្តិ",
+  "following": "កំពុងតាមដាន",
+  "bookMark": "បានរក្សាទុក",
+  "billing": "ការទូទាត់",
+  "helpCenter": "មជ្ឈមណ្ឌលជំនួយ",
+  "viewAll": "មើលទាំងអស់"
+
 }

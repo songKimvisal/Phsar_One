@@ -1,5 +1,27 @@
 {
   "search": "Search",
   "categories": "Categories",
-  "toggle_language": "KH"
+  "toggle_language": "KH",
+  "home": "Home",
+  "trade": "Trade",
+  "sell": "Sell",
+  "chat": "Chat",
+  "profile": "Profile",
+  "upgrade": "Upgrade",
+  "myLists": "My Lists",
+  "active": "Active",
+  "sold": "Sold",
+  "drafts": "Drafts",
+  "expired": "Expired",
+  "dashboard": "Dashboard",
+  "overview": "Overview",
+  "insight": "Insight",
+  "myTrade": "My Trades",
+  "performance": "Performance",
+  "history": "History",
+  "following": "Following",
+  "bookMark": "BookMark",
+  "billing": "Billing",
+  "helpCenter": "Help Center",
+  "viewAll": "View All"
 }

@@ -5,31 +5,27 @@ import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/Colors";
 
 export default function SearchBar() {
-  const themeColors = useThemeColor(); // Gets colors based on Light/Dark mode
+  const themeColors = useThemeColor(); 
   const { t, i18n } = useTranslation();
 
   const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";
 
   return (
     <View
-      style={[
-        styles.searchContainer,
-        { backgroundColor: themeColors.card }, // Dynamic background
-      ]}
+      style={[styles.searchContainer, { backgroundColor: themeColors.card }]}
     >
       <TextInput
         placeholder={t("search")}
-        placeholderTextColor={themeColors.tabIconDefault} // Dim color for placeholder
+        placeholderTextColor={themeColors.tabIconDefault}
         style={[
           styles.searchInput,
           {
             fontFamily: activeFont,
-            color: themeColors.text, // Dynamic text color
+            color: themeColors.text,
           },
         ]}
       />
 
-      {/* Search Button using your Reds[500] */}
       <TouchableOpacity style={styles.iconContainer}>
         <MagnifyingGlass size={20} weight="bold" color="white" />
       </TouchableOpacity>
@@ -46,8 +42,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingLeft: 20,
-    paddingRight: 6, // Space for the button
-    // Shadow/Elevation for Light Mode
+    paddingRight: 6,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -62,7 +57,7 @@ const styles = StyleSheet.create({
     height: 38,
     width: 52,
     borderRadius: 25,
-    backgroundColor: Colors.reds[500], // Brand Red
+    backgroundColor: Colors.reds[500],
     alignItems: "center",
     justifyContent: "center",
   },

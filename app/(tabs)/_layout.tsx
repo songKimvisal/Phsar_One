@@ -1,22 +1,18 @@
+import CustomTabs from "@/src/components/CustomTabs";
 import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
 import i18n from "@/src/i18n";
+import Header from "@src/components/Header";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
-
 function MainLayout() {
   const { theme } = useTheme();
   return (
     <>
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{ headerShown: false }}
-        ></Stack.Screen>
-      </Stack>
+      <Header />
+      <CustomTabs />
       <StatusBar style={theme === "light" ? "dark" : "light"} />
     </>
   );
