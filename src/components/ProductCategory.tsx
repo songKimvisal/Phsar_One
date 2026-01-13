@@ -1,11 +1,11 @@
+import { useRouter } from "expo-router";
 import {
+  Armchair,
   Buildings,
-  Camera,
   Car,
   Desktop,
   DeviceMobile,
   Lightning,
-  Shapes,
   ShirtFolded,
   Sparkle,
 } from "phosphor-react-native";
@@ -17,17 +17,24 @@ export default function ProductCategory() {
   const { t, i18n } = useTranslation();
   const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";
   const themeColors = useThemeColor();
+  const router = useRouter();
   const CATEGORIES = [
     { id: "1", nameKey: "smart_phone", icon: DeviceMobile },
     { id: "2", nameKey: "vehicles", icon: Car },
     { id: "3", nameKey: "beauty", icon: Sparkle },
-    { id: "4", nameKey: "camera", icon: Camera },
-    { id: "5", nameKey: "real_estates", icon: Buildings },
-    { id: "6", nameKey: "clothing", icon: ShirtFolded },
-    { id: "7", nameKey: "computer", icon: Desktop },
+    { id: "4", nameKey: "furniture", icon: Armchair },
+    { id: "5", nameKey: "clothing", icon: ShirtFolded },
+    { id: "6", nameKey: "computer", icon: Desktop },
+    { id: "7", nameKey: "real_estates", icon: Buildings },
     { id: "8", nameKey: "electronic", icon: Lightning },
-    { id: "9", nameKey: "other", icon: Shapes },
   ];
+
+  const handlePress = (id: string, nameKey: string) => {
+    router.push({
+      pathname: "/category/[id]",
+      params: { id: id, title: t(nameKey) },
+    });
+  };
   return (
     <View style={styles.categoryContainer}>
       <ThemedText style={[styles.categoryText, { fontFamily: activeFont }]}>
@@ -38,6 +45,7 @@ export default function ProductCategory() {
           const Icon = item.icon;
           return (
             <TouchableOpacity
+              onPress={() => handlePress(item.id, item.nameKey)}
               key={item.id}
               style={[
                 styles.chip,
