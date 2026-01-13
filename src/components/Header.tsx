@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "@src/context/ThemeContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Globe, Moon, Sun } from "phosphor-react-native";
@@ -9,9 +10,10 @@ export default function Header() {
   const { i18n, t } = useTranslation();
   const { theme, setMode } = useTheme();
   const themesColors = useThemeColor();
-  const toggleLanguage = () => {
+  const toggleLanguage = async () => {
     const nextLanguage = i18n.language === "kh" ? "en" : "kh";
-    i18n.changeLanguage(nextLanguage);
+    await i18n.changeLanguage(nextLanguage);
+    await AsyncStorage.setItem("user-language", nextLanguage);
   };
   const toggleTheme = () => {
     setMode(theme === "light" ? "dark" : "light");
