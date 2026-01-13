@@ -5,7 +5,7 @@ import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/Colors";
 
 export default function SearchBar() {
-  const themeColors = useThemeColor(); 
+  const themeColors = useThemeColor();
   const { t, i18n } = useTranslation();
 
   const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";

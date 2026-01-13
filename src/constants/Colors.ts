@@ -18,7 +18,7 @@ export const Colors = {
     text: "#111827",
     background: "#FFFFFF",
     card: "#F9FAFB",
-    tabIconDefault: "#9CA3AF",
+    tabIconDefault: "#868d99",
     primary: redScale[750],
     border: "#E5E7EB",
   },
