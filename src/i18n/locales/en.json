@@ -8,7 +8,7 @@
   "sell": "Sell",
   "chat": "Chat",
   "profile": "Profile",
-  
+
   "upgrade": "Upgrade",
   "myLists": "My Lists",
   "active": "Active",
@@ -33,7 +33,65 @@
   "real_estates": "Real Estates",
   "clothing": "Clothing",
   "computer": "Computer",
-  "electronic":"Electronic",
-  "other":"Other"
+  "electronic": "Electronic",
+  "furniture": "Furniture",
+  "other": "Other",
 
+  "Phone": "Phone",
+  "Tablet": "Tablet",
+  "Smart Watch": "Smart Watch",
+  "Phone Accessories": "Phone Accessories",
+
+  "Car": "Car",
+  "Bicycle": "Bicycle",
+  "Motorcycle": "Motorcycle",
+  "Lorries": "Lorries",
+  "Tractors": "Tractors",
+  "Tuk Tuk & Remork": "Tuk Tuk & Remork",
+  "Parts & Accessories": "Parts & Accessories",
+  "Vehicles For Rent": "Vehicles For Rent",
+
+  "Skin Care": "Skin Care",
+  "Hair Care": "Hair Care",
+  "Makeup": "Makeup",
+  "Natural & Organic": "Natural & Organic",
+
+  "Tables & Desks": "Tables & Desks",
+  "Chairs & Sofas": "Chairs & Sofas",
+  "Wardrobes & Cabinets": "Wardrobes & Cabinets",
+  "Shelves & Drawers": "Shelves & Drawers",
+  "Beds & Mattresses": "Beds & Mattresses",
+  "Curtain & Carpet": "Curtains & Carpets",
+  "Kitchenware": "Kitchenware",
+  "Household Items": "Household Items",
+  "Handicrafts-Paintings": "Handicrafts & Paintings",
+
+  "Women's Fashion": "Women's Fashion",
+  "Men's Fashion": "Men's Fashion",
+  "Baby & Kids": "Baby & Kids",
+  "Fashion Accessories": "Fashion Accessories",
+
+  "Laptop": "Laptop",
+  "Desktop": "Desktop",
+  "All in One": "All in One",
+  "Monitor Printer & Scanner": "Monitor, Printer & Scanner",
+
+  "Land": "Land",
+  "House": "House",
+  "Condo": "Condo",
+  "Apartment": "Apartment",
+  "Commercial": "Commercial",
+
+  "Washing Machines": "Washing Machines",
+  "Fridges": "Fridges",
+  "Air Conditioning": "Air Conditioning",
+  "Tools": "Tools",
+  "Machinery": "Machinery",
+  "Security Camera": "Security Camera",
+  "TVs & Audio": "TVs & Audio",
+  "Video games": "Video Games",
+  "Toys": "Toys",
+
+  "location": "Location",
+  "filter_sort": "Filter & Sort"
 }
