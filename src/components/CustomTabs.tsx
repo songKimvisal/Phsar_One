@@ -11,9 +11,12 @@ import {
 import { useTranslation } from "react-i18next";
 import { Image } from "react-native";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 export default function CustomTabs() {
   const themeColors = useThemeColor();
   const { i18n, t } = useTranslation();
+  const { bottom } = useSafeAreaInsets();
   const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";
   const iconSize = {
     home: 26,
@@ -46,7 +49,7 @@ export default function CustomTabs() {
           shadowOpacity: 0.15,
           shadowRadius: 4,
           borderTopWidth: 0,
-          bottom: 10,
+          bottom: bottom + 10,
         },
       }}
     >
