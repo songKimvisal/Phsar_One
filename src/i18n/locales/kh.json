@@ -2,11 +2,13 @@
   "search": "ស្វែងរក",
   "categories": "ប្រភេទ​​​​​​ ទំនិញ",
   "toggle_language": "EN",
+  
   "home": "ទំព័រដេីម",
   "trade": "ផ្លាស់ប្តូរ",
   "sell": "លក់",
   "chat": "សារ",
   "profile": "គណនី",
+
   "upgrade": "ធ្វើឱ្យប្រសើរ",
   "myLists": "បញ្ជីរបស់ខ្ញុំ",
   "active": "កំពុងដំណើរការ",
@@ -23,6 +25,14 @@
   "bookMark": "បានរក្សាទុក",
   "billing": "ការទូទាត់",
   "helpCenter": "មជ្ឈមណ្ឌលជំនួយ",
-  "viewAll": "មើលទាំងអស់"
+  "viewAll": "មើលទាំងអស់",
 
+  "smart_phone": "ទូរស័ព្ទ",
+  "vehicles": "យានជំនិះ",
+  "beauty": "សម្រស់",
+  "real_estates": "អចលនទ្រព្យ",
+  "clothing": "សម្លៀកបំពាក់",
+  "computer": "កុំព្យូទ័រ",
+  "electronic": "គ្រឿងអេឡិចត្រូនិក",
+  "other": "ផ្សេងៗ"
 }

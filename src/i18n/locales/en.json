@@ -2,11 +2,13 @@
   "search": "Search",
   "categories": "Categories",
   "toggle_language": "KH",
+
   "home": "Home",
   "trade": "Trade",
   "sell": "Sell",
   "chat": "Chat",
   "profile": "Profile",
+  
   "upgrade": "Upgrade",
   "myLists": "My Lists",
   "active": "Active",
@@ -23,5 +25,15 @@
   "bookMark": "BookMark",
   "billing": "Billing",
   "helpCenter": "Help Center",
-  "viewAll": "View All"
+  "viewAll": "View All",
+
+  "smart_phone": "Smart Phone",
+  "vehicles": "Vehicles",
+  "beauty": "Beauty",
+  "real_estates": "Real Estates",
+  "clothing": "Clothing",
+  "computer": "Computer",
+  "electronic":"Electronic",
+  "other":"Other"
+
 }
