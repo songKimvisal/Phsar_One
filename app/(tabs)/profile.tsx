@@ -21,7 +21,6 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const themeColors = useThemeColor();
@@ -29,7 +28,7 @@ export default function ProfileScreen() {
   const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+    <View style={{ flex: 1, backgroundColor: themeColors.background }}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* 1. Header with Upgrade and Settings */}
         <View style={styles.topActions}>
@@ -43,11 +42,11 @@ export default function ProfileScreen() {
             </ThemedText>
           </TouchableOpacity>
           <View style={styles.rightIcons}>
-            <Bell size={28} color={themeColors.text} />
+            <Bell size={28} color={themeColors.text} style={styles.iconBtn} />
             <Gear
               size={28}
               color={themeColors.text}
-              style={{ marginLeft: 15 }}
+              style={[{ marginLeft: 15 }, styles.iconBtn]}
             />
           </View>
         </View>
@@ -159,7 +158,7 @@ export default function ProfileScreen() {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -224,11 +223,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
+    paddingVertical: 10,
   },
   upgradeBtn: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 6,
     borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
   upgradeText: {
     color: "#FFF",
@@ -237,6 +239,10 @@ const styles = StyleSheet.create({
   },
   rightIcons: {
     flexDirection: "row",
+    alignItems: "center",
+  },
+  iconBtn: {
+    padding: 4, // Matches the touch area of your home icons
   },
   userInfo: {
     flexDirection: "row",
