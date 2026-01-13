@@ -20,7 +20,7 @@ import {
 } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View, SafeAreaView } from "react-native";
 
 export default function ProfileScreen() {
   const themeColors = useThemeColor();
@@ -28,7 +28,7 @@ export default function ProfileScreen() {
   const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";
 
   return (
-    <View style={{ flex: 1, backgroundColor: themeColors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* 1. Header with Upgrade and Settings */}
         <View style={styles.topActions}>
@@ -158,7 +158,7 @@ export default function ProfileScreen() {
           />
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
