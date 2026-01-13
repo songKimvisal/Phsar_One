@@ -2,7 +2,7 @@
   "search": "ស្វែងរក",
   "categories": "ប្រភេទ​​​​​​ ទំនិញ",
   "toggle_language": "EN",
-  
+
   "home": "ទំព័រដេីម",
   "trade": "ផ្លាស់ប្តូរ",
   "sell": "លក់",
@@ -34,5 +34,64 @@
   "clothing": "សម្លៀកបំពាក់",
   "computer": "កុំព្យូទ័រ",
   "electronic": "គ្រឿងអេឡិចត្រូនិក",
-  "other": "ផ្សេងៗ"
+  "furniture": "គ្រឿងសង្ហារិម",
+  "other": "ផ្សេងៗ",
+
+  "Phone": "ទូរស័ព្ទ",
+  "Tablet": "ថេប្លេត",
+  "Smart Watch": "នាឡិកាវៃឆ្លាត",
+  "Phone Accessories": "គ្រឿងបន្លាស់ទូរស័ព្ទ",
+
+  "Car": "រថយន្ត",
+  "Bicycle": "កង់",
+  "Motorcycle": "ម៉ូតូ",
+  "Lorries": "រថយន្តដឹកទំនិញ",
+  "Tractors": "ត្រាក់ទ័រ",
+  "Tuk Tuk & Remork": "តុកតុក និង រ៉ឺម៉ក",
+  "Parts & Accessories": "គ្រឿងបន្លាស់ និង គ្រឿងបន្ថែម",
+  "Vehicles For Rent": "យានយន្តសម្រាប់ជួល",
+
+  "Skin Care": "ផលិតផលថែរក្សាស្បែក",
+  "Hair Care": "ផលិតផលថែរក្សាសក់",
+  "Makeup": "គ្រឿងសម្អាង",
+  "Natural & Organic": "ធម្មជាតិ និង អ័រហ្គានិក",
+
+  "Tables & Desks": "តុ និង តុការងារ",
+  "Chairs & Sofas": "កៅអី និង សាឡុង",
+  "Wardrobes & Cabinets": "ទូសម្លៀកបំពាក់ និង ទូដាក់ឥវ៉ាន់",
+  "Shelves & Drawers": "ធ្នើ និង ថតដាក់ឥវ៉ាន់",
+  "Beds & Mattresses": "គ្រែ និង ពូក",
+  "Curtain & Carpet": "វាំងនន និង កម្រាលព្រំ",
+  "Kitchenware": "ឧបករណ៍ផ្ទះបាយ",
+  "Household Items": "សម្ភារៈប្រើប្រាស់ក្នុងផ្ទះ",
+  "Handicrafts-Paintings": "សិប្បកម្ម និង គំនូរ",
+
+  "Women's Fashion": "ម៉ូដសម្លៀកបំពាក់ស្ត្រី",
+  "Men's Fashion": "ម៉ូដសម្លៀកបំពាក់បុរស",
+  "Baby & Kids": "ទារក និង កុមារ",
+  "Fashion Accessories": "គ្រឿងអលង្ការ និង គ្រឿងតុបតែងម៉ូដ",
+
+  "Laptop": "កុំព្យូទ័រ​ផ្ទាល់ខ្លួន (លាប់តុប)",
+  "Desktop": "កុំព្យូទ័រតុ",
+  "All in One": "កុំព្យូទ័រ All-in-One",
+  "Monitor Printer & Scanner": "ម៉ូនីទ័រ, ម៉ាស៊ីនបោះពុម្ព និង ស្កេន",
+
+  "Land": "ដី",
+  "House": "ផ្ទះ",
+  "Condo": "ខុនដូ",
+  "Apartment": "អាផាតមិន",
+  "Commercial": "អាជីវកម្ម/ពាណិជ្ជកម្ម",
+
+  "Washing Machines": "ម៉ាស៊ីនបោកគក់",
+  "Fridges": "ទូរទឹកកក / ទូរទឹកផ្លាស់សីតុណ្ហភាព",
+  "Air Conditioning": "ម៉ាស៊ីនត្រជាក់ / ម៉ាស៊ីនកំដៅ",
+  "Tools": "ឧបករណ៍",
+  "Machinery": "ម៉ាស៊ីន និង ឧបករណ៍ធ្វើការ",
+  "Security Camera": "កាមេរ៉ាសុវត្ថិភាព",
+  "TVs & Audio": "ទូរទស្សន៍ និង សំឡេង",
+  "Video games": "ហ្គេមវីដេអូ",
+  "Toys": "របស់ក្មេងលេង",
+
+  "location": "តាមទីតាំង",
+  "filter_sort": "តាមលក្ឋខណ្ដ"
 }
