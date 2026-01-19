@@ -3,7 +3,7 @@ import { useTheme } from "@src/context/ThemeContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Globe, Moon, Sun } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/Colors";
 import { ThemedText } from "./ThemedText";
 export default function Header() {
@@ -28,7 +28,7 @@ export default function Header() {
           style={styles.logoIcon}
         />
 
-        <ThemedText style={styles.logoText}>PhsarOne</ThemedText>
+        <Text style={styles.logoText}>PhsarOne</Text>
       </View>
       <View style={styles.toggleBtn}>
         <TouchableOpacity onPress={toggleTheme}>
@@ -45,7 +45,7 @@ export default function Header() {
             <Globe size={24} weight="duotone" color={themesColors.text} />
           )}
           <ThemedText style={styles.languageTitle}>
-            {t("toggle_language")}
+            {t("navigation.toggle_language")}
           </ThemedText>
         </TouchableOpacity>
       </View>

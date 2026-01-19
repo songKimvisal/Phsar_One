@@ -15,7 +15,7 @@ import useThemeColor from "../hooks/useThemeColor";
 import { ThemedText } from "./ThemedText";
 export default function ProductCategory() {
   const { t, i18n } = useTranslation();
-  const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";
+  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
   const themeColors = useThemeColor();
   const router = useRouter();
   const CATEGORIES = [
@@ -32,13 +32,13 @@ export default function ProductCategory() {
   const handlePress = (id: string, nameKey: string) => {
     router.push({
       pathname: "/category/[id]",
-      params: { id: id, title: t(nameKey) },
+      params: { id: id, title: t(`categories.${nameKey}`) },
     });
   };
   return (
     <View style={styles.categoryContainer}>
       <ThemedText style={[styles.categoryText, { fontFamily: activeFont }]}>
-        {t("categories")}
+        {t("navigation.category")}
       </ThemedText>
       <View style={styles.chipContainer}>
         {CATEGORIES.map((item) => {
@@ -59,7 +59,7 @@ export default function ProductCategory() {
               <ThemedText
                 style={[styles.chipLabel, { fontFamily: activeFont }]}
               >
-                {t(item.nameKey)}
+                {t(`categories.${item.nameKey}`)}
               </ThemedText>
             </TouchableOpacity>
           );

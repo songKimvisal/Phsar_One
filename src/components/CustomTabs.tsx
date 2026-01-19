@@ -17,7 +17,7 @@ export default function CustomTabs() {
   const themeColors = useThemeColor();
   const { i18n, t } = useTranslation();
   const { bottom } = useSafeAreaInsets();
-  const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";
+  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
   const iconSize = {
     home: 26,
     trade: 26,
@@ -56,7 +56,7 @@ export default function CustomTabs() {
       <Tabs.Screen
         name="index"
         options={{
-          title: t("home"),
+          title: t("navigation.home"),
           tabBarIcon: ({ focused, color, size }) =>
             focused ? (
               <Image
@@ -75,7 +75,7 @@ export default function CustomTabs() {
       <Tabs.Screen
         name="trade"
         options={{
-          title: t("trade"),
+          title: t("navigation.trade"),
           tabBarIcon: ({ color, size }) => (
             <ArrowsClockwise size={iconSize.trade} color={color} />
           ),
@@ -88,7 +88,7 @@ export default function CustomTabs() {
       <Tabs.Screen
         name="sell"
         options={{
-          title: t("sell"),
+          title: t("navigation.sell"),
           tabBarIcon: ({ color, size }) => (
             <CameraPlus size={iconSize.sell} color={color} weight="duotone" />
           ),
@@ -101,7 +101,7 @@ export default function CustomTabs() {
       <Tabs.Screen
         name="chat"
         options={{
-          title: t("chat"),
+          title: t("navigation.chat"),
           tabBarIcon: ({ color, size }) => (
             <ChatCircleDots size={iconSize.chat} color={color} />
           ),
@@ -114,7 +114,7 @@ export default function CustomTabs() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: t("profile"),
+          title: t("navigation.profile"),
           tabBarIcon: ({ color, size }) => (
             <UserCircle size={iconSize.profile} color={color} />
           ),

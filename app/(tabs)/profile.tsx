@@ -20,12 +20,18 @@ import {
 } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, TouchableOpacity, View, SafeAreaView } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  SafeAreaView,
+} from "react-native";
 
 export default function ProfileScreen() {
   const themeColors = useThemeColor();
   const { t, i18n } = useTranslation();
-  const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";
+  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
@@ -38,7 +44,7 @@ export default function ProfileScreen() {
             <ThemedText
               style={[styles.upgradeText, { fontFamily: activeFont }]}
             >
-              {t("upgrade")} ✨
+              {t("user_actions.upgrade")} ✨
             </ThemedText>
           </TouchableOpacity>
           <View style={styles.rightIcons}>
@@ -66,65 +72,65 @@ export default function ProfileScreen() {
               John Doe
             </ThemedText>
             <ThemedText style={[styles.userType, { fontFamily: activeFont }]}>
-              {t("regular_account") || "Regular account"}
+              {t("user_actions.regular_account")}
             </ThemedText>
           </View>
         </View>
 
         {/* 3. My Listings */}
         <ProfileSection
-          title={t("myLists")}
+          title={t("user_actions.myLists")}
           activeFont={activeFont}
-          viewAllLabel={t("viewAll")}
+          viewAllLabel={t("user_actions.viewAll")}
         >
           <GridItem
             icon={<Tag color={Colors.reds[500]} weight="fill" />}
-            label={t("active")}
+            label={t("user_actions.active")}
             activeFont={activeFont}
           />
           <GridItem
             icon={<CheckCircle color={Colors.reds[500]} weight="fill" />}
-            label={t("sold")}
+            label={t("user_actions.sold")}
             activeFont={activeFont}
           />
           <GridItem
             icon={<NotePencil color={Colors.reds[500]} weight="fill" />}
-            label={t("drafts")}
+            label={t("user_actions.drafts")}
             activeFont={activeFont}
           />
           <GridItem
             icon={
               <ClockCounterClockwise color={Colors.reds[500]} weight="fill" />
             }
-            label={t("expired")}
+            label={t("user_actions.expired")}
             activeFont={activeFont}
           />
         </ProfileSection>
 
         {/* 4. Dashboard */}
         <ProfileSection
-          title={t("dashboard")}
+          title={t("user_actions.dashboard")}
           activeFont={activeFont}
-          viewAllLabel={t("viewAll")}
+          viewAllLabel={t("user_actions.viewAll")}
         >
           <GridItem
             icon={<ChartPie size={28} color={themeColors.text} />}
-            label={t("overview")}
+            label={t("user_actions.overview")}
             activeFont={activeFont}
           />
           <GridItem
             icon={<ChartBar size={28} color={themeColors.text} />}
-            label={t("insight")}
+            label={t("user_actions.insight")}
             activeFont={activeFont}
           />
           <GridItem
             icon={<Tag size={28} color={themeColors.text} />}
-            label={t("myTrade")}
+            label={t("user_actions.myTrade")}
             activeFont={activeFont}
           />
           <GridItem
             icon={<PresentationChart size={28} color={themeColors.text} />}
-            label={t("performance")}
+            label={t("user_actions.performance")}
             activeFont={activeFont}
           />
         </ProfileSection>
@@ -133,27 +139,27 @@ export default function ProfileScreen() {
         <View style={styles.footerGrid}>
           <GridItem
             icon={<ClockCounterClockwise size={26} color={themeColors.text} />}
-            label={t("history")}
+            label={t("user_actions.history")}
             activeFont={activeFont}
           />
           <GridItem
             icon={<Storefront size={26} color={themeColors.text} />}
-            label={t("following")}
+            label={t("user_actions.following")}
             activeFont={activeFont}
           />
           <GridItem
             icon={<Bookmark size={26} color={themeColors.text} />}
-            label={t("bookMark")}
+            label={t("user_actions.bookMark")}
             activeFont={activeFont}
           />
           <GridItem
             icon={<Wallet size={26} color={themeColors.text} />}
-            label={t("billing")}
+            label={t("user_actions.billing")}
             activeFont={activeFont}
           />
           <GridItem
             icon={<Headset size={26} color={themeColors.text} />}
-            label={t("helpCenter")}
+            label={t("user_actions.helpCenter")}
             activeFont={activeFont}
           />
         </View>

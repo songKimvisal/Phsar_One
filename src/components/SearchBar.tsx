@@ -8,14 +8,14 @@ export default function SearchBar() {
   const themeColors = useThemeColor();
   const { t, i18n } = useTranslation();
 
-  const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";
+  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
 
   return (
     <View
       style={[styles.searchContainer, { backgroundColor: themeColors.card }]}
     >
       <TextInput
-        placeholder={t("search")}
+        placeholder={t("navigation.search")}
         placeholderTextColor={themeColors.tabIconDefault}
         style={[
           styles.searchInput,

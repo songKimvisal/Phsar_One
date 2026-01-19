@@ -5,7 +5,7 @@ import useThemeColor from "../hooks/useThemeColor";
 export function ThemedText({ style, children, ...props }: TextProps) {
   const { i18n } = useTranslation();
   const themeColors = useThemeColor();
-  const fontFamily = i18n.language === "km" ? "khmer-regular" : "Oxygen";
+  const fontFamily = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
 
   return (
     <Text style={[{ fontFamily, color: themeColors.text }, style]} {...props}>
@@ -13,3 +13,4 @@ export function ThemedText({ style, children, ...props }: TextProps) {
     </Text>
   );
 }
+

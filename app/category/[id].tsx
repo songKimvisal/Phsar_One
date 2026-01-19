@@ -19,7 +19,7 @@ export default function CategoryDetailScreen() {
   const themeColors = useThemeColor();
   const subCategories = CATEGORY_MAP[id as string]?.sub || [];
   const { t, i18n } = useTranslation();
-  const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";
+  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
 
   return (
     <SafeAreaView
@@ -53,7 +53,7 @@ export default function CategoryDetailScreen() {
                 style={[styles.subChip, { backgroundColor: themeColors.card }]}
               >
                 <ThemedText style={[{ fontSize: 13, fontFamily: activeFont }]}>
-                  {t(sub)}
+                  {t(`subcategories.${sub}`)}
                 </ThemedText>
               </TouchableOpacity>
             ))}
@@ -67,13 +67,13 @@ export default function CategoryDetailScreen() {
           <TouchableOpacity style={styles.filterBtn}>
             <MapPin size={18} color={themeColors.text} />
             <ThemedText style={[styles.filterText, { fontFamily: activeFont }]}>
-              {t("location")}
+              {t("fields.location")}
             </ThemedText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.filterBtn}>
             <Funnel size={18} color={themeColors.text} />
             <ThemedText style={[styles.filterText, { fontFamily: activeFont }]}>
-              {t("filter_sort")}
+              {t("fields.filter_sort")}
             </ThemedText>
           </TouchableOpacity>
         </View>
