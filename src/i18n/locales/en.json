@@ -295,6 +295,10 @@
     "tbongKhmum": "Tbong Khmum"
   },
   "sellSection": {
-    "What_are_you_selling?": "What are you selling?"
+    "What_are_you_selling?": "What are you selling?",
+    "category_subtitle": "Select a category to continue"
+  },
+  "trade_screen": {
+    "title": "Trade Screen"
   }
 }

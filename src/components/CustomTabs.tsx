@@ -68,7 +68,7 @@ export default function CustomTabs() {
             ),
           tabBarLabelStyle: {
             fontSize: 12,
-            fontFamily: activeFont,
+            fontFamily: activeFont, // Ensure font is applied
           },
         }}
       />
@@ -80,7 +80,6 @@ export default function CustomTabs() {
             <ArrowsClockwise size={iconSize.trade} color={color} />
           ),
           tabBarLabelStyle: {
-            fontSize: 12,
             fontFamily: activeFont,
           },
         }}
@@ -93,7 +92,6 @@ export default function CustomTabs() {
             <CameraPlus size={iconSize.sell} color={color} weight="duotone" />
           ),
           tabBarLabelStyle: {
-            fontSize: 12,
             fontFamily: activeFont,
           },
         }}
@@ -106,7 +104,6 @@ export default function CustomTabs() {
             <ChatCircleDots size={iconSize.chat} color={color} />
           ),
           tabBarLabelStyle: {
-            fontSize: 12,
             fontFamily: activeFont,
           },
         }}
@@ -119,7 +116,6 @@ export default function CustomTabs() {
             <UserCircle size={iconSize.profile} color={color} />
           ),
           tabBarLabelStyle: {
-            fontSize: 12,
             fontFamily: activeFont,
           },
         }}

@@ -1,8 +1,10 @@
-export const CATEGORY_MAP: Record<string, { sub: string[] }> = {
+export const CATEGORY_MAP: Record<string, { nameKey: string; sub: string[] }> = {
   "1": {
+    nameKey: "smart_phone",
     sub: ["Phone", "Tablet", "Smart Watch", "Phone Accessories", "other"],
   },
   "2": {
+    nameKey: "vehicles",
     sub: [
       "Car",
       "Bicycle",
@@ -16,9 +18,11 @@ export const CATEGORY_MAP: Record<string, { sub: string[] }> = {
     ],
   },
   "3": {
+    nameKey: "beauty",
     sub: ["Skin Care", "Hair Care", "Makeup", "Natural & Organic", "other"],
   },
   "4": {
+    nameKey: "furniture",
     sub: [
       "Tables & Desks",
       "Chairs & Sofas",
@@ -32,6 +36,7 @@ export const CATEGORY_MAP: Record<string, { sub: string[] }> = {
     ],
   },
   "5": {
+    nameKey: "clothing",
     sub: [
       "Women's Fashion",
       "Men's Fashion",
@@ -41,6 +46,7 @@ export const CATEGORY_MAP: Record<string, { sub: string[] }> = {
     ],
   },
   "6": {
+    nameKey: "computer",
     sub: [
       "Laptop",
       "Desktop",
@@ -49,8 +55,12 @@ export const CATEGORY_MAP: Record<string, { sub: string[] }> = {
       "Parts & Accessories",
     ],
   },
-  "7": { sub: ["Land", "House", "Condo", "Apartment", "Commercial"] },
+  "7": {
+    nameKey: "real_estates",
+    sub: ["Land", "House", "Condo", "Apartment", "Commercial"],
+  },
   "8": {
+    nameKey: "electronic",
     sub: [
       "Washing Machines",
       "Fridges",

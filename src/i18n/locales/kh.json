@@ -295,6 +295,10 @@
     "tbongKhmum": "ត្បូងឃ្មុំ"
   },
   "sellSection": {
-    "What_are_you_selling?": "តើអ្នកចង់លក់អ្វី?"
+    "What_are_you_selling?": "តើអ្នកចង់លក់អ្វី?",
+    "category_subtitle": "ជ្រើសរើសប្រភេទដើម្បីបន្ត"
+  },
+  "trade_screen": {
+    "title": "អេក្រង់ជួញដូរ"
   }
 }

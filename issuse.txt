@@ -1,0 +1,20 @@
+# Issues Solved
+
+This document summarizes the key issues that were identified and resolved in the application.
+
+## 1. Navigation Failure from Main Category to Subcategory
+
+*   **Problem:** Users were unable to navigate from the main category screen to the subcategory screen. The application would crash upon clicking a main category.
+*   **Root Cause:** The theme provider (`ThemeProvider`) was only wrapping the routes inside the `app/(tabs)` directory. When a user tried to navigate to the category detail screen (located at `app/category/[id].tsx`), which is outside the `(tabs)` group, the screen was not able to access the theme context, resulting in a "useTheme must be used within ThemeProvider" error and a crash.
+*   **Solution:**
+    1.  A global root layout file (`app/_layout.tsx`) was created.
+    2.  The `ThemeProvider` and other global providers (like `I18nextProvider`) were moved into this new root layout.
+    3.  This change ensures that **all** routes and components in the entire application are wrapped with the necessary context providers, resolving the crash and allowing navigation to function correctly.
+
+## 2. UI Content Overlapping with Device Notches and Home Indicator
+
+*   **Problem:** Several screens had UI elements that could be obscured by the device's status bar, camera notch, or the home indicator area at the bottom of the screen. This was because they were not accounting for the device's "safe areas."
+*   **Root Cause:** The main screen layouts and the custom tab bar were not using appropriate safe area handling.
+*   **Solution:**
+    1.  **For Screens (`index.tsx`, `profile.tsx`, `category/[id].tsx`):** The top-level `<View>` was replaced with `<SafeAreaView>`. This component automatically applies padding to prevent the UI from overlapping with the top and bottom safe areas of the device.
+    2.  **For the Custom Tab Bar (`CustomTabs.tsx`):** The tab bar used a fixed `bottom: 10` style, which is unreliable. This was replaced with a more robust solution using the `useSafeAreaInsets` hook. This hook provides the actual inset value for the bottom of the screen, allowing the tab bar's position to be dynamically and correctly adjusted on any device.
