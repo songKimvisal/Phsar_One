@@ -1,5 +1,5 @@
-import Header from "@/src/components/Header";
-import ProductCategory from "@/src/components/ProductCategory";
+import Header from "@src/components/Header";
+import ProductCategory from "@src/components/ProductCategory";
 
 import SearchBar from "@src/components/SearchBar";
 import useThemeColor from "@src/hooks/useThemeColor";

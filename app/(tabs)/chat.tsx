@@ -1,5 +1,5 @@
-import { ThemedText } from "@/src/components/ThemedText";
-import useThemeColor from "@/src/hooks/useThemeColor";
+import { ThemedText } from "@src/components/ThemedText";
+import useThemeColor from "@src/hooks/useThemeColor";
 import { StyleSheet, View } from "react-native";
 
 export default function ChatScreen() {

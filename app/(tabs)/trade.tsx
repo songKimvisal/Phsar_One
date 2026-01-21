@@ -1,5 +1,5 @@
-import { ThemedText } from "@/src/components/ThemedText";
-import useThemeColor from "@/src/hooks/useThemeColor";
+import { ThemedText } from "@src/components/ThemedText";
+import useThemeColor from "@src/hooks/useThemeColor";
 import { StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 export default function TradeScreen() {
