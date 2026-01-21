@@ -1,10 +1,9 @@
-import { useTheme } from "@/src/context/ThemeContext";
+import { useTheme } from "@src/context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native";
-
 export default function SellLayout() {
   const { colors } = useTheme(); //
   const { t } = useTranslation();
