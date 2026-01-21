@@ -30,8 +30,7 @@ import {
 
 export default function ProfileScreen() {
   const themeColors = useThemeColor();
-  const { t, i18n } = useTranslation();
-  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
@@ -41,9 +40,7 @@ export default function ProfileScreen() {
           <TouchableOpacity
             style={[styles.upgradeBtn, { backgroundColor: Colors.reds[500] }]}
           >
-            <ThemedText
-              style={[styles.upgradeText, { fontFamily: activeFont }]}
-            >
+            <ThemedText style={styles.upgradeText}>
               {t("user_actions.upgrade")} ✨
             </ThemedText>
           </TouchableOpacity>
@@ -68,10 +65,8 @@ export default function ProfileScreen() {
             <UserCircle size={60} color={themeColors.text} weight="fill" />
           </View>
           <View style={styles.userTextContainer}>
-            <ThemedText style={[styles.userName, { fontFamily: activeFont }]}>
-              John Doe
-            </ThemedText>
-            <ThemedText style={[styles.userType, { fontFamily: activeFont }]}>
+            <ThemedText style={styles.userName}>John Doe</ThemedText>
+            <ThemedText style={styles.userType}>
               {t("user_actions.regular_account")}
             </ThemedText>
           </View>
@@ -80,58 +75,48 @@ export default function ProfileScreen() {
         {/* 3. My Listings */}
         <ProfileSection
           title={t("user_actions.myLists")}
-          activeFont={activeFont}
           viewAllLabel={t("user_actions.viewAll")}
         >
           <GridItem
             icon={<Tag color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.active")}
-            activeFont={activeFont}
           />
           <GridItem
             icon={<CheckCircle color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.sold")}
-            activeFont={activeFont}
           />
           <GridItem
             icon={<NotePencil color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.drafts")}
-            activeFont={activeFont}
           />
           <GridItem
             icon={
               <ClockCounterClockwise color={Colors.reds[500]} weight="fill" />
             }
             label={t("user_actions.expired")}
-            activeFont={activeFont}
           />
         </ProfileSection>
 
         {/* 4. Dashboard */}
         <ProfileSection
           title={t("user_actions.dashboard")}
-          activeFont={activeFont}
           viewAllLabel={t("user_actions.viewAll")}
         >
           <GridItem
             icon={<ChartPie size={28} color={themeColors.text} />}
             label={t("user_actions.overview")}
-            activeFont={activeFont}
           />
           <GridItem
             icon={<ChartBar size={28} color={themeColors.text} />}
             label={t("user_actions.insight")}
-            activeFont={activeFont}
           />
           <GridItem
             icon={<Tag size={28} color={themeColors.text} />}
             label={t("user_actions.myTrade")}
-            activeFont={activeFont}
           />
           <GridItem
             icon={<PresentationChart size={28} color={themeColors.text} />}
             label={t("user_actions.performance")}
-            activeFont={activeFont}
           />
         </ProfileSection>
 
@@ -140,27 +125,22 @@ export default function ProfileScreen() {
           <GridItem
             icon={<ClockCounterClockwise size={26} color={themeColors.text} />}
             label={t("user_actions.history")}
-            activeFont={activeFont}
           />
           <GridItem
             icon={<Storefront size={26} color={themeColors.text} />}
             label={t("user_actions.following")}
-            activeFont={activeFont}
           />
           <GridItem
             icon={<Bookmark size={26} color={themeColors.text} />}
             label={t("user_actions.bookMark")}
-            activeFont={activeFont}
           />
           <GridItem
             icon={<Wallet size={26} color={themeColors.text} />}
             label={t("user_actions.billing")}
-            activeFont={activeFont}
           />
           <GridItem
             icon={<Headset size={26} color={themeColors.text} />}
             label={t("user_actions.helpCenter")}
-            activeFont={activeFont}
           />
         </View>
       </ScrollView>
@@ -172,12 +152,10 @@ export default function ProfileScreen() {
 function ProfileSection({
   title,
   children,
-  activeFont,
   viewAllLabel,
 }: {
   title: string;
   children: React.ReactNode;
-  activeFont: string;
   viewAllLabel: string;
 }) {
   const themeColors = useThemeColor();
@@ -189,13 +167,9 @@ function ProfileSection({
       ]}
     >
       <View style={styles.sectionHeader}>
-        <ThemedText style={[styles.sectionTitle, { fontFamily: activeFont }]}>
-          {title}
-        </ThemedText>
+        <ThemedText style={styles.sectionTitle}>{title}</ThemedText>
         <TouchableOpacity style={styles.viewAll}>
-          <ThemedText style={[styles.viewAllText, { fontFamily: activeFont }]}>
-            {viewAllLabel}
-          </ThemedText>
+          <ThemedText style={styles.viewAllText}>{viewAllLabel}</ThemedText>
           <CaretRight size={14} color="#888" />
         </TouchableOpacity>
       </View>
@@ -208,18 +182,14 @@ function ProfileSection({
 function GridItem({
   icon,
   label,
-  activeFont,
 }: {
   icon: React.ReactNode;
   label: string;
-  activeFont: string;
 }) {
   return (
     <TouchableOpacity style={styles.gridItem}>
       {icon}
-      <ThemedText style={[styles.gridLabel, { fontFamily: activeFont }]}>
-        {label}
-      </ThemedText>
+      <ThemedText style={styles.gridLabel}>{label}</ThemedText>
     </TouchableOpacity>
   );
 }
