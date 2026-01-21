@@ -1,0 +1,14 @@
+**Functions Implemented:**
+
+*   **Font-Based Language Switching:** The `ThemedText.tsx` component was enhanced to dynamically apply specific fonts (`khmer-regular` or `Oxygen`) based on the active language (`kh` or `en`), centralizing font control.
+*   **`ThemedTextInput` Component:** A new, reusable `src/components/ThemedTextInput.tsx` component was developed. It extends the native `TextInput` to automatically apply themed fonts and `placeholderTextColor` based on language and theme.
+
+**Problems Fixed:**
+
+*   **Inconsistent Font Application:** Previously, fonts were applied inconsistently across various text elements. This was fixed by centralizing font logic within `ThemedText` and `ThemedTextInput`.
+*   **Lack of Reusable Themed Input:** The absence of a dedicated themed input component led to repetitive code for applying themes and fonts to `TextInput` elements. This was solved by creating `ThemedTextInput`.
+*   **Redundant Font Declarations:** `activeFont` variables and explicit `fontFamily` styles were repetitively declared in many components (`ProductCategory.tsx`, `app/sell/details.tsx`, `app/(tabs)/profile.tsx`), leading to bloated and less maintainable code. These redundancies were eliminated.
+*   **Usage of Native Text/TextInput:** Several components were using native `Text` or `TextInput` directly without theme integration. These were refactored to use `ThemedText` and `ThemedTextInput` for consistent theming.
+*   **Incorrect Import Paths:** Invalid import paths (e.g., `@/src/` instead of `@src/`) were corrected in multiple tab screen files (`app/(tabs)/chat.tsx`, `app/(tabs)/index.tsx`, `app/(tabs)/sell.tsx`, `app/(tabs)/trade.tsx`, and `app/sell/_layout.tsx`), resolving module resolution issues.
+*   **Streamlined Code Structure:** By centralizing font and theming logic, the overall codebase became cleaner, more modular, and easier to maintain.
+*   **Version Control Management:** All changes were systematically committed and pushed to the GitHub repository through a series of logical, atomic commits, ensuring proper version control and a clear development history.
