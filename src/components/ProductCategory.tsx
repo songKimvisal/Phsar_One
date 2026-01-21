@@ -14,8 +14,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import useThemeColor from "../hooks/useThemeColor";
 import { ThemedText } from "./ThemedText";
 export default function ProductCategory() {
-  const { t, i18n } = useTranslation();
-  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+  const { t } = useTranslation();
   const themeColors = useThemeColor();
   const router = useRouter();
   const CATEGORIES = [
@@ -37,7 +36,7 @@ export default function ProductCategory() {
   };
   return (
     <View style={styles.categoryContainer}>
-      <ThemedText style={[styles.categoryText, { fontFamily: activeFont }]}>
+      <ThemedText style={styles.categoryText}>
         {t("navigation.category")}
       </ThemedText>
       <View style={styles.chipContainer}>
@@ -56,9 +55,7 @@ export default function ProductCategory() {
               ]}
             >
               <Icon size={24} color={themeColors.text} weight="duotone"></Icon>
-              <ThemedText
-                style={[styles.chipLabel, { fontFamily: activeFont }]}
-              >
+              <ThemedText style={styles.chipLabel}>
                 {t(`categories.${item.nameKey}`)}
               </ThemedText>
             </TouchableOpacity>
