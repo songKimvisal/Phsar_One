@@ -1,29 +1,21 @@
 import useThemeColor from "@src/hooks/useThemeColor";
 import { MagnifyingGlass } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/Colors";
+import { ThemedTextInput } from "./ThemedTextInput";
 
 export default function SearchBar() {
   const themeColors = useThemeColor();
-  const { t, i18n } = useTranslation();
-
-  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+  const { t } = useTranslation();
 
   return (
     <View
       style={[styles.searchContainer, { backgroundColor: themeColors.card }]}
     >
-      <TextInput
+      <ThemedTextInput
         placeholder={t("navigation.search")}
-        placeholderTextColor={themeColors.tabIconDefault}
-        style={[
-          styles.searchInput,
-          {
-            fontFamily: activeFont,
-            color: themeColors.text,
-          },
-        ]}
+        style={styles.searchInput}
       />
 
       <TouchableOpacity style={styles.iconContainer}>
