@@ -72,7 +72,7 @@
     "Fashion Accessories": "គ្រឿងតុបតែងខ្លួន",
     "Laptop": "ឡេបថប",
     "Desktop": "កុំព្យូទ័រលើតុ",
-    "All in One": "អលអុីនវ័ន",
+    "All in One": "អលអីនវ័ន",
     "Monitor Printer & Scanner": "អេក្រង់ ម៉ាស៊ីនបោះពុម្ព និងស្កែនន័រ",
     "Land": "ដី",
     "House": "ផ្ទះ",
@@ -87,7 +87,8 @@
     "Security Camera": "កាមេរ៉ាសុវត្ថិភាព",
     "TVs & Audio": "ទូរទស្សន៍ និងសំឡេង",
     "Video games": "ហ្គេមវីដេអូ",
-    "Toys": "ប្រដាប់ក្មេងលេង"
+    "Toys": "ប្រដាប់ក្មេងលេង",
+    "other": "ផ្សេងៗ"
   },
   "fields": {
     "brand": "ម៉ាក",
@@ -296,7 +297,10 @@
   },
   "sellSection": {
     "What_are_you_selling?": "តើអ្នកចង់លក់អ្វី?",
-    "category_subtitle": "ជ្រើសរើសប្រភេទដើម្បីបន្ត"
+    "category_subtitle": "ជ្រើសរើសប្រភេទដើម្បីបន្ត",
+    "Product_Details": "ព័ត៌មានលម្អិតផលិតផល",
+    "Pin_Location": "ជ្រើសរើសទីតាំង",
+    "Post_Now": "ដាកលក់"
   },
   "trade_screen": {
     "title": "អេក្រង់ជួញដូរ"

@@ -3,9 +3,9 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { Tabs } from "expo-router";
 import {
   ArrowsClockwise,
-  CameraPlus,
   ChatCircleDots,
   House,
+  PlusCircle,
   UserCircle,
 } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
@@ -80,6 +80,7 @@ export default function CustomTabs() {
             <ArrowsClockwise size={iconSize.trade} color={color} />
           ),
           tabBarLabelStyle: {
+            fontSize: 12,
             fontFamily: activeFont,
           },
         }}
@@ -89,9 +90,10 @@ export default function CustomTabs() {
         options={{
           title: t("navigation.sell"),
           tabBarIcon: ({ color, size }) => (
-            <CameraPlus size={iconSize.sell} color={color} weight="duotone" />
+            <PlusCircle size={iconSize.sell} color={color} weight="duotone" />
           ),
           tabBarLabelStyle: {
+            fontSize: 12,
             fontFamily: activeFont,
           },
         }}
@@ -104,6 +106,7 @@ export default function CustomTabs() {
             <ChatCircleDots size={iconSize.chat} color={color} />
           ),
           tabBarLabelStyle: {
+            fontSize: 12,
             fontFamily: activeFont,
           },
         }}
@@ -116,6 +119,7 @@ export default function CustomTabs() {
             <UserCircle size={iconSize.profile} color={color} />
           ),
           tabBarLabelStyle: {
+            fontSize: 12,
             fontFamily: activeFont,
           },
         }}

@@ -1,6 +1,6 @@
+import DynamicPhosphorIcon from "@/src/components/DynamicPhosphorIcon"; // Import DynamicPhosphorIcon
 import { ThemedText } from "@/src/components/ThemedText";
 import { CATEGORY_MAP } from "@/src/constants/CategoryData";
-import { Colors } from "@/src/constants/Colors";
 import useThemeColor from "@/src/hooks/useThemeColor";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { CaretLeft, Funnel, MapPin } from "phosphor-react-native";
@@ -17,7 +17,13 @@ export default function CategoryDetailScreen() {
   const { id, title } = useLocalSearchParams();
   const router = useRouter();
   const themeColors = useThemeColor();
-  const subCategories = CATEGORY_MAP[id as string]?.sub || [];
+  // Correct the subCategories data structure
+  const subCategoryData = Object.entries(
+    CATEGORY_MAP[id as string]?.sub || {},
+  ).map(([name, icon]) => ({
+    name,
+    icon,
+  }));
   const { t, i18n } = useTranslation();
   const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
 
@@ -47,16 +53,36 @@ export default function CategoryDetailScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.subScroll}
           >
-            {subCategories.map((sub) => (
-              <TouchableOpacity
-                key={sub}
-                style={[styles.subChip, { backgroundColor: themeColors.card }]}
-              >
-                <ThemedText style={[{ fontSize: 13, fontFamily: activeFont }]}>
-                  {t(`subcategories.${sub}`)}
-                </ThemedText>
-              </TouchableOpacity>
-            ))}
+            {subCategoryData.map(
+              (
+                subItem, // Use subCategoryData and subItem
+              ) => (
+                <TouchableOpacity
+                  key={subItem.name} // Key by subItem.name
+                  style={[
+                    styles.subChip,
+                    {
+                      backgroundColor: themeColors.card,
+                      borderColor: themeColors.border,
+                    },
+                  ]} // Use themeColors.border
+                >
+                  <DynamicPhosphorIcon
+                    name={subItem.icon} // Use the icon name from subItem
+                    size={16} // Adjust size as needed
+                    color={themeColors.text}
+                    weight="duotone"
+                  />
+                  <ThemedText
+                    style={[
+                      { fontSize: 13, fontFamily: activeFont, marginLeft: 6 },
+                    ]}
+                  >
+                    {t(`subcategories.${subItem.name}`)}
+                  </ThemedText>
+                </TouchableOpacity>
+              ),
+            )}
           </ScrollView>
         </View>
 
@@ -99,7 +125,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignSelf: "center",
     borderWidth: 1,
-    borderColor: Colors.light.border,
+    flexDirection: "row", // Arrange icon and text horizontally
+    alignItems: "center", // Align items vertically in the center
   },
   filterBar: {
     flexDirection: "row",

@@ -87,7 +87,8 @@
     "Security Camera": "Security Camera",
     "TVs & Audio": "TVs & Audio",
     "Video games": "Video Games",
-    "Toys": "Toys"
+    "Toys": "Toys",
+    "other": "Other"
   },
   "fields": {
     "brand": "Brand",
@@ -296,7 +297,11 @@
   },
   "sellSection": {
     "What_are_you_selling?": "What are you selling?",
-    "category_subtitle": "Select a category to continue"
+    "category_subtitle": "Select a category to continue",
+    "Choose_Subcategory": "Select a subcategory to continue",
+    "Product_Details": "Product Details",
+    "Pin_Location": "Pin Your Location",
+    "Post_Now": "Post Now"
   },
   "trade_screen": {
     "title": "Trade Screen"
