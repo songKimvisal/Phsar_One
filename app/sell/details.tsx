@@ -1,11 +1,11 @@
+import { Picker } from "@react-native-picker/picker";
 import { ThemedText } from "@src/components/ThemedText";
 import { ThemedTextInput } from "@src/components/ThemedTextInput";
 import { Colors } from "@src/constants/Colors";
 import { POST_FIELDS_MAP } from "@src/constants/postFields";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { Picker } from "@react-native-picker/picker";
-import * => ImagePicker from "expo-image-picker";
+import * as ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
 import {
   Platform,
@@ -90,7 +90,7 @@ export default function ProductDetailsForm() {
                       key={option}
                       label={t(
                         `fieldOptions.${field.key}.${optionToKey(option)}`,
-                        option
+                        option,
                       )}
                       value={option}
                     />
@@ -112,7 +112,7 @@ export default function ProductDetailsForm() {
                         key={option}
                         label={t(
                           `fieldOptions.${field.key}.${optionToKey(option)}`,
-                          option
+                          option,
                         )}
                         value={option}
                       />
@@ -185,7 +185,6 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: Colors.reds[500],
     borderRadius: 8,
     padding: 10,
     fontSize: 16,
