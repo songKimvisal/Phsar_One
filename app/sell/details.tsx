@@ -3,9 +3,9 @@ import { ThemedTextInput } from "@src/components/ThemedTextInput";
 import { Colors } from "@src/constants/Colors";
 import { POST_FIELDS_MAP } from "@src/constants/postFields";
 import { useSellDraft } from "@src/context/SellDraftContext";
-import { useTheme } from "@src/context/ThemeContext";
+import useThemeColor from "@src/hooks/useThemeColor";
 import { Picker } from "@react-native-picker/picker";
-import * as ImagePicker from "expo-image-picker";
+import * => ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
 import {
   Platform,
@@ -33,7 +33,7 @@ export default function ProductDetailsForm() {
       ]);
     }
   };
-  const { colors } = useTheme();
+  const themeColors = useThemeColor();
   const optionToKey = (str: string) => {
     if (!str) return "";
     const parts = str.split(" ");
@@ -47,12 +47,12 @@ export default function ProductDetailsForm() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       <ScrollView style={[styles.formContainer]}>
         {/* Photo Section */}
         <TouchableOpacity
           onPress={pickImage}
-          style={[styles.photoContainer, { backgroundColor: colors.card }]}
+          style={[styles.photoContainer, { backgroundColor: themeColors.card }]}
         >
           <ThemedText style={styles.photoText}>
             Add Photos ({draft.photos.length})
@@ -69,7 +69,7 @@ export default function ProductDetailsForm() {
               </ThemedText>
               {(fieldType === "text" || fieldType === "number") && (
                 <ThemedTextInput
-                  style={[styles.input, { color: colors.text }]}
+                  style={[styles.input, { color: themeColors.text }]}
                   value={draft.details[field.key] || ""}
                   onChangeText={(text) => updateDetail(field.key, text)}
                   keyboardType={fieldType === "number" ? "numeric" : "default"}
@@ -83,7 +83,7 @@ export default function ProductDetailsForm() {
                   onValueChange={(itemValue) =>
                     updateDetail(field.key, itemValue)
                   }
-                  style={[styles.pickerIOS, { color: colors.text }]}
+                  style={[styles.pickerIOS, { color: themeColors.text }]}
                 >
                   {field.options.map((option: string) => (
                     <Picker.Item
@@ -104,8 +104,8 @@ export default function ProductDetailsForm() {
                     onValueChange={(itemValue) =>
                       updateDetail(field.key, itemValue)
                     }
-                    style={[styles.input, { color: colors.text }]}
-                    dropdownIconColor={colors.text}
+                    style={[styles.input, { color: themeColors.text }]}
+                    dropdownIconColor={themeColors.text}
                   >
                     {field.options.map((option: string) => (
                       <Picker.Item

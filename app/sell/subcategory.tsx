@@ -1,8 +1,8 @@
-import DynamicPhosphorIcon from "@/src/components/DynamicPhosphorIcon"; // Add this import
-import { ThemedText } from "@/src/components/ThemedText";
-import { CATEGORY_MAP } from "@/src/constants/CategoryData";
-import { useSellDraft } from "@/src/context/SellDraftContext";
-import { useTheme } from "@/src/context/ThemeContext";
+import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon"; // Add this import
+import { ThemedText } from "@src/components/ThemedText";
+import { CATEGORY_MAP } from "@src/constants/CategoryData";
+import { useSellDraft } from "@src/context/SellDraftContext";
+import useThemeColor from "@src/hooks/useThemeColor";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,10 +15,9 @@ import {
 
 export default function SubcategoryScreen() {
   const { draft, updateDraft } = useSellDraft();
-  const { t, i18n } = useTranslation();
-  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+  const { t } = useTranslation();
   const router = useRouter();
-  const { colors } = useTheme();
+  const themeColors = useThemeColor();
   const { categoryId: paramCategoryId } = useLocalSearchParams();
   const handleBack = () => {
     router.replace("/(tabs)/sell");
@@ -54,10 +53,10 @@ export default function SubcategoryScreen() {
       <SafeAreaView
         style={[
           styles.container,
-          { backgroundColor: colors.background, justifyContent: "center" },
+          { backgroundColor: themeColors.background, justifyContent: "center" },
         ]}
       >
-        <ThemedText style={{ textAlign: "center", fontFamily: activeFont }}>
+        <ThemedText style={{ textAlign: "center" }}>
           {t("common.loading")}...
         </ThemedText>
         <TouchableOpacity onPress={handleBack} style={{ marginTop: 10 }}>
@@ -73,7 +72,7 @@ export default function SubcategoryScreen() {
     <SafeAreaView
       style={[
         styles.container,
-        { backgroundColor: colors.background, flex: 1 },
+        { backgroundColor: themeColors.background, flex: 1 },
       ]}
     >
       <FlatList
@@ -85,8 +84,8 @@ export default function SubcategoryScreen() {
             style={[
               styles.listItem,
               {
-                backgroundColor: colors.card,
-                borderColor: colors.border,
+                backgroundColor: themeColors.card,
+                borderColor: themeColors.border,
               },
             ]}
             onPress={() => {
@@ -97,10 +96,10 @@ export default function SubcategoryScreen() {
             <DynamicPhosphorIcon
               name={item.icon}
               size={24}
-              color={colors.text}
+              color={themeColors.text}
               weight="duotone"
             />
-            <ThemedText style={{ marginLeft: 10, fontFamily: activeFont }}>
+            <ThemedText style={{ marginLeft: 10 }}>
               {t(`subcategories.${item.name}`)}
             </ThemedText>
           </TouchableOpacity>
