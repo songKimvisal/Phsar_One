@@ -6,12 +6,12 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { CaretLeft, Funnel, MapPin } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CategoryDetailScreen() {
   const { id, title } = useLocalSearchParams();

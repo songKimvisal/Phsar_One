@@ -69,7 +69,13 @@ export default function ProductDetailsForm() {
               </ThemedText>
               {(fieldType === "text" || fieldType === "number") && (
                 <ThemedTextInput
-                  style={[styles.input, { color: themeColors.text }]}
+                  style={[
+                    styles.input,
+                    {
+                      color: themeColors.text,
+                      borderColor: themeColors.border,
+                    },
+                  ]}
                   value={draft.details[field.key] || ""}
                   onChangeText={(text) => updateDetail(field.key, text)}
                   keyboardType={fieldType === "number" ? "numeric" : "default"}
@@ -78,35 +84,36 @@ export default function ProductDetailsForm() {
               {fieldType === "select" &&
               field.options &&
               Platform.OS === "ios" ? (
-                <Picker
-                  selectedValue={draft.details[field.key] || ""}
-                  onValueChange={(itemValue) =>
-                    updateDetail(field.key, itemValue)
-                  }
-                  style={[styles.pickerIOS, { color: themeColors.text }]}
+                <View
+                  style={[
+                    styles.pickerContainer,
+                    {
+                      backgroundColor: themeColors.card,
+                      borderColor: themeColors.border,
+                    },
+                  ]}
                 >
-                  {field.options.map((option: string) => (
-                    <Picker.Item
-                      key={option}
-                      label={t(
-                        `fieldOptions.${field.key}.${optionToKey(option)}`,
-                        option,
-                      )}
-                      value={option}
-                    />
-                  ))}
-                </Picker>
-              ) : (
-                fieldType === "select" &&
-                field.options && (
                   <Picker
                     selectedValue={draft.details[field.key] || ""}
                     onValueChange={(itemValue) =>
                       updateDetail(field.key, itemValue)
                     }
-                    style={[styles.input, { color: themeColors.text }]}
-                    dropdownIconColor={themeColors.text}
+                    style={[
+                      styles.pickerIOS,
+                      {
+                        color: themeColors.text,
+                        backgroundColor: themeColors.card,
+                      },
+                    ]}
+                    itemStyle={{
+                      color: themeColors.text,
+                    }}
                   >
+                    <Picker.Item
+                      label={`Select ${t(`fields.${field.key}`)}`}
+                      value=""
+                      color={themeColors.text}
+                    />
                     {field.options.map((option: string) => (
                       <Picker.Item
                         key={option}
@@ -115,9 +122,55 @@ export default function ProductDetailsForm() {
                           option,
                         )}
                         value={option}
+                        color={themeColors.text}
                       />
                     ))}
                   </Picker>
+                </View>
+              ) : (
+                fieldType === "select" &&
+                field.options && (
+                  <View
+                    style={[
+                      styles.pickerContainer,
+                      {
+                        backgroundColor: themeColors.card,
+                        borderColor: themeColors.border,
+                      },
+                    ]}
+                  >
+                    <Picker
+                      selectedValue={draft.details[field.key] || ""}
+                      onValueChange={(itemValue) =>
+                        updateDetail(field.key, itemValue)
+                      }
+                      style={[
+                        styles.picker,
+                        {
+                          color: themeColors.text,
+                          backgroundColor: themeColors.card,
+                        },
+                      ]}
+                      dropdownIconColor={themeColors.text}
+                    >
+                      <Picker.Item
+                        label={`Select ${t(`fields.${field.key}`)}`}
+                        value=""
+                        color={themeColors.text}
+                      />
+                      {field.options.map((option: string) => (
+                        <Picker.Item
+                          key={option}
+                          label={t(
+                            `fieldOptions.${field.key}.${optionToKey(option)}`,
+                            option,
+                          )}
+                          value={option}
+                          color={themeColors.text}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
                 )
               )}
             </View>
@@ -163,7 +216,6 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     padding: 16,
-    paddingTop: 60,
   },
   photoContainer: {
     height: 150,
@@ -188,6 +240,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 16,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  picker: {
+    height: 50,
+    width: "100%",
   },
   locationTitle: { marginTop: 20, fontSize: 16, marginBottom: 10 },
   map: { height: 200, borderRadius: 10, marginBottom: 20 },
