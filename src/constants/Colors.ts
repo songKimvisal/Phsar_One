@@ -16,11 +16,12 @@ const redScale = {
 export const Colors = {
   light: {
     text: "#111827",
-    background: "#FFFFFF",
-    card: "#F9FAFB",
+    background: "#F3F4F6",
+    card: "#FFFFFF",
     tabIconDefault: "#868d99",
     primary: redScale[750],
     border: "#E5E7EB",
+    primaryButtonText: "#FFFFFF",
   },
   dark: {
     text: "#F9FAFB",
@@ -29,6 +30,7 @@ export const Colors = {
     tabIconDefault: "#4B5563",
     primary: redScale[750],
     border: "#374151",
+    primaryButtonText: "#FFFFFF",
   },
   reds: redScale,
 };

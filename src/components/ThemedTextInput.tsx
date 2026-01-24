@@ -9,7 +9,16 @@ export function ThemedTextInput({ style, ...props }: TextInputProps) {
 
   return (
     <TextInput
-      style={[{ fontFamily, color: themeColors.text }, style]}
+      style={[
+        {
+          borderWidth: 1,
+          fontFamily,
+          color: themeColors.text,
+          backgroundColor: themeColors.card,
+          borderColor: themeColors.border,
+        },
+        style,
+      ]}
       placeholderTextColor={themeColors.tabIconDefault}
       {...props}
     />

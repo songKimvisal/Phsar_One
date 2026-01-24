@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
+    borderWidth: 0,
     fontSize: 16,
   },
   iconContainer: {
