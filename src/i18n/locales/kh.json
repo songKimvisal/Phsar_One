@@ -300,7 +300,19 @@
     "category_subtitle": "ជ្រើសរើសប្រភេទដើម្បីបន្ត",
     "Product_Details": "ព័ត៌មានលម្អិតផលិតផល",
     "Pin_Location": "ជ្រើសរើសទីតាំង",
-    "Post_Now": "ដាកលក់"
+    "Post_Now": "ដាកលក់",
+    "SellerContactDetail": "ព័ត៌មានលម្អិតទំនាក់ទំនងអ្នកលក់",
+    "Price": "តម្លៃ",
+    "SellerName": "ឈ្មោះអ្នកលក់",
+    "PhoneNumber": "លេខទូរស័ព្ទ",
+    "Email": "អ៊ីមែល",
+    "Negotiable": "អាចចរចាបាន",
+    "Discount": "បញ្ចុះតម្លៃ",
+    "None": "គ្មាន",
+    "Percentage": "ភាគរយ",
+    "FixedAmount": "ចំនួនថេរ",
+    "DiscountPercentagePlaceholder": "ឧ. 10 សម្រាប់ 10%",
+    "DiscountFixedAmountPlaceholder": "ឧ. 5 សម្រាប់ $5"
   },
   "trade_screen": {
     "title": "អេក្រង់ជួញដូរ"

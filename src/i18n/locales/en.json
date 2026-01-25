@@ -301,7 +301,19 @@
     "Choose_Subcategory": "Select a subcategory to continue",
     "Product_Details": "Product Details",
     "Pin_Location": "Pin Your Location",
-    "Post_Now": "Post Now"
+    "Post_Now": "Post Now",
+    "SellerContactDetail": "Contact Detail",
+    "Price": "Price",
+    "SellerName": "Seller Name",
+    "PhoneNumber": "Phone Number",
+    "Email": "Email",
+    "Negotiable": "Negotiable",
+    "Discount": "Discount",
+    "None": "None",
+    "Percentage": "Percentage",
+    "FixedAmount": "Fixed Amount",
+    "DiscountPercentagePlaceholder": "e.g., 10 for 10%",
+    "DiscountFixedAmountPlaceholder": "e.g., 5 for $5"
   },
   "trade_screen": {
     "title": "Trade Screen"
