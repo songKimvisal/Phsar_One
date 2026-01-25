@@ -1,4 +1,5 @@
 import { Picker } from "@react-native-picker/picker";
+import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon";
 import { ThemedText } from "@src/components/ThemedText";
 import { ThemedTextInput } from "@src/components/ThemedTextInput";
 import { Colors } from "@src/constants/Colors";
@@ -177,6 +178,114 @@ export default function ProductDetailsForm() {
           );
         })}
 
+        {/* Price Input and Negotiable Toggle */}
+        <View style={styles.inputGroup}>
+          <ThemedText style={styles.inputLabel}>
+            {t("sellSection.Price")}
+          </ThemedText>
+          <View style={styles.priceContainer}>
+            <ThemedTextInput
+              style={[
+                styles.input,
+                styles.priceInput,
+                {
+                  color: themeColors.text,
+                  borderColor: themeColors.border,
+                },
+              ]}
+              value={draft.price}
+              onChangeText={(text) => updateDraft("price", text)}
+              keyboardType="numeric"
+            />
+            <TouchableOpacity
+              style={styles.negotiableToggle}
+              onPress={() => updateDraft("negotiable", !draft.negotiable)}
+            >
+              <DynamicPhosphorIcon
+                name={draft.negotiable ? "CheckCircle" : "Circle"}
+                size={24}
+                color={draft.negotiable ? Colors.greens[500] : themeColors.text}
+              />
+              <ThemedText style={styles.negotiableText}>
+                {t("sellSection.Negotiable")}
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Discount Options */}
+        <View style={styles.inputGroup}>
+          <ThemedText style={styles.inputLabel}>
+            {t("sellSection.Discount")}
+          </ThemedText>
+          <View style={styles.discountOptionsContainer}>
+            <TouchableOpacity
+              style={[
+                styles.discountOptionButton,
+                draft.discountType === "none" && styles.selectedDiscountOption,
+              ]}
+              onPress={() => updateDraft("discountType", "none")}
+            >
+              <ThemedText
+                style={draft.discountType === "none" && styles.selectedText}
+              >
+                {t("sellSection.None")}
+              </ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.discountOptionButton,
+                draft.discountType === "percentage" &&
+                  styles.selectedDiscountOption,
+              ]}
+              onPress={() => updateDraft("discountType", "percentage")}
+            >
+              <ThemedText
+                style={
+                  draft.discountType === "percentage" && styles.selectedText
+                }
+              >
+                {t("sellSection.Percentage")}
+              </ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.discountOptionButton,
+                draft.discountType === "fixed" && styles.selectedDiscountOption,
+              ]}
+              onPress={() => updateDraft("discountType", "fixed")}
+            >
+              <ThemedText
+                style={draft.discountType === "fixed" && styles.selectedText}
+              >
+                {t("sellSection.FixedAmount")}
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+
+          {(draft.discountType === "percentage" ||
+            draft.discountType === "fixed") && (
+            <ThemedTextInput
+              style={[
+                styles.input,
+                {
+                  color: themeColors.text,
+                  borderColor: themeColors.border,
+                  marginTop: 10,
+                },
+              ]}
+              value={draft.discountValue}
+              onChangeText={(text) => updateDraft("discountValue", text)}
+              keyboardType="numeric"
+              placeholder={
+                draft.discountType === "percentage"
+                  ? t("sellSection.DiscountPercentagePlaceholder")
+                  : t("sellSection.DiscountFixedAmountPlaceholder")
+              }
+            />
+          )}
+        </View>
+
         {/* Location Picker */}
         <ThemedText style={styles.locationTitle}>
           {t("sellSection.Pin_Location")}
@@ -201,6 +310,127 @@ export default function ProductDetailsForm() {
             <Marker coordinate={draft.location} />
           )}
         </MapView>
+
+        {/* Seller Contact Detail Section */}
+        <ThemedText
+          style={[
+            styles.locationTitle,
+            { fontSize: 25, marginBottom: 30, fontWeight: "bold" },
+          ]}
+        >
+          {t("sellSection.SellerContactDetail")}
+        </ThemedText>
+
+        {/* Seller Name Input */}
+        <View style={styles.inputGroup}>
+          <ThemedText style={styles.inputLabel}>
+            {t("sellSection.SellerName")}
+          </ThemedText>
+          <ThemedTextInput
+            style={[
+              styles.input,
+              {
+                color: themeColors.text,
+                borderColor: themeColors.border,
+              },
+            ]}
+            value={draft.contact.sellerName}
+            onChangeText={(text) =>
+              updateDraft("contact", { ...draft.contact, sellerName: text })
+            }
+          />
+        </View>
+
+        {/* Phone Number Inputs */}
+        {Array.isArray(draft.contact?.phones) &&
+          draft.contact.phones.map((phone, index) => (
+            <View key={index} style={styles.inputGroup}>
+              <ThemedText style={styles.inputLabel}>
+                {t("sellSection.PhoneNumber")} {index + 1}
+              </ThemedText>
+              <View style={styles.phoneInputContainer}>
+                <ThemedTextInput
+                  style={[
+                    styles.input,
+                    styles.phoneInput,
+                    {
+                      color: themeColors.text,
+                      borderColor: themeColors.border,
+                    },
+                  ]}
+                  value={phone}
+                  onChangeText={(text) => {
+                    const newPhones = [...draft.contact.phones];
+                    newPhones[index] = text;
+                    updateDraft("contact", {
+                      ...draft.contact,
+                      phones: newPhones,
+                    });
+                  }}
+                  keyboardType="phone-pad"
+                />
+                {draft.contact.phones.length > 1 && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      const newPhones = [...draft.contact.phones];
+                      newPhones.splice(index, 1);
+                      updateDraft("contact", {
+                        ...draft.contact,
+                        phones: newPhones,
+                      });
+                    }}
+                    style={styles.removeBtn}
+                  >
+                    <DynamicPhosphorIcon
+                      name="Trash"
+                      size={24}
+                      color={Colors.reds[500]}
+                    />
+                  </TouchableOpacity>
+                )}
+                {index === draft.contact.phones.length - 1 &&
+                  draft.contact.phones.length < 3 && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        const newPhones = [...draft.contact.phones, ""];
+                        updateDraft("contact", {
+                          ...draft.contact,
+                          phones: newPhones,
+                        });
+                      }}
+                      style={styles.addPhoneIconBtn}
+                    >
+                      <DynamicPhosphorIcon
+                        name="PlusCircle"
+                        size={24}
+                        color={Colors.blues[500]}
+                      />
+                    </TouchableOpacity>
+                  )}
+              </View>
+            </View>
+          ))}
+
+        {/* Email Input */}
+        <View style={styles.inputGroup}>
+          <ThemedText style={styles.inputLabel}>
+            {t("sellSection.Email")}
+          </ThemedText>
+          <ThemedTextInput
+            style={[
+              styles.input,
+              {
+                color: themeColors.text,
+                borderColor: themeColors.border,
+              },
+            ]}
+            value={draft.contact.email}
+            onChangeText={(text) =>
+              updateDraft("contact", { ...draft.contact, email: text })
+            }
+            keyboardType="email-address"
+          />
+        </View>
 
         <TouchableOpacity style={styles.submitBtn} onPress={() => {}}>
           <ThemedText style={styles.submitBtnText}>
@@ -265,8 +495,53 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   pickerIOS: {
-    // Specific styles for iOS Picker if needed, otherwise it will inherit from input
-    height: 150, // iOS Picker needs a height to be visible
+    height: 150,
     width: "100%",
+  },
+  phoneInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  phoneInput: {
+    flex: 1,
+  },
+  addPhoneIconBtn: {
+    marginLeft: 10,
+  },
+  removeBtn: {
+    marginLeft: 10,
+  },
+  priceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  priceInput: {
+    flex: 1,
+  },
+  negotiableToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 15,
+  },
+  negotiableText: {
+    marginLeft: 5,
+    fontSize: 16,
+  },
+  discountOptionsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 10,
+  },
+  discountOptionButton: {
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+  },
+  selectedDiscountOption: {
+    backgroundColor: Colors.light.tint,
+  },
+  selectedText: {
+    color: Colors.light.background,
   },
 });

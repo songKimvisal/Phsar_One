@@ -1,4 +1,4 @@
-import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon"; // Add this import
+import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon";
 import { ThemedText } from "@src/components/ThemedText";
 import { CATEGORY_MAP } from "@src/constants/CategoryData";
 import { useSellDraft } from "@src/context/SellDraftContext";
