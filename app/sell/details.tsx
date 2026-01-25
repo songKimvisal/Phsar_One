@@ -95,9 +95,6 @@ export default function ProductDetailsForm() {
         console.log("Permission to access location was denied");
         return;
       }
-
-      // Only fetch current location if draft.location is still the default (Phnom Penh)
-      // This prevents overwriting a manually selected location or already fetched location
       if (
         draft.location.latitude === DEFAULT_REGION.latitude &&
         draft.location.longitude === DEFAULT_REGION.longitude
@@ -165,7 +162,7 @@ export default function ProductDetailsForm() {
               ]}
             >
               <ThemedText style={styles.photoText}>
-                Add Photos ({draft.photos.length})
+                {t("sellSection.Add_Photos")}({draft.photos.length})
               </ThemedText>
             </TouchableOpacity>
 
@@ -262,6 +259,7 @@ export default function ProductDetailsForm() {
                             {
                               color: themeColors.text,
                               backgroundColor: themeColors.card,
+                              fontFamily: activeFont,
                             },
                           ]}
                           dropdownIconColor={themeColors.text}
@@ -458,6 +456,21 @@ export default function ProductDetailsForm() {
                   fontSize: 16,
                   fontFamily: activeFont,
                 }}
+                placeholderStyle={{
+                  color: themeColors.text,
+                  fontSize: 16,
+                  fontFamily: activeFont,
+                }}
+                listItemLabelStyle={{
+                  color: themeColors.text,
+                  fontSize: 16,
+                  fontFamily: activeFont,
+                }}
+                selectedItemLabelStyle={{
+                  color: themeColors.text,
+                  fontSize: 16,
+                  fontFamily: activeFont,
+                }}
                 dropDownContainerStyle={{
                   backgroundColor: themeColors.card,
                   borderColor: themeColors.border,
@@ -520,8 +533,26 @@ export default function ProductDetailsForm() {
                     backgroundColor: themeColors.card,
                     borderColor: themeColors.border,
                   }}
-                  textStyle={{ color: themeColors.text, fontSize: 16 }}
-                  placeholderStyle={{ color: themeColors.text, fontSize: 16 }}
+                  textStyle={{
+                    color: themeColors.text,
+                    fontSize: 16,
+                    fontFamily: activeFont,
+                  }}
+                  placeholderStyle={{
+                    color: themeColors.text,
+                    fontSize: 16,
+                    fontFamily: activeFont,
+                  }}
+                  listItemLabelStyle={{
+                    color: themeColors.text,
+                    fontSize: 16,
+                    fontFamily: activeFont,
+                  }}
+                  selectedItemLabelStyle={{
+                    color: themeColors.text,
+                    fontSize: 16,
+                    fontFamily: activeFont,
+                  }}
                   dropDownContainerStyle={{
                     backgroundColor: themeColors.card,
                     borderColor: themeColors.border,
@@ -583,6 +614,26 @@ export default function ProductDetailsForm() {
                   style={{
                     backgroundColor: themeColors.card,
                     borderColor: themeColors.border,
+                  }}
+                  textStyle={{
+                    color: themeColors.text,
+                    fontSize: 16,
+                    fontFamily: activeFont,
+                  }}
+                  placeholderStyle={{
+                    color: themeColors.text,
+                    fontSize: 16,
+                    fontFamily: activeFont,
+                  }}
+                  listItemLabelStyle={{
+                    color: themeColors.text,
+                    fontSize: 16,
+                    fontFamily: activeFont,
+                  }}
+                  selectedItemLabelStyle={{
+                    color: themeColors.text,
+                    fontSize: 16,
+                    fontFamily: activeFont,
                   }}
                   dropDownContainerStyle={{
                     backgroundColor: themeColors.card,
