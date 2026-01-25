@@ -313,7 +313,10 @@
     "Percentage": "Percentage",
     "FixedAmount": "Fixed Amount",
     "DiscountPercentagePlaceholder": "e.g., 10 for 10%",
-    "DiscountFixedAmountPlaceholder": "e.g., 5 for $5"
+    "DiscountFixedAmountPlaceholder": "e.g., 5 for $5",
+    "ProvinceCapital": "Province/Capital",
+    "KhanDistrict": "Khan/District",
+    "SangkatCommune": "Sangkat/Commune"
   },
   "trade_screen": {
     "title": "Trade Screen"

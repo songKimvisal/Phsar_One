@@ -301,7 +301,7 @@
     "Product_Details": "ព័ត៌មានលម្អិតផលិតផល",
     "Pin_Location": "ជ្រើសរើសទីតាំង",
     "Post_Now": "ដាកលក់",
-    "SellerContactDetail": "ព័ត៌មានលម្អិតទំនាក់ទំនងអ្នកលក់",
+    "SellerContactDetail": "ព័ត៌មានលម្អិត",
     "Price": "តម្លៃ",
     "SellerName": "ឈ្មោះអ្នកលក់",
     "PhoneNumber": "លេខទូរស័ព្ទ",
@@ -312,7 +312,10 @@
     "Percentage": "ភាគរយ",
     "FixedAmount": "ចំនួនថេរ",
     "DiscountPercentagePlaceholder": "ឧ. 10 សម្រាប់ 10%",
-    "DiscountFixedAmountPlaceholder": "ឧ. 5 សម្រាប់ $5"
+    "DiscountFixedAmountPlaceholder": "ឧ. 5 សម្រាប់ $5",
+    "ProvinceCapital": "ខេត្ត/រាជធានី",
+    "KhanDistrict": "ខណ្ឌ/ស្រុក",
+    "SangkatCommune": "សង្កាត់/ឃុំ"
   },
   "trade_screen": {
     "title": "អេក្រង់ជួញដូរ"
