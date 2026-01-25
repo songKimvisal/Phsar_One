@@ -58,10 +58,10 @@ export default function ProductDetailsForm() {
   // Initialize dropdown items
   const { i18n } = useTranslation();
   const currentLang = i18n.language;
-  const activeFont = i18n.language === "km" ? "khmer-regular" : "Oxygen";
+  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
 
   const initialProvinces = CAMBODIA_LOCATIONS.map((p) => ({
-    label: currentLang === "km" ? p.name_km : p.name_en,
+    label: currentLang === "kh" ? p.name_km : p.name_en,
     value: p.name_en,
   }));
 
@@ -69,7 +69,7 @@ export default function ProductDetailsForm() {
     ? CAMBODIA_LOCATIONS.find(
         (p) => p.name_en === selectedProvince,
       )?.subdivisions.map((d) => ({
-        label: currentLang === "km" ? d.name_km : d.name_en,
+        label: currentLang === "kh" ? d.name_km : d.name_en,
         value: d.name_en,
       })) || []
     : [];
@@ -79,7 +79,7 @@ export default function ProductDetailsForm() {
       ? CAMBODIA_LOCATIONS.find((p) => p.name_en === selectedProvince)
           ?.subdivisions.find((d) => d.name_en === selectedDistrict)
           ?.subdivisions.map((c) => ({
-            label: currentLang === "km" ? c.name_km : c.name_en,
+            label: currentLang === "kh" ? c.name_km : c.name_en,
             value: c.name_en,
           })) || []
       : [];
@@ -120,7 +120,43 @@ export default function ProductDetailsForm() {
       }
     })();
   }, []);
+  useEffect(() => {
+    // Provinces
+    setProvinceItems(
+      CAMBODIA_LOCATIONS.map((p) => ({
+        label: currentLang === "kh" ? p.name_km : p.name_en,
+        value: p.name_en,
+      })),
+    );
 
+    // Districts
+    if (selectedProvince) {
+      const districts =
+        CAMBODIA_LOCATIONS.find(
+          (p) => p.name_en === selectedProvince,
+        )?.subdivisions.map((d) => ({
+          label: currentLang === "kh" ? d.name_km : d.name_en,
+          value: d.name_en,
+        })) || [];
+      setDistrictItems(districts);
+    } else {
+      setDistrictItems([]);
+    }
+
+    // Communes
+    if (selectedProvince && selectedDistrict) {
+      const communes =
+        CAMBODIA_LOCATIONS.find((p) => p.name_en === selectedProvince)
+          ?.subdivisions.find((d) => d.name_en === selectedDistrict)
+          ?.subdivisions.map((c) => ({
+            label: currentLang === "kh" ? c.name_km : c.name_en,
+            value: c.name_en,
+          })) || [];
+      setCommuneItems(communes);
+    } else {
+      setCommuneItems([]);
+    }
+  }, [currentLang, selectedProvince, selectedDistrict]);
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
