@@ -6,12 +6,14 @@ const initialDraft = {
   photos: [] as string[],
   title: "",
   price: "",
-  negotiable: false,
+  discountType: "none", // New field for discount type
+  discountValue: "", // New field for discount value
+  negotiable: false, // Reintroduce negotiable field
   description: "",
   details: {} as Record<string, any>,
   province: "",
   location: { latitude: 11.5564, longitude: 104.9282 },
-  contact: { chatOnly: true, phone: "" },
+  contact: { chatOnly: true, sellerName: "", phones: [""] as string[], email: "" }, // Modified contact with sellerName, phones array, and email
 };
 
 type SellDraftContextType = {
