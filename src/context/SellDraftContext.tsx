@@ -13,6 +13,8 @@ const initialDraft = {
   details: {} as Record<string, any>,
   province: "",
   location: { latitude: 11.5564, longitude: 104.9282 },
+  district: "",
+  commune: "",
   contact: { chatOnly: true, sellerName: "", phones: [""] as string[], email: "" }, // Modified contact with sellerName, phones array, and email
 };
 
