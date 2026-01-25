@@ -13,11 +13,20 @@ const redScale = {
   950: "#450A0A",
 };
 
+const blueScale = {
+  500: "#3B82F6",
+};
+
+const greenScale = {
+  500: "#22C55E",
+};
+
 export const Colors = {
   light: {
     text: "#111827",
     background: "#F3F4F6",
     card: "#FFFFFF",
+    tint: redScale[750],
     tabIconDefault: "#868d99",
     primary: redScale[750],
     border: "#E5E7EB",
@@ -27,10 +36,13 @@ export const Colors = {
     text: "#F9FAFB",
     background: "#111827",
     card: "#1F2937",
+    tint: redScale[750],
     tabIconDefault: "#4B5563",
     primary: redScale[750],
     border: "#374151",
     primaryButtonText: "#FFFFFF",
   },
   reds: redScale,
+  blues: blueScale,
+  greens: greenScale,
 };
