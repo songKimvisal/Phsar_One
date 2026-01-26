@@ -1,5 +1,6 @@
 import Header from "@src/components/Header";
 import ProductCategory from "@src/components/ProductCategory";
+import RecentListings from "@src/components/RecentListings";
 
 import SearchBar from "@src/components/SearchBar";
 import useThemeColor from "@src/hooks/useThemeColor";
@@ -15,6 +16,7 @@ export default function Index() {
         <Header />
         <SearchBar />
         <ProductCategory />
+        <RecentListings />
       </ScrollView>
     </SafeAreaView>
   );
