@@ -29,7 +29,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.reds[750],
+        tabBarActiveTintColor: Colors.reds[500],
         tabBarIconStyle: {
           marginTop: 5,
         },
@@ -76,9 +76,16 @@ export default function TabLayout() {
         name="trade"
         options={{
           title: t("navigation.trade"),
-          tabBarIcon: ({ color, size }) => (
-            <ArrowsClockwise size={iconSize.trade} color={color} />
-          ),
+          tabBarIcon: ({ focused, color, size }) =>
+            focused ? (
+              <ArrowsClockwise
+                size={iconSize.trade}
+                color={color}
+                weight="fill"
+              />
+            ) : (
+              <ArrowsClockwise size={iconSize.trade} color={color} />
+            ),
           tabBarLabelStyle: {
             fontSize: 12,
             fontFamily: activeFont,
@@ -89,9 +96,12 @@ export default function TabLayout() {
         name="sell"
         options={{
           title: t("navigation.sell"),
-          tabBarIcon: ({ color, size }) => (
-            <PlusCircle size={iconSize.sell} color={color} weight="duotone" />
-          ),
+          tabBarIcon: ({ focused, color, size }) =>
+            focused ? (
+              <PlusCircle size={iconSize.sell} color={color} weight="fill" />
+            ) : (
+              <PlusCircle size={iconSize.sell} color={color} />
+            ),
           tabBarLabelStyle: {
             fontSize: 12,
             fontFamily: activeFont,
@@ -102,9 +112,16 @@ export default function TabLayout() {
         name="chat"
         options={{
           title: t("navigation.chat"),
-          tabBarIcon: ({ color, size }) => (
-            <ChatCircleDots size={iconSize.chat} color={color} />
-          ),
+          tabBarIcon: ({ focused, color, size }) =>
+            focused ? (
+              <ChatCircleDots
+                size={iconSize.chat}
+                color={color}
+                weight="fill"
+              />
+            ) : (
+              <ChatCircleDots size={iconSize.chat} color={color} />
+            ),
           tabBarLabelStyle: {
             fontSize: 12,
             fontFamily: activeFont,
@@ -115,9 +132,12 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: t("navigation.profile"),
-          tabBarIcon: ({ color, size }) => (
-            <UserCircle size={iconSize.profile} color={color} />
-          ),
+          tabBarIcon: ({ focused, color, size }) =>
+            focused ? (
+              <UserCircle size={iconSize.profile} color={color} weight="fill" />
+            ) : (
+              <UserCircle size={iconSize.profile} color={color} />
+            ),
           tabBarLabelStyle: {
             fontSize: 12,
             fontFamily: activeFont,

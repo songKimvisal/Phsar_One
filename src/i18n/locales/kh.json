@@ -320,5 +320,8 @@
   },
   "trade_screen": {
     "title": "អេក្រង់ជួញដូរ"
+  },
+  "home_screen": {
+    "recent_listings": "ការផ្សាយថ្មីៗ"
   }
 }

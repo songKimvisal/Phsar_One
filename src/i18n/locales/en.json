@@ -321,5 +321,8 @@
   },
   "trade_screen": {
     "title": "Trade Screen"
+  },
+  "home_screen": {
+    "recent_listings": "Recent Listings"
   }
 }
