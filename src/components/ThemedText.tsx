@@ -14,7 +14,8 @@ export function ThemedText({ style, children, ...props }: TextProps) {
     fontFamily =
       fontWeight === "bold" ? "khmer-KantumruyPro-Bold" : "khmer-regular";
   } else {
-    fontFamily = fontWeight === "bold" ? "Oxygen-Bold" : "Oxygen";
+    // Use system default font for non-Khmer languages
+    fontFamily = undefined;
   }
 
   return (

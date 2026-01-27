@@ -463,8 +463,9 @@ export default function ProductDetailsForm() {
             </MapView>
 
             {/* Province/Capital Dropdown */}
+
             <View style={[styles.inputGroup, { zIndex: 3000 }]}>
-              <ThemedText style={styles.inputLabel}>
+              <ThemedText style={[styles.inputLabel, { marginBottom: 10 }]}>
                 {t("sellSection.ProvinceCapital")}
               </ThemedText>
               <DropDownPicker
@@ -546,7 +547,7 @@ export default function ProductDetailsForm() {
                   { zIndex: 2000, marginTop: provinceOpen ? 250 : 0 },
                 ]}
               >
-                <ThemedText style={styles.inputLabel}>
+                <ThemedText style={[styles.inputLabel, { marginBottom: 10 }]}>
                   {t("sellSection.KhanDistrict")}
                 </ThemedText>
                 <DropDownPicker
@@ -628,7 +629,7 @@ export default function ProductDetailsForm() {
                   { zIndex: 1000, marginTop: districtOpen ? 250 : 0 },
                 ]}
               >
-                <ThemedText style={styles.inputLabel}>
+                <ThemedText style={[styles.inputLabel, { marginBottom: 10 }]}>
                   {t("sellSection.SangkatCommune")}
                 </ThemedText>
                 <DropDownPicker

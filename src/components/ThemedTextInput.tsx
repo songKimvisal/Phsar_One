@@ -5,7 +5,7 @@ import useThemeColor from "../hooks/useThemeColor";
 export function ThemedTextInput({ style, ...props }: TextInputProps) {
   const { i18n } = useTranslation();
   const themeColors = useThemeColor();
-  const fontFamily = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+  const fontFamily = i18n.language === "kh" ? "khmer-regular" : undefined;
 
   return (
     <TextInput
