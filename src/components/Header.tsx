@@ -3,7 +3,7 @@ import { useTheme } from "@src/context/ThemeContext";
 import { Globe, Moon, Sun } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/Colors";
 import useThemeColor from "../hooks/useThemeColor";
 import { ThemedText } from "./ThemedText";
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 25,
     fontWeight: "bold",
-    color: Colors.reds[750],
+    color: Colors.reds[500],
   },
   languageIcon: {
     flexDirection: "row",

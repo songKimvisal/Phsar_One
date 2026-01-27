@@ -12,22 +12,21 @@ export default function SellLayout() {
     <Stack
       screenOptions={{
         headerShown: true,
-        headerStyle: { backgroundColor: colors.background }, //
+        headerStyle: { backgroundColor: colors.background }, 
         headerTintColor: colors.text,
         headerTitleStyle: { fontWeight: "600" },
-        headerShadowVisible: false, // Cleaner look for modern apps
+        headerShadowVisible: false, 
       }}
     >
       <Stack.Screen
         name="subcategory"
         options={{
-          title: t("sellSection.Choose_Subcategory"), //
+          title: t("sellSection.Choose_Subcategory"),
           headerLeft: () => (
             <TouchableOpacity
-              // Use replace to ensure you go back to the correct Tab entry point
               onPress={() => router.replace("/(tabs)/sell")}
               style={{
-                paddingRight: 15, // Increase touch area
+                paddingRight: 15,
                 paddingVertical: 5,
               }}
             >
