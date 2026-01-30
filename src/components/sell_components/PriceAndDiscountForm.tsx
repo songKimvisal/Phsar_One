@@ -87,6 +87,15 @@ export default function PriceAndDiscountForm({
               backgroundColor: themeColors.card,
               borderColor: themeColors.border,
             }}
+            ArrowUpIconComponent={({ style }) => (
+              <DynamicPhosphorIcon name="CaretUp" size={20} color={themeColors.text} style={style} />
+            )}
+            ArrowDownIconComponent={({ style }) => (
+              <DynamicPhosphorIcon name="CaretDown" size={20} color={themeColors.text} style={style} />
+            )}
+            TickIconComponent={({ style }) => (
+              <DynamicPhosphorIcon name="Check" size={20} color={themeColors.text} style={style} />
+            )}
             zIndex={4000}
           />
         </View>

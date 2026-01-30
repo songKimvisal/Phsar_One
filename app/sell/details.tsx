@@ -1,4 +1,3 @@
-import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon";
 import { ThemedText } from "@src/components/ThemedText";
 import AddressDropdowns from "@src/components/sell_components/AddressDropdowns";
 import DynamicPostFields from "@src/components/sell_components/DynamicPostFields";
