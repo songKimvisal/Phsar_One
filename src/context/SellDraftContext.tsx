@@ -6,6 +6,7 @@ const initialDraft = {
   photos: [] as string[],
   title: "",
   price: "",
+  currency: "USD",
   discountType: "none", // New field for discount type
   discountValue: "", // New field for discount value
   negotiable: false, // Reintroduce negotiable field

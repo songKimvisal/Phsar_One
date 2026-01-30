@@ -1,9 +1,9 @@
-import { useTheme } from "@src/context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@src/context/ThemeContext";
 import { router, Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity } from "react-native";
+import { Platform, TouchableOpacity } from "react-native";
 export default function SellLayout() {
   const { colors } = useTheme(); //
   const { t } = useTranslation();
@@ -12,25 +12,33 @@ export default function SellLayout() {
     <Stack
       screenOptions={{
         headerShown: true,
-        headerStyle: { backgroundColor: colors.background }, 
+        headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.text,
         headerTitleStyle: { fontWeight: "600" },
-        headerShadowVisible: false, 
+        headerShadowVisible: false,
       }}
     >
       <Stack.Screen
         name="subcategory"
         options={{
+          headerShown: true,
           title: t("sellSection.Choose_Subcategory"),
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.replace("/(tabs)/sell")}
+              onPress={() => router.back()}
               style={{
-                paddingRight: 15,
-                paddingVertical: 5,
+                marginLeft: Platform.OS === "ios" ? 0 : 10,
+                width: 30,
+                height: 30,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
+              <Ionicons
+                name={Platform.OS === "ios" ? "chevron-back" : "arrow-back"}
+                size={24}
+                color={colors.text}
+              />
             </TouchableOpacity>
           ),
         }}

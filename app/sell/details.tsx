@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
+  KeyboardAvoidingView,
   Platform,
   SafeAreaView,
   StyleSheet,
@@ -54,11 +55,17 @@ export default function ProductDetailsForm() {
   const [provinceOpen, setProvinceOpen] = useState(false);
   const [districtOpen, setDistrictOpen] = useState(false);
   const [communeOpen, setCommuneOpen] = useState(false);
+  const [currencyOpen, setCurrencyOpen] = useState(false);
 
   // Initialize dropdown items
   const { i18n } = useTranslation();
   const currentLang = i18n.language;
   const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+
+  const [currencyItems, setCurrencyItems] = useState([
+    { label: "USD", value: "USD" },
+    { label: "KHR", value: "KHR" },
+  ]);
 
   const initialProvinces = CAMBODIA_LOCATIONS.map((p) => ({
     label: currentLang === "kh" ? p.name_km : p.name_en,
@@ -184,7 +191,11 @@ export default function ProductDetailsForm() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
-      <FlatList
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <FlatList
         data={[{ key: "formContent" }]}
         renderItem={() => null}
         ListHeaderComponent={
@@ -324,12 +335,12 @@ export default function ProductDetailsForm() {
               );
             })}
 
-            {/* Price Input and Negotiable Toggle */}
+            {/* Price Input and Currency Picker */}
             <View style={styles.inputGroup}>
               <ThemedText style={styles.inputLabel}>
                 {t("sellSection.Price")}
               </ThemedText>
-              <View style={styles.priceContainer}>
+              <View style={styles.priceAndCurrencyWrapper}>
                 <ThemedTextInput
                   style={[
                     styles.input,
@@ -343,23 +354,64 @@ export default function ProductDetailsForm() {
                   onChangeText={(text) => updateDraft("price", text)}
                   keyboardType="numeric"
                 />
-                <TouchableOpacity
-                  style={styles.negotiableToggle}
-                  onPress={() => updateDraft("negotiable", !draft.negotiable)}
-                >
-                  <DynamicPhosphorIcon
-                    name={draft.negotiable ? "CheckCircle" : "Circle"}
-                    size={24}
-                    color={
-                      draft.negotiable ? Colors.greens[500] : themeColors.text
-                    }
-                  />
-                  <ThemedText style={styles.negotiableText}>
-                    {t("sellSection.Negotiable")}
-                  </ThemedText>
-                </TouchableOpacity>
+                <DropDownPicker
+                  open={currencyOpen}
+                  value={draft.currency}
+                  items={currencyItems}
+                  setOpen={setCurrencyOpen}
+                  setValue={(callback) => {
+                    const value = callback(draft.currency);
+                    updateDraft("currency", value);
+                  }}
+                  setItems={setCurrencyItems}
+                  containerStyle={styles.currencyPickerContainer}
+                  style={{
+                    backgroundColor: themeColors.card,
+                    borderColor: themeColors.border,
+                  }}
+                  textStyle={{
+                    color: themeColors.text,
+                    fontSize: 14,
+                    fontFamily: activeFont,
+                  }}
+                  placeholderStyle={{
+                    color: themeColors.text,
+                    fontSize: 14,
+                    fontFamily: activeFont,
+                  }}
+                  listItemLabelStyle={{
+                    color: themeColors.text,
+                    fontSize: 14,
+                    fontFamily: activeFont,
+                  }}
+                  selectedItemLabelStyle={{
+                    color: themeColors.text,
+                    fontSize: 14,
+                    fontFamily: activeFont,
+                  }}
+                  dropDownContainerStyle={{
+                    backgroundColor: themeColors.card,
+                    borderColor: themeColors.border,
+                  }}
+                  zIndex={4000}
+                />
               </View>
             </View>
+
+            {/* Negotiable Toggle */}
+            <TouchableOpacity
+              style={styles.negotiableToggle}
+              onPress={() => updateDraft("negotiable", !draft.negotiable)}
+            >
+              <DynamicPhosphorIcon
+                name={draft.negotiable ? "CheckSquare" : "Square"}
+                size={28}
+                color={draft.negotiable ? Colors.greens[500] : themeColors.text}
+              />
+              <ThemedText style={styles.negotiableText}>
+                {t("sellSection.Negotiable")}
+              </ThemedText>
+            </TouchableOpacity>
 
             {/* Discount Options */}
             <View style={styles.inputGroup}>
@@ -819,6 +871,7 @@ export default function ProductDetailsForm() {
         }
         keyExtractor={(item) => item.key}
       />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -851,6 +904,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 16,
+    height: 50,
   },
   pickerContainer: {
     borderWidth: 1,
@@ -892,21 +946,27 @@ const styles = StyleSheet.create({
   removeBtn: {
     marginLeft: 10,
   },
-  priceContainer: {
+  priceAndCurrencyWrapper: {
     flexDirection: "row",
     alignItems: "center",
+    zIndex: 4000,
   },
   priceInput: {
     flex: 1,
+    marginRight: 10,
+  },
+  currencyPickerContainer: {
+    width: 100,
   },
   negotiableToggle: {
     flexDirection: "row",
     alignItems: "center",
-    marginLeft: 15,
+    marginTop: 15,
+    marginBottom: 15,
   },
   negotiableText: {
-    marginLeft: 5,
-    fontSize: 16,
+    marginLeft: 10,
+    fontSize: 18,
   },
   discountOptionsContainer: {
     flexDirection: "row",

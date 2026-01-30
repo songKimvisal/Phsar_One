@@ -1,9 +1,16 @@
 import { ThemedText } from "@src/components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, Image, StyleSheet, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const mockProducts = [
   {
@@ -82,9 +89,16 @@ const mockProducts = [
 const RecentListings = () => {
   const themeColors = useThemeColor();
   const { t } = useTranslation();
+  const router = useRouter();
 
   const renderProduct = ({ item }: any) => (
-    <View
+    <TouchableOpacity
+      onPress={() =>
+        router.push({
+          pathname: "/product/[id]",
+          params: { id: item.id },
+        })
+      }
       style={[
         styles.productCard,
         {
@@ -112,7 +126,7 @@ const RecentListings = () => {
           {item.price}
         </ThemedText>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -127,7 +141,7 @@ const RecentListings = () => {
         numColumns={2}
         columnWrapperStyle={styles.row}
         showsVerticalScrollIndicator={false}
-        scrollEnabled={false} // Disable FlatList scrolling, rely on outer ScrollView
+        scrollEnabled={false}
       />
     </View>
   );
