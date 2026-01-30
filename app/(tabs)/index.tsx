@@ -1,10 +1,9 @@
-import Header from "@src/components/Header";
-import ProductCategory from "@src/components/ProductCategory";
-import RecentListings from "@src/components/RecentListings";
-
+import Header from "@/src/components/home_components/Header";
+import ProductCategory from "@/src/components/home_components/ProductCategory";
+import RecentListings from "@/src/components/home_components/RecentListings";
 import SearchBar from "@src/components/SearchBar";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { ScrollView, StyleSheet, View, SafeAreaView } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
 export default function Index() {
   const themeColors = useThemeColor();
   return (

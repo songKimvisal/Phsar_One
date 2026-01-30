@@ -1,12 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ThemedText } from "@src/components/ThemedText";
+import { Colors } from "@src/constants/Colors";
 import { useTheme } from "@src/context/ThemeContext";
+import useThemeColor from "@src/hooks/useThemeColor";
 import { Globe, Moon, Sun } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Colors } from "../constants/Colors";
-import useThemeColor from "../hooks/useThemeColor";
-import { ThemedText } from "./ThemedText";
 export default function Header() {
   const { i18n, t } = useTranslation();
   const { theme, setMode } = useTheme();
@@ -25,7 +25,7 @@ export default function Header() {
     >
       <View style={styles.logoContainer}>
         <Image
-          source={require("../assets/icons/Main-logo-24.png")}
+          source={require("@src/assets/icons/Main-logo-24.png")}
           style={styles.logoIcon}
         />
 

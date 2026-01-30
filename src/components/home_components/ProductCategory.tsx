@@ -1,3 +1,5 @@
+import { ThemedText } from "@src/components/ThemedText";
+import useThemeColor from "@src/hooks/useThemeColor";
 import { useRouter } from "expo-router";
 import {
   Armchair,
@@ -11,8 +13,6 @@ import {
 } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import useThemeColor from "../hooks/useThemeColor";
-import { ThemedText } from "./ThemedText";
 export default function ProductCategory() {
   const { t } = useTranslation();
   const themeColors = useThemeColor();
