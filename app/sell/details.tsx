@@ -1,11 +1,11 @@
 import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon";
 import { ThemedText } from "@src/components/ThemedText";
-import AddressDropdowns from "@src/components/sell/AddressDropdowns";
-import DynamicPostFields from "@src/components/sell/DynamicPostFields";
-import LocationPickerMap from "@src/components/sell/LocationPickerMap";
-import PhotoUploadSection from "@src/components/sell/PhotoUploadSection";
-import PriceAndDiscountForm from "@src/components/sell/PriceAndDiscountForm";
-import SellerContactForm from "@src/components/sell/SellerContactForm";
+import AddressDropdowns from "@src/components/sell_components/AddressDropdowns";
+import DynamicPostFields from "@src/components/sell_components/DynamicPostFields";
+import LocationPickerMap from "@src/components/sell_components/LocationPickerMap";
+import PhotoUploadSection from "@src/components/sell_components/PhotoUploadSection";
+import PriceAndDiscountForm from "@src/components/sell_components/PriceAndDiscountForm";
+import SellerContactForm from "@src/components/sell_components/SellerContactForm";
 import { Colors } from "@src/constants/Colors";
 import { POST_FIELDS_MAP } from "@src/constants/postFields";
 import { useSellDraft } from "@src/context/SellDraftContext";
