@@ -7,11 +7,11 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
-  SafeAreaView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SellScreen() {
   const { colors } = useTheme(); // Use 'colors' to match index.tsx and subcategory.tsx

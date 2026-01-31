@@ -1,5 +1,7 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemedText } from "@src/components/ThemedText";
 import { Colors } from "@src/constants/Colors";
+import { useTheme } from "@src/context/ThemeContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { useRouter } from "expo-router";
 import {
@@ -12,10 +14,13 @@ import {
   CheckCircleIcon,
   ClockCounterClockwiseIcon,
   GearSixIcon,
+  GlobeSimpleIcon,
   HeadsetIcon,
+  MoonIcon,
   NotePencilIcon,
   PresentationChartIcon,
   StorefrontIcon,
+  SunIcon,
   TagIcon,
   TagSimpleIcon,
   UserCircleIcon
@@ -31,15 +36,25 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
+  const { i18n, t } = useTranslation();
+  const { theme, setMode } = useTheme();
   const themeColors = useThemeColor();
-  const { t } = useTranslation();
+  const toggleLanguage = async () => {
+    const nextLanguage = i18n.language === "kh" ? "en" : "kh";
+    await i18n.changeLanguage(nextLanguage);
+    await AsyncStorage.setItem("user-language", nextLanguage);
+  };
   const router = useRouter();
+  const toggleTheme = () => {
+    setMode(theme === "light" ? "dark" : "light");
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* 1. Header with Upgrade and Settings */}
         <View style={styles.topActions}>
+          
           <TouchableOpacity
             style={[styles.upgradeBtn, { backgroundColor: Colors.reds[500] }]}
           >
@@ -48,6 +63,23 @@ export default function ProfileScreen() {
             </ThemedText>
           </TouchableOpacity>
           <View style={styles.rightIcons}>
+            <TouchableOpacity onPress={toggleTheme}>
+          {theme == "light" ? (
+            <MoonIcon size={24} weight="regular" color={themeColors.text} />
+          ) : (
+            <SunIcon size={24} weight="regular" color={themeColors.text} />
+          )}
+        </TouchableOpacity>
+            <TouchableOpacity style={styles.languageIcon} onPress={toggleLanguage}>
+          {theme == "light" ? (
+            <GlobeSimpleIcon size={24} weight="regular" color={themeColors.text} />
+          ) : (
+            <GlobeSimpleIcon size={24} weight="regular" color={themeColors.text} />
+          )}
+          <ThemedText style={styles.languageTitle}>
+            {t("navigation.toggle_language")}
+          </ThemedText>
+        </TouchableOpacity>
             <BellSimpleIcon size={28} color={themeColors.text} style={styles.iconBtn} />
             <TouchableOpacity onPress={() => router.push('/settings')}>
               <GearSixIcon
@@ -199,6 +231,18 @@ function GridItem({
   );
 }
 const styles = StyleSheet.create({
+  languageIcon: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    marginLeft: 8,
+    paddingVertical: 4,
+  },
+  languageTitle: {
+    marginLeft: 5,
+    fontWeight: "regular",
+    fontSize: 12,
+  },
   topActions: {
     flexDirection: "row",
     justifyContent: "space-between",
