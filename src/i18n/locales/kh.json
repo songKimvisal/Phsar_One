@@ -316,7 +316,8 @@
     "DiscountFixedAmountPlaceholder": "ឧ. 5 សម្រាប់ $5",
     "ProvinceCapital": "ខេត្ត/រាជធានី",
     "KhanDistrict": "ខណ្ឌ/ស្រុក",
-    "SangkatCommune": "សង្កាត់/ឃុំ"
+    "SangkatCommune": "សង្កាត់/ឃុំ",
+    "Delete":"លប់"
   },
   "trade_screen": {
     "title": "អេក្រង់ជួញដូរ"
