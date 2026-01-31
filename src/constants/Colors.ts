@@ -21,12 +21,12 @@ const greenScale = {
 export const Colors = {
   light: {
     text: "#111827",
-    background: "#F3F4F6",
+    background: "#E9ECEF", // Slightly darker light gray for more depth
     card: "#FFFFFF",
     tint: redScale[500],
     tabIconDefault: "#868d99",
     primary: redScale[500],
-    border: "#E5E7EB",
+    border: "#CED4DA", // More pronounced border color
     primaryButtonText: "#FFFFFF",
   },
   dark: {

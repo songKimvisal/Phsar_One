@@ -91,8 +91,7 @@ export default function DynamicPostFields({
                     <Picker.Item
                       key={option}
                       label={t(
-                        `fieldOptions.${field.key}.${optionToKey(option)}`,
-                        option,
+                        `fieldOptions.${field.key}.${optionToKey(option)}`
                       )}
                       value={option}
                       color={themeColors.text}
@@ -133,11 +132,10 @@ export default function DynamicPostFields({
                     {field.options.map((option: string) => (
                       <Picker.Item
                         key={option}
-                        label={t(
-                          `fieldOptions.${field.key}.${optionToKey(option)}`,
-                          option,
-                        )}
-                        value={option}
+                      label={t(
+                        `fieldOptions.${field.key}.${optionToKey(option)}`
+                      )}
+                      value={option}
                         color={themeColors.text}
                       />
                     ))}

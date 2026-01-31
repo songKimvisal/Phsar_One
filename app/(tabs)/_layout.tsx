@@ -9,7 +9,7 @@ import {
   UserCircle,
 } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
-import { Image } from "react-native";
+import { Image, Text } from "react-native";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -33,7 +33,6 @@ export default function TabLayout() {
         tabBarIconStyle: {
           marginTop: 5,
         },
-        tabBarLabelStyle: { marginTop: 5 },
         tabBarStyle: {
           position: "absolute",
           left: 16,
@@ -41,7 +40,7 @@ export default function TabLayout() {
           marginLeft: 16,
           marginRight: 16,
           elevation: 0,
-          backgroundColor: themeColors.card,
+          backgroundColor: themeColors.background, // Changed from themeColors.card to themeColors.background
           borderRadius: 40,
           height: 70,
           shadowColor: "#000",
@@ -66,10 +65,11 @@ export default function TabLayout() {
             ) : (
               <House size={iconSize.home} color={color} />
             ),
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: activeFont,
-          },
+          tabBarLabel: ({ color: labelColor }) => (
+            <Text style={{ fontSize: 12, fontFamily: activeFont, color: labelColor }}>
+              {t("navigation.home")}
+            </Text>
+          ),
         }}
       />
       <Tabs.Screen
@@ -86,10 +86,11 @@ export default function TabLayout() {
             ) : (
               <ArrowsClockwise size={iconSize.trade} color={color} />
             ),
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: activeFont,
-          },
+          tabBarLabel: ({ color: labelColor }) => (
+            <Text style={{ fontSize: 12, fontFamily: activeFont, color: labelColor }}>
+              {t("navigation.trade")}
+            </Text>
+          ),
         }}
       />
       <Tabs.Screen
@@ -102,10 +103,11 @@ export default function TabLayout() {
             ) : (
               <PlusCircle size={iconSize.sell} color={color} />
             ),
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: activeFont,
-          },
+          tabBarLabel: ({ color: labelColor }) => (
+            <Text style={{ fontSize: 12, fontFamily: activeFont, color: labelColor }}>
+              {t("navigation.sell")}
+            </Text>
+          ),
         }}
       />
       <Tabs.Screen
@@ -122,10 +124,11 @@ export default function TabLayout() {
             ) : (
               <ChatCircleDots size={iconSize.chat} color={color} />
             ),
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: activeFont,
-          },
+          tabBarLabel: ({ color: labelColor }) => (
+            <Text style={{ fontSize: 12, fontFamily: activeFont, color: labelColor }}>
+              {t("navigation.chat")}
+            </Text>
+          ),
         }}
       />
       <Tabs.Screen
@@ -138,10 +141,11 @@ export default function TabLayout() {
             ) : (
               <UserCircle size={iconSize.profile} color={color} />
             ),
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: activeFont,
-          },
+          tabBarLabel: ({ color: labelColor }) => (
+            <Text style={{ fontSize: 12, fontFamily: activeFont, color: labelColor }}>
+              {t("navigation.profile")}
+            </Text>
+          ),
         }}
       />
     </Tabs>
