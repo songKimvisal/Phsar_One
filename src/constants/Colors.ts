@@ -20,8 +20,9 @@ const greenScale = {
 
 export const Colors = {
   light: {
+    navbg: "#fff",
     text: "#111827",
-    background: "#E9ECEF", // Slightly darker light gray for more depth
+    background: "#FAFAFA", // Slightly darker light gray for more depth
     card: "#FFFFFF",
     tint: redScale[500],
     tabIconDefault: "#868d99",
@@ -30,6 +31,7 @@ export const Colors = {
     primaryButtonText: "#FFFFFF",
   },
   dark: {
+    navbg: "#182030",
     text: "#F9FAFB",
     background: "#111827",
     card: "#1F2937",
