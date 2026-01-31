@@ -1,3 +1,4 @@
+import ThemedStatusBar from "@/src/components/ThemedStatusBar";
 import SellDraftProvider from "@/src/context/SellDraftContext";
 import { ThemeProvider } from "@/src/context/ThemeContext";
 import i18n from "@/src/i18n";
@@ -7,6 +8,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -49,6 +51,7 @@ export default function RootLayout() {
     <ThemeProvider>
       <I18nextProvider i18n={i18n}>
         <SellDraftProvider>
+          <ThemedStatusBar />
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="sell" />
