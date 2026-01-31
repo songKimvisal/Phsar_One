@@ -25,7 +25,7 @@ export default function CategoryDetailScreen() {
     icon,
   }));
   const { t, i18n } = useTranslation();
-  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+  const activeFont = i18n.language === "kh" ? "khmer-regular" : "undefined";
 
   return (
     <SafeAreaView

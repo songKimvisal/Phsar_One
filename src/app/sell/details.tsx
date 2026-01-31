@@ -15,18 +15,18 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProductDetailsForm() {
   const { draft } = useSellDraft();
   const { t, i18n } = useTranslation();
   const fields = POST_FIELDS_MAP[draft.subCategory] || [];
   const themeColors = useThemeColor();
-  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+  const activeFont = i18n.language === "kh" ? "khmer-regular" : "undefined";
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
