@@ -104,7 +104,6 @@ const RecentListings = () => {
         {
           backgroundColor: themeColors.card,
           borderColor: themeColors.border,
-          borderWidth: 1,
         },
       ]}
     >
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
   },
   productCard: {
-    borderRadius: 16,
+    borderRadius: 6,
     width: "48%",
     marginBottom: 6,
     overflow: "hidden",

@@ -1,12 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ThemedText } from "@src/components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import { useTheme } from "@src/context/ThemeContext";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { Globe, Moon, Sun } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 export default function Header() {
   const { i18n, t } = useTranslation();
   const { theme, setMode } = useTheme();
@@ -25,30 +23,10 @@ export default function Header() {
     >
       <View style={styles.logoContainer}>
         <Image
-          source={require("@src/assets/icons/Main-logo-24.png")}
+          source={require("@src/assets/icons/Wordmark.png")}
           style={styles.logoIcon}
+          resizeMode="contain"
         />
-
-        <Text style={styles.logoText}>PhsarOne</Text>
-      </View>
-      <View style={styles.toggleBtn}>
-        <TouchableOpacity onPress={toggleTheme}>
-          {theme == "light" ? (
-            <Moon size={24} weight="duotone" color={themesColors.text} />
-          ) : (
-            <Sun size={24} weight="duotone" color={themesColors.text} />
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.languageIcon} onPress={toggleLanguage}>
-          {theme == "light" ? (
-            <Globe size={24} weight="duotone" color={themesColors.text} />
-          ) : (
-            <Globe size={24} weight="duotone" color={themesColors.text} />
-          )}
-          <ThemedText style={styles.languageTitle}>
-            {t("navigation.toggle_language")}
-          </ThemedText>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -65,31 +43,19 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     flexDirection: "row",
-    alignItems: "baseline",
+    alignItems: "center",
+    height: 32,
   },
   logoIcon: {
-    width: 32,
-    height: 32,
+    width: undefined,
+    height: "100%",
+    aspectRatio: 4
   },
   logoText: {
     marginLeft: 5,
     fontSize: 25,
     fontWeight: "bold",
     color: Colors.reds[500],
-  },
-  languageIcon: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    marginLeft: 10,
-    paddingVertical: 4,
-  },
-  languageTitle: {
-    marginLeft: 5,
-    fontWeight: "bold",
-    fontSize: 14,
   },
   toggleBtn: {
     flexDirection: "row",
