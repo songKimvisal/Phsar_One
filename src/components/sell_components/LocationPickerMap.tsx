@@ -2,9 +2,8 @@ import { ThemedText } from "@src/components/ThemedText";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import * as Location from "expo-location";
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { StyleSheet } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Linking, StyleSheet, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 const DEFAULT_REGION = {
@@ -17,23 +16,36 @@ const DEFAULT_REGION = {
 interface LocationPickerMapProps {
   themeColors: ReturnType<typeof useThemeColor>;
   t: (key: string) => string;
+  onConfirmLocation: (location: {
+    latitude: number;
+    longitude: number;
+  }) => void;
+}
+
+interface CustomButtonProps {
+  title: string;
+  onPress: () => void;
+  disabled?: boolean;
+  style?: any;
+  textStyle?: any;
 }
 
 export default function LocationPickerMap({
   themeColors,
   t,
+  onConfirmLocation,
 }: LocationPickerMapProps) {
   const { draft, updateDraft } = useSellDraft();
-  const [mapRegion, setMapRegion] = useState(
-    draft.location.latitude && draft.location.longitude
-      ? {
-          latitude: draft.location.latitude,
-          longitude: draft.location.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }
-      : DEFAULT_REGION,
+  const mapRef = useRef<MapView>(null);
+
+  const [hasSelectedLocation, setHasSelectedLocation] = useState(
+    !!(
+      draft.location.latitude &&
+      draft.location.latitude !== DEFAULT_REGION.latitude
+    ),
   );
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [markerCoord, setMarkerCoord] = useState(draft.location);
 
   useEffect(() => {
     (async () => {
@@ -42,61 +54,184 @@ export default function LocationPickerMap({
         console.log("Permission to access location was denied");
         return;
       }
-      if (
-        draft.location.latitude === DEFAULT_REGION.latitude &&
-        draft.location.longitude === DEFAULT_REGION.longitude
-      ) {
+      if (!hasSelectedLocation) {
         let currentLocation = await Location.getCurrentPositionAsync({});
         const newLocation = {
           latitude: currentLocation.coords.latitude,
           longitude: currentLocation.coords.longitude,
         };
         updateDraft("location", newLocation);
-        setMapRegion({
-          ...newLocation,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
-      } else {
-        setMapRegion({
-          latitude: draft.location.latitude,
-          longitude: draft.location.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
+        setMarkerCoord(newLocation);
+        mapRef.current?.animateToRegion(
+          { ...newLocation, latitudeDelta: 0.01, longitudeDelta: 0.01 },
+          1000,
+        );
+        setHasSelectedLocation(true);
       }
     })();
   }, []);
+
+  const styles = getStyles(themeColors);
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${markerCoord.latitude},${markerCoord.longitude}`;
+
+  const CustomButton = ({
+    title,
+    onPress,
+    disabled,
+    style,
+    textStyle,
+  }: CustomButtonProps) => (
+    <TouchableOpacity
+      style={[styles.customButton, style, disabled && styles.disabledButton]}
+      onPress={onPress}
+      disabled={disabled}
+    >
+      <ThemedText style={[styles.customButtonText, textStyle]}>
+        {title}
+      </ThemedText>
+    </TouchableOpacity>
+  );
+
+  const handleTap = (coordinate: { latitude: number; longitude: number }) => {
+    setMarkerCoord(coordinate);
+    updateDraft("location", coordinate);
+    mapRef.current?.animateToRegion(
+      { ...coordinate, latitudeDelta: 0.01, longitudeDelta: 0.01 },
+      500,
+    );
+    setHasSelectedLocation(true);
+    setIsConfirmed(false);
+  };
+
+  const handleDragEnd = (coordinate: {
+    latitude: number;
+    longitude: number;
+  }) => {
+    setMarkerCoord(coordinate);
+    updateDraft("location", coordinate);
+    setHasSelectedLocation(true);
+    setIsConfirmed(false);
+  };
 
   return (
     <>
       <ThemedText style={styles.locationTitle}>
         {t("sellSection.Pin_Location")}
       </ThemedText>
-      <MapView
-        style={styles.map}
-        region={mapRegion}
-        onRegionChangeComplete={(region) => setMapRegion(region)}
-        onPress={(e) => {
-          const newLocation = {
-            latitude: e.nativeEvent.coordinate.latitude,
-            longitude: e.nativeEvent.coordinate.longitude,
-          };
-          updateDraft("location", newLocation);
-          setMapRegion({
-            ...newLocation,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          });
-        }}
+      <View
+        style={styles.mapContainer}
+        onStartShouldSetResponderCapture={() => !isConfirmed}
       >
-        <Marker coordinate={draft.location} />
-      </MapView>
+        <MapView
+          ref={mapRef}
+          style={styles.map}
+          initialRegion={
+            draft.location.latitude
+              ? { ...draft.location, latitudeDelta: 0.01, longitudeDelta: 0.01 }
+              : DEFAULT_REGION
+          }
+          onPress={(e) => !isConfirmed && handleTap(e.nativeEvent.coordinate)}
+          scrollEnabled={!isConfirmed}
+          zoomEnabled={!isConfirmed}
+          pitchEnabled={false}
+          rotateEnabled={false}
+        >
+          <Marker
+            coordinate={markerCoord}
+            draggable={!isConfirmed}
+            onDragEnd={(e) => handleDragEnd(e.nativeEvent.coordinate)}
+          />
+        </MapView>
+        {isConfirmed && <View style={styles.mapOverlay} />}
+      </View>
+
+      <View style={styles.buttonContainer}>
+        {!isConfirmed ? (
+          <CustomButton
+            title={t("sellSection.Confirm_Location")}
+            onPress={() => {
+              onConfirmLocation(markerCoord);
+              setIsConfirmed(true);
+            }}
+            disabled={!hasSelectedLocation}
+          />
+        ) : (
+          <View style={styles.confirmedContainer}>
+            <TouchableOpacity onPress={() => Linking.openURL(mapUrl)}>
+              <ThemedText style={styles.linkText}>
+                {t("sellSection.Open_on_Google_Maps")}
+              </ThemedText>
+            </TouchableOpacity>
+            <CustomButton
+              title={t("sellSection.Change_Location")}
+              onPress={() => setIsConfirmed(false)}
+              style={styles.changeButton}
+              textStyle={styles.changeButtonText}
+            />
+          </View>
+        )}
+      </View>
     </>
   );
 }
 
-const styles = StyleSheet.create({
-  locationTitle: { marginTop: 20, fontSize: 16, marginBottom: 10 },
-  map: { height: 200, borderRadius: 10, marginBottom: 20 },
-});
+const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
+  StyleSheet.create({
+    locationTitle: { marginTop: 20, fontSize: 16, marginBottom: 10 },
+    mapContainer: {
+      height: 200,
+      borderRadius: 10,
+      marginBottom: 15,
+      overflow: "hidden",
+    },
+    map: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    mapOverlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "rgba(0,0,0,0.3)",
+    },
+    buttonContainer: {
+      marginBottom: 20,
+    },
+    customButton: {
+      backgroundColor: themeColors.tint,
+      padding: 15,
+      borderRadius: 10,
+      alignItems: "center",
+    },
+    disabledButton: {
+      backgroundColor: themeColors.border,
+    },
+    customButtonText: {
+      color: themeColors.primaryButtonText,
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+    confirmedContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      backgroundColor: themeColors.background,
+      padding: 12,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: themeColors.border,
+    },
+    linkText: {
+      color: themeColors.tint,
+      textDecorationLine: "underline",
+      fontSize: 14,
+    },
+    changeButton: {
+      backgroundColor: themeColors.primary,
+      paddingVertical: 8,
+      paddingHorizontal: 15,
+      borderRadius: 8,
+    },
+    changeButtonText: {
+      fontSize: 14,
+      color: themeColors.primaryButtonText,
+      fontWeight: "bold",
+    },
+  });

@@ -9,7 +9,7 @@ import { Colors } from "@src/constants/Colors";
 import { POST_FIELDS_MAP } from "@src/constants/postFields";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
@@ -27,6 +27,14 @@ export default function ProductDetailsForm() {
   const fields = POST_FIELDS_MAP[draft.subCategory] || [];
   const themeColors = useThemeColor();
   const activeFont = i18n.language === "kh" ? "khmer-regular" : "undefined";
+
+  const [isLocationConfirmed, setIsLocationConfirmed] = useState(false);
+
+  const handleConfirmLocation = (location: { latitude: number; longitude: number }) => {
+    setIsLocationConfirmed(true);
+    console.log("Location confirmed:", location);
+    // You might want to do more here, e.g., enable a "Post Now" button or navigate
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
@@ -58,7 +66,11 @@ export default function ProductDetailsForm() {
               />
 
               {/* Location Picker */}
-              <LocationPickerMap themeColors={themeColors} t={t} />
+              <LocationPickerMap
+                themeColors={themeColors}
+                t={t}
+                onConfirmLocation={handleConfirmLocation}
+              />
 
               {/* Province/Capital, Khan/District, Sangkat/Commune Dropdowns */}
               <AddressDropdowns
