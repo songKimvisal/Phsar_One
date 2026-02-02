@@ -317,6 +317,11 @@
     "ProvinceCapital": "ខេត្ត/រាជធានី",
     "KhanDistrict": "ខណ្ឌ/ស្រុក",
     "SangkatCommune": "សង្កាត់/ឃុំ",
+    "Confirm_Location": "បញ្ជាក់ទីតាំង",
+    "Location_Confirmed": "បានបញ្ជាក់ទីតាំង ✓",
+    "Change_Location": "ផ្លាស់ប្តូរ",
+    "View_on_Map": "មើលនៅលើផែនទី",
+    "Open_on_Google_Maps": "បើកនៅលើ Google Maps",
     "Delete":"លប់"
   },
   "trade_screen": {

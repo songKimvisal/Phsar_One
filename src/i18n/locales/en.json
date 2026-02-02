@@ -318,7 +318,12 @@
     "DiscountFixedAmountPlaceholder": "e.g., 5 for $5",
     "ProvinceCapital": "Province/Capital",
     "KhanDistrict": "Khan/District",
-    "SangkatCommune": "Sangkat/Commune"
+    "SangkatCommune": "Sangkat/Commune",
+    "Confirm_Location": "Confirm Location",
+    "Location_Confirmed": "Location Confirmed ✓",
+    "Change_Location": "Change",
+    "View_on_Map": "View on Map",
+    "Open_on_Google_Maps": "Open on Google Maps"
   },
   "trade_screen": {
     "title": "Trade Screen"
