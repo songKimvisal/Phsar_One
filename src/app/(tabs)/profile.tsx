@@ -23,16 +23,11 @@ import {
   SunIcon,
   TagIcon,
   TagSimpleIcon,
-  UserCircleIcon
+  UserCircleIcon,
 } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
@@ -52,36 +47,59 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* 1. Header with Upgrade and Settings */}
         <View style={styles.topActions}>
-          
+          {/* Subscription button */}
           <TouchableOpacity
+            onPress={() => router.push("/subscription")}
             style={[styles.upgradeBtn, { backgroundColor: Colors.reds[500] }]}
           >
             <ThemedText style={styles.upgradeText}>
               {t("user_actions.upgrade")} ✨
             </ThemedText>
           </TouchableOpacity>
+
           <View style={styles.rightIcons}>
+            {/* Light/Dark mode */}
             <TouchableOpacity onPress={toggleTheme}>
-          {theme == "light" ? (
-            <MoonIcon size={24} weight="regular" color={themeColors.text} />
-          ) : (
-            <SunIcon size={24} weight="regular" color={themeColors.text} />
-          )}
-        </TouchableOpacity>
-            <TouchableOpacity style={styles.languageIcon} onPress={toggleLanguage}>
-          {theme == "light" ? (
-            <GlobeSimpleIcon size={24} weight="regular" color={themeColors.text} />
-          ) : (
-            <GlobeSimpleIcon size={24} weight="regular" color={themeColors.text} />
-          )}
-          <ThemedText style={styles.languageTitle}>
-            {t("navigation.toggle_language")}
-          </ThemedText>
-        </TouchableOpacity>
-            <BellSimpleIcon size={28} color={themeColors.text} style={styles.iconBtn} />
-            <TouchableOpacity onPress={() => router.push('/settings')}>
+              {theme == "light" ? (
+                <MoonIcon size={24} weight="regular" color={themeColors.text} />
+              ) : (
+                <SunIcon size={24} weight="regular" color={themeColors.text} />
+              )}
+            </TouchableOpacity>
+
+            {/* Switch Language */}
+            <TouchableOpacity
+              style={styles.languageIcon}
+              onPress={toggleLanguage}
+            >
+              {theme == "light" ? (
+                <GlobeSimpleIcon
+                  size={24}
+                  weight="regular"
+                  color={themeColors.text}
+                />
+              ) : (
+                <GlobeSimpleIcon
+                  size={24}
+                  weight="regular"
+                  color={themeColors.text}
+                />
+              )}
+              <ThemedText style={styles.languageTitle}>
+                {t("navigation.toggle_language")}
+              </ThemedText>
+            </TouchableOpacity>
+
+            {/* Notification */}
+            <BellSimpleIcon
+              size={28}
+              color={themeColors.text}
+              style={styles.iconBtn}
+            />
+
+            {/* Settings */}
+            <TouchableOpacity onPress={() => router.push("/settings")}>
               <GearSixIcon
                 size={28}
                 color={themeColors.text}
@@ -128,7 +146,10 @@ export default function ProfileScreen() {
           />
           <GridItem
             icon={
-              <ClockCounterClockwiseIcon color={Colors.reds[500]} weight="fill" />
+              <ClockCounterClockwiseIcon
+                color={Colors.reds[500]}
+                weight="fill"
+              />
             }
             label={t("user_actions.expired")}
           />
@@ -160,7 +181,9 @@ export default function ProfileScreen() {
         {/* 5. Footer Grid */}
         <View style={styles.footerGrid}>
           <GridItem
-            icon={<ClockCounterClockwiseIcon size={26} color={themeColors.text} />}
+            icon={
+              <ClockCounterClockwiseIcon size={26} color={themeColors.text} />
+            }
             label={t("user_actions.history")}
           />
           <GridItem
@@ -216,13 +239,7 @@ function ProfileSection({
 }
 
 // Reusable Grid Item
-function GridItem({
-  icon,
-  label,
-}: {
-  icon: React.ReactNode;
-  label: string;
-}) {
+function GridItem({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <TouchableOpacity style={styles.gridItem}>
       {icon}

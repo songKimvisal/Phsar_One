@@ -1,5 +1,5 @@
 import useThemeColor from "@src/hooks/useThemeColor";
-import { MagnifyingGlass } from "phosphor-react-native";
+import { MagnifyingGlassIcon } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/Colors";
@@ -19,7 +19,7 @@ export default function SearchBar() {
       />
 
       <TouchableOpacity style={styles.iconContainer}>
-        <MagnifyingGlass size={20} weight="bold" color="white" />
+        <MagnifyingGlassIcon size={24} weight="regular" color="white" />
       </TouchableOpacity>
     </View>
   );
