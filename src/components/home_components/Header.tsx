@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   logoIcon: {
     width: undefined,
     height: "100%",
-    aspectRatio: 4
+    aspectRatio: 4,
   },
   logoText: {
     marginLeft: 5,

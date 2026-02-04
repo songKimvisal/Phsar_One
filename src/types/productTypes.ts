@@ -1,0 +1,147 @@
+export interface SellerContact {
+  sellerName: string;
+  phones: string[];
+  email: string;
+}
+export interface Location {
+  latitude: number;
+  longitude: number;
+}
+export interface Address {
+  province: string | null;
+  district: string | null;
+  commune: string | null;
+}
+export interface Product {
+  id: string;
+  title: string;
+  description: string;
+  mainCategory: string;
+  subCategory: string;
+  photos: string[];
+  price: string;
+  currency: "USD" | "KHR";
+  negotiable: boolean;
+  discountType: "none" | "percentage" | "fixed";
+  discountValue: string;
+  address: Address;
+  location: Location;
+  details: Record<string, any>;
+  contact: SellerContact;
+  views?: number;
+  createdAt: string;
+  updatedAt: string;
+  status: "active" | "sold" | "interactive";
+  seller?: {
+    id: string;
+    name: string;
+    avatar?: string;
+    verified?: boolean;
+    trusted?: boolean;
+    rating?: number;
+    totalListings?: number;
+  };
+}
+
+export interface ProductDraft {
+  title: string;
+  description: string;
+  mainCategory: string;
+  subCategory: string;
+  photos: string[];
+  price: string;
+  currency: "USD" | "KHR";
+  negotiable: boolean;
+  discountType: "none" | "percentage" | "fixed";
+  discountValue: string;
+  province: string | null;
+  district: string | null;
+  commune: string | null;
+  location: Location;
+  details: Record<string, any>;
+  contact: SellerContact;
+}
+export const draftToProduct = (draft: ProductDraft, id: string): Product => {
+  return {
+    id,
+    title: draft.title,
+    description: draft.description,
+    mainCategory: draft.mainCategory,
+    subCategory: draft.subCategory,
+    photos: draft.photos,
+    price: draft.price,
+    currency: draft.currency,
+    negotiable: draft.negotiable,
+    discountType: draft.discountType,
+    discountValue: draft.discountValue,
+    address: {
+      province: draft.province,
+      district: draft.district,
+      commune: draft.commune,
+    },
+    location: draft.location,
+    details: draft.details,
+    contact: draft.contact,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: "active",
+  };
+};
+
+export const formatAddress = (address: Address): string => {
+  const parts = [address.province, address.district, address.commune];
+  return parts.join(", ");
+};
+
+export const calculateDiscountPrice = (product: Product): number | null => {
+  const basePrice = parseFloat(product.price);
+  if (isNaN(basePrice) || product.discountType == "none") {
+    return null;
+  }
+  if (product.discountType === "percentage") {
+    const percentage = parseFloat(product.discountValue);
+    if (!isNaN(percentage)) {
+      return basePrice - (basePrice * percentage) / 100;
+    }
+  } else if (product.discountType === "fixed") {
+    const discount = parseFloat(product.discountValue);
+    if (!isNaN(discount)) {
+      return basePrice - discount;
+    }
+  }
+
+  return null;
+};
+
+export const formatPrice = (
+  price: string | number,
+  currency: "USD" | "KHR",
+): string => {
+  const numPrice = typeof price == "string" ? parseFloat(price) : price;
+  if (isNaN(numPrice)) return "";
+  if (currency == "USD") {
+    return `$${numPrice.toLocaleString()}`;
+  } else {
+    return `៛${numPrice.toLocaleString()}`;
+  }
+};
+export const formatTimeAgo = (dateString: string): string => {
+  const now = new Date();
+  const past = new Date(dateString);
+  const diffMs = now.getTime() - past.getTime();
+
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 60) return `${diffMins}m ago`;
+
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+
+  const diffWeeks = Math.floor(diffDays / 7);
+  if (diffWeeks < 4) return `${diffWeeks}w ago`;
+
+  const diffMonths = Math.floor(diffDays / 30);
+  return `${diffMonths}mo ago`;
+};

@@ -11,11 +11,13 @@ const redScale = {
 };
 
 const blueScale = {
+  100: "#DBEAFE",
   500: "#3B82F6",
 };
 
 const greenScale = {
   500: "#22C55E",
+  600: "#16a34a",
 };
 
 export const Colors = {

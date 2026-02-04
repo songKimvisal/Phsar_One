@@ -86,19 +86,20 @@ const mockProducts = [
   },
 ];
 
-const RecentListings = () => {
+export default function RecentListings() {
   const themeColors = useThemeColor();
   const { t } = useTranslation();
   const router = useRouter();
 
   const renderProduct = ({ item }: any) => (
     <TouchableOpacity
-      onPress={() =>
+      onPress={() => {
+        console.log("Navigating to product detail with id:", item.id);
         router.push({
           pathname: "/product/[id]",
           params: { id: item.id },
-        })
-      }
+        });
+      }}
       style={[
         styles.productCard,
         {
@@ -144,7 +145,7 @@ const RecentListings = () => {
       />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -187,5 +188,3 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 });
-
-export default RecentListings;
