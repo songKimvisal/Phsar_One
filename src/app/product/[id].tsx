@@ -1,239 +1,204 @@
-import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@src/components/ThemedText";
-import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import React from "react";
 import {
-  Dimensions,
-  Image,
-  Platform,
+  Product,
+  calculateDiscountPrice,
+  formatAddress,
+  formatTimeAgo,
+} from "@src/types/productTypes";
+import { formatProductDetails } from "@src/utils/productUtils";
+import { Stack, useLocalSearchParams } from "expo-router";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Linking,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from "react-native";
+import BuyerSafetyGuidelines from "../../components/productDetails_components/BuyerSafetyGuidelines";
+import ProductActionButtons from "../../components/productDetails_components/ProductActionButtons";
+import ProductDescription from "../../components/productDetails_components/ProductDescription";
+import ProductDetailsTable from "../../components/productDetails_components/ProductDetailsTable";
+import ProductHeader from "../../components/productDetails_components/ProductHeader";
+import ProductImageGallery from "../../components/productDetails_components/ProductImageGallery";
+import ProductInfoSection from "../../components/productDetails_components/ProductInfoSection";
+import ProductLocation from "../../components/productDetails_components/ProductLocation";
+import SellerInfoSection from "../../components/productDetails_components/SellerInfoSection";
 
-const mockProducts = [
+// Mock product data - replace with your API call
+const mockProducts: Product[] = [
   {
     id: "1",
-    name: "Tesla Model Y",
-    image:
-      "https://imgs.search.brave.com/sV7JFaCPLNsD9Nry7_LwZc0EuC753WjLK82oOUFJpmc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMwLmNhcmJ1enpp/bWFnZXMuY29tL3dv/cmRwcmVzcy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyNC8xMS8y/MDIzLTIwMjQtdGVz/bGEtbW9kZWwteS1l/eHRlcmlvci0zLmpw/Zz9xPTQ5JmZpdD1j/cm9wJnc9ODI1JmRw/cj0y",
-    time: "24m",
-    location: "BKK, Phnom Penh",
-    condition: "New",
-    year: "2025",
-    price: "$500",
+    title: "Mercedes CLA45",
     description:
-      "This is a brand new Tesla Model Y with all the latest features. Low mileage and in pristine condition. A great deal!",
-  },
-  {
-    id: "2",
-    name: "Tesla Model Y",
-    image:
-      "https://imgs.search.brave.com/sV7JFaCPLNsD9Nry7_LwZc0EuC753WjLK82oOUFJpmc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMwLmNhcmJ1enpp/bWFnZXMuY29tL3dv/cmRwcmVzcy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyNC8xMS8y/MDIzLTIwMjQtdGVz/bGEtbW9kZWwteS1l/eHRlcmlvci0zLmpw/Zz9xPTQ5JmZpdD1j/cm9wJnc9ODI1JmRw/cj0y",
-    time: "24m",
-    location: "BKK, Phnom Penh",
-    condition: "New",
-    year: "2025",
-    price: "$500",
-    description:
-      "This is a brand new Tesla Model Y with all the latest features. Low mileage and in pristine condition. A great deal!",
-  },
-  {
-    id: "3",
-    name: "Tesla Model Y",
-    image:
-      "https://imgs.search.brave.com/sV7JFaCPLNsD9Nry7_LwZc0EuC753WjLK82oOUFJpmc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMwLmNhcmJ1enpp/bWFnZXMuY29tL3dv/cmRwcmVzcy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyNC8xMS8y/MDIzLTIwMjQtdGVz/bGEtbW9kZWwteS1l/eHRlcmlvci0zLmpw/Zz9xPTQ5JmZpdD1j/cm9wJnc9ODI1JmRw/cj0y",
-    time: "24m",
-
-    location: "BKK, Phnom Penh",
-    condition: "New",
-    year: "2025",
-    price: "$500",
-    description:
-      "This is a brand new Tesla Model Y with all the latest features. Low mileage and in pristine condition. A great deal!",
-  },
-  {
-    id: "4",
-    name: "Tesla Model Y",
-    image:
-      "https://imgs.search.brave.com/sV7JFaCPLNsD9Nry7_LwZc0EuC753WjLK82oOUFJpmc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMwLmNhcmJ1enpp/bWFnZXMuY29tL3dv/cmRwcmVzcy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyNC8xMS8y/MDIzLTIwMjQtdGVz/bGEtbW9kZWwteS1l/eHRlcmlvci0zLmpw/Zz9xPTQ5JmZpdD1j/cm9wJnc9ODI1JmRw/cj0y",
-    time: "24m",
-    location: "BKK, Phnom Penh",
-    condition: "New",
-    year: "2025",
-    price: "$500",
-    description:
-      "This is a brand new Tesla Model Y with all the latest features. Low mileage and in pristine condition. A great deal!",
-  },
-  {
-    id: "5",
-    name: "Tesla Model Y",
-    image:
-      "https://imgs.search.brave.com/sV7JFaCPLNsD9Nry7_LwZc0EuC753WjLK82oOUFJpmc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMwLmNhcmJ1enpp/bWFnZXMuY29tL3dv/cmRwcmVzcy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyNC8xMS8y/MDIzLTIwMjQtdGVz/bGEtbW9kZWwteS1l/eHRlcmlvci0zLmpw/Zz9xPTQ5JmZpdD1j/cm9wJnc9ODI1JmRw/cj0y",
-    time: "24m",
-    location: "BKK, Phnom Penh",
-    condition: "New",
-
-    year: "2025",
-    price: "$500",
-    description:
-      "This is a brand new Tesla Model Y with all the latest features. Low mileage and in pristine condition. A great deal!",
-  },
-  {
-    id: "6",
-    name: "Tesla Model Y",
-    image:
-      "https://imgs.search.brave.com/sV7JFaCPLNsD9Nry7_LwZc0EuC753WjLK82oOUFJpmc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMwLmNhcmJ1enpp/bWFnZXMuY29tL3dv/cmRwcmVzcy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyNC8xMS8y/MDIzLTIwMjQtdGVz/bGEtbW9kZWwteS1l/eHRlcmlvci0zLmpw/Zz9xPTQ5JmZpdD1j/cm9wJnc9ODI1JmRw/cj0y",
-    time: "24m",
-    location: "BKK, Phnom Penh",
-    condition: "New",
-    year: "2025",
-    price: "$500",
-    description:
-      "This is a brand new Tesla Model Y with all the latest features. Low mileage and in pristine condition. A great deal!",
+      "Luxury sedan in excellent condition with low mileage. Perfect for city driving and long trips.",
+    mainCategory: "Vehicles",
+    subCategory: "Car",
+    photos: [
+      "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800",
+      "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=800",
+      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800",
+    ],
+    price: "50000",
+    currency: "KHR",
+    negotiable: true,
+    discountType: "percentage",
+    discountValue: "5",
+    address: {
+      province: "Phnom Penh",
+      district: "Sen Sok",
+      commune: "Phnom Penh Thmey",
+    },
+    location: {
+      latitude: 11.5564,
+      longitude: 104.9282,
+    },
+    details: {
+      brand: "Mercedes",
+      model: "CLA45",
+      year: "2023",
+      mileage: "0",
+      fuelType: "Petrol",
+      transmission: "Manual",
+      color: "White",
+    },
+    contact: {
+      sellerName: "Sarah Chen",
+      phones: ["012 345 678", "098 765 432"],
+      email: "sarah.chen@email.com",
+    },
+    views: 200,
+    createdAt: "2024-01-15T10:00:00Z",
+    updatedAt: "2024-01-15T10:00:00Z",
+    status: "active",
+    seller: {
+      id: "seller1",
+      name: "Sarah Chen",
+      avatar:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
+      verified: true,
+      trusted: true,
+      rating: 4.8,
+      totalListings: 24,
+    },
   },
 ];
 
-const ProductDetail = () => {
+export default function ProductDetail() {
   const { id } = useLocalSearchParams();
   const themeColors = useThemeColor();
-  const router = useRouter();
+  const { t } = useTranslation();
+  const { i18n } = useTranslation();
 
   const product = mockProducts.find((p) => p.id === id);
 
   if (!product) {
     return (
-      <View style={styles.container}>
-        <Stack.Screen options={{ title: "Product Not Found" }} />
-        <ThemedText>Product not found.</ThemedText>
+      <View
+        style={[styles.container, { backgroundColor: themeColors.background }]}
+      >
+        <Stack.Screen
+          options={{ title: "Product Not Found", headerShown: false }}
+        />
+        <ThemedText style={styles.notFoundText}>Product not found.</ThemedText>
       </View>
     );
   }
 
+  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+
+  const productDetails = formatProductDetails(
+    product.subCategory,
+    product.details,
+  );
+  const discountedPrice = calculateDiscountPrice(product);
+  const formattedDiscountedPrice =
+    discountedPrice !== null ? String(discountedPrice) : undefined;
+  const fullAddress = formatAddress(product.address);
+  const timeAgo = formatTimeAgo(product.createdAt);
+
+  const handleCall = () => {
+    if (product.contact.phones.length > 0) {
+      const phoneNumber = String(product.contact.phones[0]).replace(/\s/g, "");
+      Linking.openURL(`tel:${phoneNumber}`);
+    }
+  };
+
+  const handleChat = () => {
+    console.log("Open chat with seller");
+  };
+
   return (
-    <ScrollView
+    <SafeAreaView
       style={[styles.container, { backgroundColor: themeColors.background }]}
     >
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: product.name,
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{
-                marginLeft: Platform.OS === "ios" ? 0 : 10,
-                width: 30,
-                height: 30,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Ionicons
-                name={Platform.OS === "ios" ? "chevron-back" : "arrow-back"}
-                size={24}
-                color={themeColors.text}
-              />
-            </TouchableOpacity>
-          ),
-        }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
 
-      <Image source={{ uri: product.image }} style={styles.productImage} />
+      {/* Custom Header */}
+      <ProductHeader />
 
-      <View style={styles.detailsContainer}>
-        <ThemedText style={styles.productName}>{product.name}</ThemedText>
-        <ThemedText style={[styles.productPrice, { color: Colors.reds[500] }]}>
-          {product.price}
-        </ThemedText>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Image Gallery */}
+        <ProductImageGallery photos={product.photos} />
 
-        <View
-          style={[styles.separator, { backgroundColor: themeColors.border }]}
+        <ProductInfoSection
+          product={product}
+          discountedPrice={formattedDiscountedPrice}
+          timeAgo={timeAgo}
+          activeFont={activeFont}
+          t={t}
         />
 
-        <ThemedText style={styles.sectionTitle}>Details</ThemedText>
-        <View style={styles.detailRow}>
-          <ThemedText style={styles.detailLabel}>Condition</ThemedText>
-          <ThemedText style={styles.detailValue}>
-            {product.condition}
-          </ThemedText>
-        </View>
-        <View style={styles.detailRow}>
-          <ThemedText style={styles.detailLabel}>Year</ThemedText>
-          <ThemedText style={styles.detailValue}>{product.year}</ThemedText>
-        </View>
-        <View style={styles.detailRow}>
-          <ThemedText style={styles.detailLabel}>Location</ThemedText>
-          <ThemedText style={styles.detailValue}>{product.location}</ThemedText>
-        </View>
-        <View style={styles.detailRow}>
-          <ThemedText style={styles.detailLabel}>Posted</ThemedText>
-          <ThemedText style={styles.detailValue}>{product.time} ago</ThemedText>
-        </View>
-
-        <View
-          style={[styles.separator, { backgroundColor: themeColors.border }]}
+        {/* Location */}
+        <ProductLocation
+          fullAddress={fullAddress}
+          location={product.location}
         />
 
-        <ThemedText style={styles.sectionTitle}>Description</ThemedText>
-        <ThemedText style={styles.descriptionText}>
-          {product.description}
-        </ThemedText>
-      </View>
-    </ScrollView>
+        {/* Description */}
+        <ProductDescription
+          description={product.description}
+          activeFont={activeFont}
+        />
+
+        {/* Product Details */}
+        <ProductDetailsTable
+          mainCategory={product.mainCategory}
+          subCategory={product.subCategory}
+          productDetails={productDetails}
+          activeFont={activeFont}
+        />
+
+        {/* Seller Info */}
+        <SellerInfoSection product={product} />
+
+        {/* Action Buttons */}
+        <ProductActionButtons
+          onCallSeller={handleCall}
+          onChatSeller={handleChat}
+        />
+
+        {/* Safety Guidelines */}
+        <BuyerSafetyGuidelines />
+      </ScrollView>
+    </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  productImage: {
-    width: "100%",
-    height: Dimensions.get("window").width, // Make image square
+  scrollView: {
+    flex: 1,
   },
-  detailsContainer: {
-    padding: 20,
-  },
-  productName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  productPrice: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  separator: {
-    height: 1,
-    marginVertical: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 12,
-  },
-  detailRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  detailLabel: {
-    fontSize: 16,
-    opacity: 0.6,
-  },
-  detailValue: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  descriptionText: {
-    fontSize: 16,
-    lineHeight: 24,
+  notFoundText: {
+    textAlign: "center",
+    marginTop: 50,
   },
 });
-
-export default ProductDetail;

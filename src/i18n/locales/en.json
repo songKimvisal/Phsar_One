@@ -330,5 +330,25 @@
   },
   "home_screen": {
     "recent_listings": "Recent Listings"
+  },
+  "productDetail": {
+    "views": "views",
+    "negotiable": "Negotiable",
+    "description": "Description",
+    "details": "Details",
+    "mainCategory": "Main Category",
+    "subCategory": "Sub Category",
+    "sellerInfo": "Seller Information",
+    "verifiedSeller": "Verified Seller",
+    "trustedSeller": "Trusted Seller",
+    "viewProfile": "View Profile",
+    "callSeller": "Call to seller",
+    "chatSeller": "Chat to seller",
+    "buyerSafetyGuidelines": "Buyer Safety Guidelines",
+    "safety1": "Never make a payment until the item is in your hands.",
+    "safety2": "Arrange meetings in public or safe places.",
+    "safety3": "Inspect the product carefully before agreeing to buy.",
+    "safety4": "Only complete payment after confirming the item is as described.",
+    "safety5": "Avoid sharing card details on unfamiliar websites or suspicious links."
   }
 }
