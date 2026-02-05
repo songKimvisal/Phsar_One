@@ -3,6 +3,7 @@ import { ThemedText } from "@src/components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import { useTheme } from "@src/context/ThemeContext";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import {
   BellSimpleIcon,
@@ -19,6 +20,7 @@ import {
   MoonIcon,
   NotePencilIcon,
   PresentationChartIcon,
+  SparkleIcon,
   StorefrontIcon,
   SunIcon,
   TagIcon,
@@ -51,11 +53,32 @@ export default function ProfileScreen() {
           {/* Subscription button */}
           <TouchableOpacity
             onPress={() => router.push("/subscription")}
-            style={[styles.upgradeBtn, { backgroundColor: Colors.reds[500] }]}
+            activeOpacity={0.85}
           >
-            <ThemedText style={styles.upgradeText}>
-              {t("user_actions.upgrade")} ✨
-            </ThemedText>
+            <LinearGradient
+              colors={["#E73121", "#8B1D14"]} // reds[500] → reds[700]
+              start={{ x: 0, y: 0 }} // top
+              end={{ x: 0, y: 1 }} // bottom
+              style={styles.upgradeBtn}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <ThemedText style={styles.upgradeText}>
+                  {t("user_actions.upgrade")}
+                </ThemedText>
+                <SparkleIcon
+                  size={16}
+                  weight="fill"
+                  color="#FFD230"
+                  style={{ marginLeft: 4 }}
+                />
+              </View>
+            </LinearGradient>
           </TouchableOpacity>
 
           <View style={styles.rightIcons}>
@@ -276,7 +299,7 @@ const styles = StyleSheet.create({
   },
   upgradeText: {
     color: "#FFF",
-    fontWeight: "bold",
+    fontWeight: "500",
     fontSize: 14,
   },
   rightIcons: {
