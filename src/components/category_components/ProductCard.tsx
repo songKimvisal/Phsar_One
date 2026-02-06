@@ -2,8 +2,8 @@ import { ThemedText } from "@/src/components/ThemedText";
 import { Colors } from "@/src/constants/Colors";
 import useThemeColor from "@/src/hooks/useThemeColor";
 import { Product, formatPrice, formatTimeAgo } from "@/src/types/productTypes";
-import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import { Ionicons } from "@expo/vector-icons";
+import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import { MapPin } from "phosphor-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -45,13 +45,13 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
       locationArray: any[] | undefined,
       targetEnName: string,
     ) => {
-      if (!locationArray) return null; 
+      if (!locationArray) return null;
       const found = locationArray.find((item) => item.name_en === targetEnName);
       return found
         ? currentLanguage === "kh"
           ? found.name_km
           : found.name_en
-        : null; 
+        : null;
     };
 
     if (level === "province") {
@@ -160,7 +160,10 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
         <View style={styles.metaContainer}>
           <View style={styles.metaItemContainer}>
             <ThemedText
-              style={[styles.productMeta, { opacity: 0.6, fontFamily: activeFont }]}
+              style={[
+                styles.productMeta,
+                { opacity: 0.6, fontFamily: activeFont },
+              ]}
             >
               {timeAgo}
             </ThemedText>
@@ -169,15 +172,25 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
           {fullAddress && (
             <>
               <ThemedText
-                style={[styles.productMeta, { opacity: 0.6, fontFamily: activeFont }]}
+                style={[
+                  styles.productMeta,
+                  { opacity: 0.6, fontFamily: activeFont },
+                ]}
               >
                 {" "}
                 •{" "}
               </ThemedText>
               <View style={styles.metaItemContainer}>
-                <MapPin size={12} color={themeColors.text} style={styles.mapPinIcon} />
+                <MapPin
+                  size={12}
+                  color={themeColors.text}
+                  style={styles.mapPinIcon}
+                />
                 <ThemedText
-                  style={[styles.productMeta, { opacity: 0.6, fontFamily: activeFont }]}
+                  style={[
+                    styles.productMeta,
+                    { opacity: 0.6, fontFamily: activeFont },
+                  ]}
                   numberOfLines={1}
                 >
                   {fullAddress}
@@ -185,9 +198,6 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
               </View>
             </>
           )}
-
-
-
         </View>
 
         {/* Condition and Year (if available in details) */}
@@ -200,7 +210,9 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
           >
             {[
               product.details?.condition
-                ? t(`fieldOptions.condition.${toCamelCase(product.details.condition)}`)
+                ? t(
+                    `fieldOptions.condition.${toCamelCase(product.details.condition)}`,
+                  )
                 : "",
               product.details?.year || "",
             ]
@@ -216,7 +228,8 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
               styles.productPrice,
               {
                 color: Colors.greens[600],
-                fontFamily: i18n.language === "kh" ? "khmer-bold" : "Oxygen-Bold",
+                fontFamily:
+                  i18n.language === "kh" ? "khmer-bold" : "Oxygen-Bold",
               },
             ]}
           >
