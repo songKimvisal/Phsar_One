@@ -214,7 +214,10 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
           <ThemedText
             style={[
               styles.productPrice,
-              { color: Colors.greens[600], fontFamily: activeFont },
+              {
+                color: Colors.greens[600],
+                fontFamily: i18n.language === "kh" ? "khmer-bold" : "Oxygen-Bold",
+              },
             ]}
           >
             {formatPrice(product.price, product.currency)}
