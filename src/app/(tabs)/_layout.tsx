@@ -6,7 +6,7 @@ import {
   ChatCircleIcon,
   HouseIcon,
   PlusCircleIcon,
-  UserIcon
+  UserIcon,
 } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import { Image, Text } from "react-native";
@@ -39,7 +39,7 @@ export default function TabLayout() {
           marginLeft: 16,
           marginRight: 16,
           elevation: 1,
-          backgroundColor: themeColors.navbg, // Changed from themeColors.card to themeColors.background
+          backgroundColor: themeColors.navbg,
           borderRadius: 999,
           height: 66,
           shadowColor: "#000",
@@ -49,7 +49,7 @@ export default function TabLayout() {
           borderTopWidth: 0,
           bottom: bottom > 0 ? bottom : 16,
           paddingVertical: 16,
-          paddingHorizontal: 16
+          paddingHorizontal: 16,
         },
       }}
     >
@@ -68,7 +68,13 @@ export default function TabLayout() {
             ),
           tabBarLabel: ({ focused, color: labelColor }) =>
             focused ? null : (
-              <Text style={{ fontSize: 11, fontFamily: activeFont, color: labelColor }}>
+              <Text
+                style={{
+                  fontSize: 11,
+                  fontFamily: activeFont,
+                  color: labelColor,
+                }}
+              >
                 {t("navigation.home")}
               </Text>
             ),
@@ -89,7 +95,13 @@ export default function TabLayout() {
               <ArrowsClockwiseIcon size={iconSize.trade} color={color} />
             ),
           tabBarLabel: ({ color: labelColor }) => (
-            <Text style={{ fontSize: 11, fontFamily: activeFont, color: labelColor }}>
+            <Text
+              style={{
+                fontSize: 11,
+                fontFamily: activeFont,
+                color: labelColor,
+              }}
+            >
               {t("navigation.trade")}
             </Text>
           ),
@@ -101,12 +113,22 @@ export default function TabLayout() {
           title: t("navigation.sell"),
           tabBarIcon: ({ focused, color, size }) =>
             focused ? (
-              <PlusCircleIcon size={iconSize.sell} color={color} weight="fill" />
+              <PlusCircleIcon
+                size={iconSize.sell}
+                color={color}
+                weight="fill"
+              />
             ) : (
               <PlusCircleIcon size={iconSize.sell} color={color} />
             ),
           tabBarLabel: ({ color: labelColor }) => (
-            <Text style={{ fontSize: 11, fontFamily: activeFont, color: labelColor }}>
+            <Text
+              style={{
+                fontSize: 11,
+                fontFamily: activeFont,
+                color: labelColor,
+              }}
+            >
               {t("navigation.sell")}
             </Text>
           ),
@@ -127,7 +149,13 @@ export default function TabLayout() {
               <ChatCircleIcon size={iconSize.chat} color={color} />
             ),
           tabBarLabel: ({ color: labelColor }) => (
-            <Text style={{ fontSize: 11, fontFamily: activeFont, color: labelColor }}>
+            <Text
+              style={{
+                fontSize: 11,
+                fontFamily: activeFont,
+                color: labelColor,
+              }}
+            >
               {t("navigation.chat")}
             </Text>
           ),
@@ -144,7 +172,13 @@ export default function TabLayout() {
               <UserIcon size={iconSize.profile} color={color} />
             ),
           tabBarLabel: ({ color: labelColor }) => (
-            <Text style={{ fontSize: 11, fontFamily: activeFont, color: labelColor }}>
+            <Text
+              style={{
+                fontSize: 11,
+                fontFamily: activeFont,
+                color: labelColor,
+              }}
+            >
               {t("navigation.profile")}
             </Text>
           ),

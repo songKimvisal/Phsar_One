@@ -1,3 +1,4 @@
+import i18n from "../i18n";
 export interface SellerContact {
   sellerName: string;
   phones: string[];
@@ -90,7 +91,7 @@ export const draftToProduct = (draft: ProductDraft, id: string): Product => {
 
 export const formatAddress = (address: Address): string => {
   const parts = [address.province, address.district, address.commune];
-  return parts.join(", ");
+  return parts.filter(Boolean).join(", ");
 };
 
 export const calculateDiscountPrice = (product: Product): number | null => {
@@ -131,17 +132,17 @@ export const formatTimeAgo = (dateString: string): string => {
   const diffMs = now.getTime() - past.getTime();
 
   const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffMins < 60) return i18n.t("time_ago.minutes", { count: diffMins });
 
   const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffHours < 24) return i18n.t("time_ago.hours", { count: diffHours });
 
   const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffDays < 7) return i18n.t("time_ago.days", { count: diffDays });
 
   const diffWeeks = Math.floor(diffDays / 7);
-  if (diffWeeks < 4) return `${diffWeeks}w ago`;
+  if (diffWeeks < 4) return i18n.t("time_ago.weeks", { count: diffWeeks });
 
   const diffMonths = Math.floor(diffDays / 30);
-  return `${diffMonths}mo ago`;
+  return i18n.t("time_ago.months", { count: diffMonths });
 };
