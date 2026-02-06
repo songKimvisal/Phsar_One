@@ -13,6 +13,7 @@ const redScale = {
 const blueScale = {
   100: "#DBEAFE",
   500: "#3B82F6",
+  700: "#1D4ED8",
 };
 
 const greenScale = {
@@ -24,12 +25,12 @@ export const Colors = {
   light: {
     navbg: "#fff",
     text: "#111827",
-    background: "#FAFAFA", // Slightly darker light gray for more depth
+    background: "#FAFAFA",
     card: "#FFFFFF",
     tint: redScale[500],
     tabIconDefault: "#868d99",
     primary: redScale[500],
-    border: "#CED4DA", // More pronounced border color
+    border: "#CED4DA",
     primaryButtonText: "#FFFFFF",
   },
   dark: {

@@ -1,9 +1,9 @@
 import { ThemedText } from "@src/components/ThemedText";
+import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import useThemeColor from "@src/hooks/useThemeColor";
 import {
   Product,
   calculateDiscountPrice,
-  formatAddress,
   formatTimeAgo,
 } from "@src/types/productTypes";
 import { formatProductDetails } from "@src/utils/productUtils";
@@ -94,6 +94,48 @@ export default function ProductDetail() {
 
   const product = mockProducts.find((p) => p.id === id);
 
+  const getLocalizedLocationName = (
+    englishName: string | null | undefined,
+    currentLanguage: string,
+    level: "province" | "district" | "commune",
+    provinceNameEn?: string | null,
+    districtNameEn?: string | null,
+  ): string | null => {
+    if (!englishName) return null;
+
+    const findLocalizedName = (
+      locationArray: any[] | undefined,
+      targetEnName: string,
+    ) => {
+      if (!locationArray) return null; // If no array to search, no localized name can be found
+
+      const found = locationArray.find((item) => item.name_en === targetEnName);
+      return found
+        ? currentLanguage === "kh"
+          ? found.name_km
+          : found.name_en
+        : null; // Explicitly return null if not found
+    };
+
+    if (level === "province") {
+      return findLocalizedName(CAMBODIA_LOCATIONS, englishName);
+    } else if (level === "district" && provinceNameEn) {
+      const province = CAMBODIA_LOCATIONS.find(
+        (p) => p.name_en === provinceNameEn,
+      );
+      return findLocalizedName(province?.subdivisions, englishName);
+    } else if (level === "commune" && provinceNameEn && districtNameEn) {
+      const province = CAMBODIA_LOCATIONS.find(
+        (p) => p.name_en === provinceNameEn,
+      );
+      const district = province?.subdivisions?.find(
+        (d) => d.name_en === districtNameEn,
+      );
+      return findLocalizedName(district?.subdivisions, englishName);
+    }
+    return null; // Return null if no match found at any level
+  };
+
   if (!product) {
     return (
       <View
@@ -116,7 +158,29 @@ export default function ProductDetail() {
   const discountedPrice = calculateDiscountPrice(product);
   const formattedDiscountedPrice =
     discountedPrice !== null ? String(discountedPrice) : undefined;
-  const fullAddress = formatAddress(product.address);
+  const localizedCommune = getLocalizedLocationName(
+    product.address.commune,
+    i18n.language,
+    "commune",
+    product.address.province,
+    product.address.district,
+  );
+  const localizedDistrict = getLocalizedLocationName(
+    product.address.district,
+    i18n.language,
+    "district",
+    product.address.province,
+  );
+  const localizedProvince = getLocalizedLocationName(
+    product.address.province,
+    i18n.language,
+    "province",
+  );
+
+  const fullAddress =
+    [localizedCommune, localizedDistrict, localizedProvince]
+      .filter(Boolean)
+      .join(", ") || "N/A";
   const timeAgo = formatTimeAgo(product.createdAt);
 
   const handleCall = () => {
