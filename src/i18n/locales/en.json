@@ -137,6 +137,8 @@
     "landTitle": "Land Title Type",
     "location": "Location",
     "filter_sort": "Filter & Sort",
+    "filter_location": "Filter by Location",
+    "sort_by_price": "Sort by Price",
     "width": "Width (m)",
     "length": "Length (m)",
     "bedrooms": "Bedrooms",
@@ -295,6 +297,18 @@
     "takeo": "Takéo",
     "tbongKhmum": "Tbong Khmum"
   },
+  "location": {
+    "province": "Province/Capital",
+    "district": "Khan/District",
+    "commune": "Sangkat/Commune"
+  },
+  "conditions": {
+    "new": "New",
+    "used": "Used",
+    "like new": "Like New",
+    "good": "Good",
+    "fair": "Fair"
+  },
   "sellSection": {
     "What_are_you_selling?": "What are you selling?",
     "category_subtitle": "Select a category to continue",
@@ -357,7 +371,11 @@
     "noProductsInSubcategory": "No products found in this subcategory",
     "showAll": "Show All",
     "listings": "listings",
-    "separator_bullet": "•"
+    "separator_bullet": "•",
+    "clear": "Clear",
+    "apply": "Apply",
+    "price_low_to_high": "Price: Low to High",
+    "price_high_to_low": "Price: High to Low"
   },
   "time_ago": {
     "minutes": "{{count}} minutes ago",

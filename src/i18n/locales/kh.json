@@ -136,7 +136,9 @@
     "area": "ផ្ទៃក្រឡា (ម៉ែត្រការ៉េ)",
     "landTitle": "ប្រភេទប្លង់ដី",
     "location": "ទីតាំង",
-    "filter_sort": "ចម្រាញ់ និងតម្រៀប",
+    "filter_sort": "ចម្រាញ់ និង តម្រៀប",
+    "filter_location": "ត្រងតាមទីតាំង",
+    "sort_by_price": "តម្រៀបតាមតម្លៃ",
     "width": "ទទឹង (ម៉ែត្រ)",
     "length": "បណ្តោយ (ម៉ែត្រ)",
     "bedrooms": "បន្ទប់គេង",
@@ -295,6 +297,18 @@
     "takeo": "តាកែវ",
     "tbongKhmum": "ត្បូងឃ្មុំ"
   },
+  "location": {
+    "province": "រាជធានី/ខេត្ត",
+    "district": "ស្រុក/ខណ្ឌ",
+    "commune": "ឃុំ/សង្កាត់"
+  },
+  "conditions": {
+    "new": "ថ្មី",
+    "used": "ប្រើហើយ",
+    "like new": "ដូចថ្មី",
+    "good": "ល្អ",
+    "fair": "មធ្យម"
+  },
   "sellSection": {
     "What_are_you_selling?": "តើអ្នកចង់លក់អ្វី?",
     "category_subtitle": "ជ្រើសរើសប្រភេទដើម្បីបន្ត",
@@ -356,7 +370,11 @@
     "noProductsInSubcategory": "មិនមានផលិតផលនៅក្នុងប្រភេទរងនេះទេ",
     "showAll": "បង្ហាញទាំងអស់",
     "listings": "ការផ្សាយលក់",
-    "separator_bullet": "•"
+    "separator_bullet": "•",
+    "clear": "សម្អាត",
+    "apply": "អនុវត្ត",
+    "price_low_to_high": "តម្លៃ៖ ពីទាបទៅខ្ពស់",
+    "price_high_to_low": "តម្លៃ៖ ពីខ្ពស់ទៅទាប"
   },
   "time_ago": {
     "minutes": "{{count}} នាទីមុន",
