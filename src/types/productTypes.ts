@@ -126,7 +126,7 @@ export const formatPrice = (
     return `៛${numPrice.toLocaleString()}`;
   }
 };
-export const formatTimeAgo = (dateString: string): string => {
+export const formatTimeAgo = (dateString: string, t: unknown): string => {
   const now = new Date();
   const past = new Date(dateString);
   const diffMs = now.getTime() - past.getTime();

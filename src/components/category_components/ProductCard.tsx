@@ -73,7 +73,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
     return null;
   };
 
-  const timeAgo = formatTimeAgo(product.createdAt);
+  const timeAgo = formatTimeAgo(product.createdAt, t);
   const mainImage = product.photos[0] || "https://via.placeholder.com/300";
 
   // Calculate if there's a discount
