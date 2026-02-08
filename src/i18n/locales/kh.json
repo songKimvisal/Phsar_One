@@ -339,7 +339,11 @@
     "Delete": "លប់"
   },
   "trade_screen": {
-    "title": "អេក្រង់ជួញដូរ"
+    "title": "អេក្រង់ជួញដូរ",
+    "search_placeholder": "ស្វែងរកទំនិញ...",
+    "clear_filter": "ជម្រះតម្រង",
+    "condition_good": "ល្អ",
+    "looking_for": "ស្វែងរក"
   },
   "home_screen": {
     "recent_listings": "ការផ្សាយថ្មីៗ"

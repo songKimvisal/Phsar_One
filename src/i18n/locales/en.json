@@ -340,7 +340,11 @@
     "Open_on_Google_Maps": "Open on Google Maps"
   },
   "trade_screen": {
-    "title": "Trade Screen"
+    "title": "Trade Screen",
+    "search_placeholder": "Search for items...",
+    "clear_filter": "Clear filter",
+    "condition_good": "Good",
+    "looking_for": "Looking for"
   },
   "home_screen": {
     "recent_listings": "Recent Listings"
