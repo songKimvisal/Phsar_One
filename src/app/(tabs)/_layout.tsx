@@ -17,7 +17,7 @@ export default function TabLayout() {
   const themeColors = useThemeColor();
   const { i18n, t } = useTranslation();
   const { bottom } = useSafeAreaInsets();
-  const activeFont = i18n.language === "kh" ? "khmer-regular" : undefined;
+  const activeFont = i18n.language === "kh" ? "khmer-regular" : null;
   const iconSize = {
     home: 26,
     trade: 26,

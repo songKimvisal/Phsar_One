@@ -181,7 +181,7 @@ export default function ProductDetail() {
     [localizedCommune, localizedDistrict, localizedProvince]
       .filter(Boolean)
       .join(", ") || "N/A";
-  const timeAgo = formatTimeAgo(product.createdAt);
+  const timeAgo = formatTimeAgo(product.createdAt, t);
 
   const handleCall = () => {
     if (product.contact.phones.length > 0) {
