@@ -43,7 +43,7 @@ const mockProducts: Product[] = [
       mileage: "0",
       fuelType: "Petrol",
       transmission: "Manual",
-      condition: "new", // Added condition
+      condition: "new",
     },
     contact: {
       sellerName: "Sarah Chen",
@@ -51,7 +51,7 @@ const mockProducts: Product[] = [
       email: "sarah.chen@email.com",
     },
     views: 200,
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
+    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
     status: "active",
     seller: {
@@ -99,7 +99,7 @@ const mockProducts: Product[] = [
       mileage: "0",
       fuelType: "Petrol",
       transmission: "Automatic",
-      condition: "like new", // Added condition
+      condition: "like new",
     },
     contact: {
       sellerName: "Sok Vuthy",
@@ -107,7 +107,7 @@ const mockProducts: Product[] = [
       email: "sok.vuthy@email.com",
     },
     views: 150,
-    createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), // 12 hours ago
+    createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
     status: "active",
     seller: {

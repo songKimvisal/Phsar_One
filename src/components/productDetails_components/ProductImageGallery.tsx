@@ -1,3 +1,4 @@
+import useThemeColor from "@src/hooks/useThemeColor";
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -7,8 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import useThemeColor from "@src/hooks/useThemeColor";
-import { Colors } from "@src/constants/Colors";
 
 interface ProductImageGalleryProps {
   photos: string[];
@@ -32,7 +31,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
       style={[
         styles.thumbnail,
         selectedImageIndex === index && {
-          borderColor: Colors.blues[500],
+          borderColor: themeColors.tint,
         },
       ]}
     >
@@ -42,7 +41,10 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
 
   return (
     <View
-      style={[styles.imageContainer, { backgroundColor: themeColors.background }]}
+      style={[
+        styles.imageContainer,
+        { backgroundColor: themeColors.background },
+      ]}
     >
       <Image
         source={{ uri: photos[selectedImageIndex] }}

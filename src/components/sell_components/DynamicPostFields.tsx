@@ -3,36 +3,23 @@ import { ThemedText } from "@src/components/ThemedText";
 import { ThemedTextInput } from "@src/components/ThemedTextInput";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { toCamelCase } from "@src/utils/stringUtils";
+import { TFunction } from "i18next";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, View } from "react-native";
 
 interface DynamicPostFieldsProps {
-  fields: any[]; // Adjust type based on POST_FIELDS_MAP structure
+  fields: any[];
   themeColors: ReturnType<typeof useThemeColor>;
-  t: (key: string) => string;
+  t: TFunction<"translation", undefined>;
   activeFont: string;
 }
 
-export default function DynamicPostFields({
-  fields,
-  themeColors,
-  t,
-  activeFont,
-}: DynamicPostFieldsProps) {
+export default function DynamicPostFields({ fields }: DynamicPostFieldsProps) {
   const { draft, updateDetail } = useSellDraft();
-
-  const optionToKey = (str: string) => {
-    if (!str) return "";
-    const parts = str.split(" ");
-    return (
-      parts[0].toLowerCase() +
-      parts
-        .slice(1)
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join("")
-    );
-  };
+  const themeColors = useThemeColor();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -57,7 +44,9 @@ export default function DynamicPostFields({
                 keyboardType={fieldType === "number" ? "numeric" : "default"}
               />
             )}
-            {fieldType === "select" && field.options && Platform.OS === "ios" ? (
+            {fieldType === "select" &&
+            field.options &&
+            Platform.OS === "ios" ? (
               <View
                 style={[
                   styles.pickerContainer,
@@ -69,7 +58,9 @@ export default function DynamicPostFields({
               >
                 <Picker
                   selectedValue={draft.details[field.key] || ""}
-                  onValueChange={(itemValue) => updateDetail(field.key, itemValue)}
+                  onValueChange={(itemValue) =>
+                    updateDetail(field.key, itemValue)
+                  }
                   style={[
                     styles.pickerIOS,
                     {
@@ -79,7 +70,6 @@ export default function DynamicPostFields({
                   ]}
                   itemStyle={{
                     color: themeColors.text,
-                    fontFamily: activeFont,
                   }}
                 >
                   <Picker.Item
@@ -91,7 +81,7 @@ export default function DynamicPostFields({
                     <Picker.Item
                       key={option}
                       label={t(
-                        `fieldOptions.${field.key}.${optionToKey(option)}`
+                        `fieldOptions.${field.key}.${toCamelCase(option)}`,
                       )}
                       value={option}
                       color={themeColors.text}
@@ -113,13 +103,14 @@ export default function DynamicPostFields({
                 >
                   <Picker
                     selectedValue={draft.details[field.key] || ""}
-                    onValueChange={(itemValue) => updateDetail(field.key, itemValue)}
+                    onValueChange={(itemValue) =>
+                      updateDetail(field.key, itemValue)
+                    }
                     style={[
                       styles.picker,
                       {
                         color: themeColors.text,
                         backgroundColor: themeColors.card,
-                        fontFamily: activeFont,
                       },
                     ]}
                     dropdownIconColor={themeColors.text}
@@ -132,10 +123,10 @@ export default function DynamicPostFields({
                     {field.options.map((option: string) => (
                       <Picker.Item
                         key={option}
-                      label={t(
-                        `fieldOptions.${field.key}.${optionToKey(option)}`
-                      )}
-                      value={option}
+                        label={t(
+                          `fieldOptions.${field.key}.${toCamelCase(option)}`,
+                        )}
+                        value={option}
                         color={themeColors.text}
                       />
                     ))}

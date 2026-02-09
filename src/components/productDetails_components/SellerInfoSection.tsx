@@ -14,14 +14,23 @@ import {
 
 interface SellerInfoSectionProps {
   product: Product;
+  onViewProfile?: () => void;
 }
 
-const SellerInfoSection: React.FC<SellerInfoSectionProps> = ({ product }) => {
+const SellerInfoSection: React.FC<SellerInfoSectionProps> = ({
+  product,
+  onViewProfile,
+}) => {
+  // Updated destructuring
   const themeColors = useThemeColor();
   const { t } = useTranslation();
 
+  if (!product || !product.contact) {
+    return null;
+  }
+
   const handleCall = () => {
-    if (product.contact.phones.length > 0) {
+    if (product.contact && product.contact.phones.length > 0) {
       const phoneNumber = String(product.contact.phones[0]).replace(/\s/g, "");
       Linking.openURL(`tel:${phoneNumber}`);
     }
@@ -40,7 +49,13 @@ const SellerInfoSection: React.FC<SellerInfoSectionProps> = ({ product }) => {
             style={styles.sellerAvatar}
           />
         ) : (
-          <View style={[styles.sellerAvatar, styles.avatarPlaceholder]}>
+          <View
+            style={[
+              styles.sellerAvatar,
+              styles.avatarPlaceholder,
+              { backgroundColor: themeColors.border + "1A" },
+            ]}
+          >
             <Ionicons name="person" size={24} color={themeColors.text} />
           </View>
         )}
@@ -48,26 +63,38 @@ const SellerInfoSection: React.FC<SellerInfoSectionProps> = ({ product }) => {
         <View style={styles.sellerDetails}>
           <View style={styles.sellerNameRow}>
             <ThemedText style={styles.sellerName}>
-              {product.contact.sellerName}
+              {product.contact?.sellerName}
             </ThemedText>
             {product.seller?.verified && (
-              <Ionicons name="checkmark-circle" size={16} color="#4A90E2" />
+              <Ionicons
+                name="checkmark-circle"
+                size={16}
+                color={themeColors.info}
+              />
             )}
           </View>
 
           <View style={styles.badgesContainer}>
             {product.seller?.verified && (
               <View style={styles.badge}>
-                <Ionicons name="shield-checkmark" size={12} color="#4A90E2" />
-                <ThemedText style={styles.badgeText}>
+                <Ionicons
+                  name="shield-checkmark"
+                  size={12}
+                  color={themeColors.info}
+                />
+                <ThemedText
+                  style={[styles.badgeText, { color: themeColors.info }]}
+                >
                   {t("productDetail.verifiedSeller")}
                 </ThemedText>
               </View>
             )}
             {product.seller?.trusted && (
               <View style={styles.badge}>
-                <Ionicons name="ribbon" size={12} color="#4A90E2" />
-                <ThemedText style={styles.badgeText}>
+                <Ionicons name="ribbon" size={12} color={themeColors.info} />
+                <ThemedText
+                  style={[styles.badgeText, { color: themeColors.info }]}
+                >
                   {t("productDetail.trustedSeller")}
                 </ThemedText>
               </View>
@@ -76,7 +103,7 @@ const SellerInfoSection: React.FC<SellerInfoSectionProps> = ({ product }) => {
 
           {product.seller?.rating && (
             <View style={styles.ratingContainer}>
-              <Ionicons name="star" size={14} color="#FFB800" />
+              <Ionicons name="star" size={14} color={themeColors.warning} />
               <ThemedText style={styles.ratingText}>
                 {product.seller.rating} ({product.seller.totalListings}{" "}
                 listings)
@@ -85,9 +112,11 @@ const SellerInfoSection: React.FC<SellerInfoSectionProps> = ({ product }) => {
           )}
         </View>
 
-        {product.seller && (
-          <TouchableOpacity>
-            <ThemedText style={styles.viewProfileText}>
+        {product.seller && onViewProfile && (
+          <TouchableOpacity onPress={onViewProfile}>
+            <ThemedText
+              style={[styles.viewProfileText, { color: themeColors.link }]}
+            >
               {t("productDetail.viewProfile")}
             </ThemedText>
           </TouchableOpacity>
@@ -95,14 +124,21 @@ const SellerInfoSection: React.FC<SellerInfoSectionProps> = ({ product }) => {
       </View>
 
       {/* Contact Information */}
-      <View style={styles.contactInfo}>
-        {product.contact.phones.map((phone, index) => (
-          <View key={index} style={styles.contactRow}>
-            <Ionicons name="call-outline" size={16} color={themeColors.text} />
-            <ThemedText style={styles.contactText}>{phone}</ThemedText>
-          </View>
-        ))}
-        {product.contact.email && (
+      <View
+        style={[styles.contactInfo, { borderTopColor: themeColors.border }]}
+      >
+        {product.contact?.phones &&
+          product.contact.phones.map((phone, index) => (
+            <View key={index} style={styles.contactRow}>
+              <Ionicons
+                name="call-outline"
+                size={16}
+                color={themeColors.text}
+              />
+              <ThemedText style={styles.contactText}>{phone}</ThemedText>
+            </View>
+          ))}
+        {product.contact?.email && (
           <View style={styles.contactRow}>
             <Ionicons name="mail-outline" size={16} color={themeColors.text} />
             <ThemedText style={styles.contactText}>
@@ -114,6 +150,8 @@ const SellerInfoSection: React.FC<SellerInfoSectionProps> = ({ product }) => {
     </View>
   );
 };
+
+export default SellerInfoSection;
 
 const styles = StyleSheet.create({
   sellerSection: {
@@ -137,7 +175,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   avatarPlaceholder: {
-    backgroundColor: "rgba(0,0,0,0.1)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -165,7 +202,6 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 12,
-    color: "#4A90E2",
   },
   ratingContainer: {
     flexDirection: "row",
@@ -179,14 +215,12 @@ const styles = StyleSheet.create({
   },
   viewProfileText: {
     fontSize: 14,
-    color: "#4A90E2",
     fontWeight: "500",
   },
   contactInfo: {
     gap: 8,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.05)",
   },
   contactRow: {
     flexDirection: "row",
@@ -198,5 +232,3 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
 });
-
-export default SellerInfoSection;

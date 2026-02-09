@@ -1,3 +1,12 @@
+import BuyerSafetyGuidelines from "@src/components/productDetails_components/BuyerSafetyGuidelines";
+import ProductActionButtons from "@src/components/productDetails_components/ProductActionButtons";
+import ProductDescription from "@src/components/productDetails_components/ProductDescription";
+import ProductDetailsTable from "@src/components/productDetails_components/ProductDetailsTable";
+import ProductHeader from "@src/components/productDetails_components/ProductHeader";
+import ProductImageGallery from "@src/components/productDetails_components/ProductImageGallery";
+import ProductInfoSection from "@src/components/productDetails_components/ProductInfoSection";
+import ProductLocation from "@src/components/productDetails_components/ProductLocation";
+import SellerInfoSection from "@src/components/productDetails_components/SellerInfoSection";
 import { ThemedText } from "@src/components/ThemedText";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import useThemeColor from "@src/hooks/useThemeColor";
@@ -8,7 +17,7 @@ import {
 } from "@src/types/productTypes";
 import { formatProductDetails } from "@src/utils/productUtils";
 import { Stack, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Linking,
@@ -17,15 +26,6 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import BuyerSafetyGuidelines from "../../components/productDetails_components/BuyerSafetyGuidelines";
-import ProductActionButtons from "../../components/productDetails_components/ProductActionButtons";
-import ProductDescription from "../../components/productDetails_components/ProductDescription";
-import ProductDetailsTable from "../../components/productDetails_components/ProductDetailsTable";
-import ProductHeader from "../../components/productDetails_components/ProductHeader";
-import ProductImageGallery from "../../components/productDetails_components/ProductImageGallery";
-import ProductInfoSection from "../../components/productDetails_components/ProductInfoSection";
-import ProductLocation from "../../components/productDetails_components/ProductLocation";
-import SellerInfoSection from "../../components/productDetails_components/SellerInfoSection";
 
 // Mock product data - replace with your API call
 const mockProducts: Product[] = [
@@ -92,7 +92,20 @@ export default function ProductDetail() {
   const { t } = useTranslation();
   const { i18n } = useTranslation();
 
+  const [isFavorite, setIsFavorite] = useState(false); 
+
   const product = mockProducts.find((p) => p.id === id);
+
+  const handleShare = () => {
+    console.log("Sharing product...");
+  
+  };
+
+  const handleFavorite = () => {
+    setIsFavorite((prev) => !prev);
+    console.log("Toggling favorite:", !isFavorite);
+   
+  };
 
   const getLocalizedLocationName = (
     englishName: string | null | undefined,
@@ -107,14 +120,14 @@ export default function ProductDetail() {
       locationArray: any[] | undefined,
       targetEnName: string,
     ) => {
-      if (!locationArray) return null; // If no array to search, no localized name can be found
+      if (!locationArray) return null;
 
       const found = locationArray.find((item) => item.name_en === targetEnName);
       return found
         ? currentLanguage === "kh"
           ? found.name_km
           : found.name_en
-        : null; // Explicitly return null if not found
+        : null;
     };
 
     if (level === "province") {
@@ -133,7 +146,7 @@ export default function ProductDetail() {
       );
       return findLocalizedName(district?.subdivisions, englishName);
     }
-    return null; // Return null if no match found at any level
+    return null;
   };
 
   if (!product) {
@@ -201,7 +214,11 @@ export default function ProductDetail() {
       <Stack.Screen options={{ headerShown: false }} />
 
       {/* Custom Header */}
-      <ProductHeader />
+      <ProductHeader
+        onShare={handleShare}
+        onFavorite={handleFavorite}
+        isFavorite={isFavorite}
+      />
 
       <ScrollView
         style={styles.scrollView}

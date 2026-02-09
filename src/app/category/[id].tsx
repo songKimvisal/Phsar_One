@@ -22,7 +22,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const productConditions = ["new", "used", "like new", "good", "fair"];
 
-// Helper function to extract short name from full location name
 const getShortName = (fullName: string): string => {
   if (!fullName) return "";
   const prefixes = ["Khan ", "Sangkat ", "District ", "Commune "];
@@ -146,12 +145,12 @@ export default function CategoryDetailScreen() {
 
   const handleFilterPress = () => {
     setShowFilterSortDropdown((prev) => !prev);
-    setShowLocationDropdown(false); // Close location dropdown if open
+    setShowLocationDropdown(false);
   };
 
   const handleLocationPress = () => {
     setShowLocationDropdown((prev) => !prev);
-    setShowFilterSortDropdown(false); // Close filter/sort dropdown if open
+    setShowFilterSortDropdown(false);
   };
 
   const displayedSortByPrice = useMemo(() => {
@@ -315,7 +314,10 @@ export default function CategoryDetailScreen() {
         style={[styles.filterBar, { borderBottomColor: themeColors.border }]}
       >
         <TouchableOpacity
-          style={[styles.filterBtn, { borderRightWidth: 1, borderRightColor: themeColors.border }]}
+          style={[
+            styles.filterBtn,
+            { borderRightWidth: 1, borderRightColor: themeColors.border },
+          ]}
           onPress={handleLocationPress}
         >
           <MapPin
