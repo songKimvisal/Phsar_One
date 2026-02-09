@@ -1,5 +1,4 @@
 import { ThemedText } from "@src/components/ThemedText";
-import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Clock, MapPin, User } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
@@ -35,8 +34,9 @@ export default function TradeProductCard({
   onPress,
 }: TradeProductCardProps) {
   const themeColors = useThemeColor();
-  const { t, i18n } = useTranslation();
-  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+  const { t } = useTranslation();
+
+  const styles = getStyles(themeColors);
 
   return (
     <TouchableOpacity
@@ -54,52 +54,36 @@ export default function TradeProductCard({
           <View
             style={[
               styles.conditionBadge,
-              { backgroundColor: Colors.reds[500] },
+              { backgroundColor: themeColors.error },
             ]}
           >
-            <ThemedText
-              style={[styles.conditionText, { fontFamily: activeFont }]}
-            >
+            <ThemedText style={styles.conditionText}>
               {t(`trade_screen.condition_${product.condition.toLowerCase()}`)}
             </ThemedText>
           </View>
         )}
       </View>
-
       {/* Product Info */}
       <View style={styles.infoContainer}>
-        <ThemedText
-          style={[styles.productTitle, { fontFamily: activeFont }]}
-          numberOfLines={1}
-        >
+        <ThemedText style={styles.productTitle} numberOfLines={1}>
           {product.title}
         </ThemedText>
-
         {/* Seller Info */}
         <View style={styles.metaRow}>
           <User size={14} color={themeColors.text} weight="fill" />
-          <ThemedText style={[styles.metaText, { fontFamily: activeFont }]}>
-            {product.seller}
-          </ThemedText>
+          <ThemedText style={styles.metaText}>{product.seller}</ThemedText>
         </View>
-
-        {/* Time and Location */}
         <View style={styles.metaRow}>
           <Clock size={14} color={themeColors.text} weight="fill" />
-          <ThemedText style={[styles.metaText, { fontFamily: activeFont }]}>
-            {product.timeAgo}
-          </ThemedText>
+          <ThemedText style={styles.metaText}>{product.timeAgo}</ThemedText>
           <MapPin
             size={14}
             color={themeColors.text}
             weight="fill"
             style={styles.locationIcon}
           />
-          <ThemedText style={[styles.metaText, { fontFamily: activeFont }]}>
-            {product.location}
-          </ThemedText>
+          <ThemedText style={styles.metaText}>{product.location}</ThemedText>
         </View>
-
         {/* Looking For */}
         <View
           style={[
@@ -107,15 +91,10 @@ export default function TradeProductCard({
             { backgroundColor: themeColors.secondaryBackground },
           ]}
         >
-          <ThemedText
-            style={[styles.lookingForLabel, { fontFamily: activeFont }]}
-          >
+          <ThemedText style={styles.lookingForLabel}>
             {t("trade_screen.looking_for")}
           </ThemedText>
-          <ThemedText
-            style={[styles.lookingForText, { fontFamily: activeFont }]}
-            numberOfLines={1}
-          >
+          <ThemedText style={styles.lookingForText} numberOfLines={1}>
             {product.lookingFor.filter(Boolean).join(", ")}
           </ThemedText>
         </View>
@@ -124,75 +103,76 @@ export default function TradeProductCard({
   );
 }
 
-const styles = StyleSheet.create({
-  cardContainer: {
-    width: CARD_WIDTH,
-    borderRadius: 8, // Increased radius for a softer look
-    borderWidth: 1,
-    overflow: "hidden",
-    marginBottom: 12, // Slightly increased vertical spacing
-  },
-  imageWrapper: {
-    width: "100%",
-    height: 120,
-    backgroundColor: "#f0f0f0", // Placeholder background
-    position: "relative",
-    borderTopLeftRadius: 8, // Match card radius
-    borderTopRightRadius: 8, // Match card radius
-    overflow: "hidden", // Ensure image respects rounded corners
-  },
-  productImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  conditionBadge: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3, // Slightly reduced vertical padding
-    borderRadius: 10, // More rounded corners
-  },
-  conditionText: {
-    color: "#FFFFFF",
-    fontSize: 11, // Slightly smaller font
-    fontWeight: "bold",
-  },
-  infoContainer: {
-    padding: 12, // Increased padding
-  },
-  productTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  metaRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4, // Increased vertical spacing between meta rows
-    gap: 6, // Increased gap between icon and text
-  },
-  metaText: {
-    fontSize: 12,
-    opacity: 0.7,
-  },
-  locationIcon: {
-    marginLeft: 8,
-  },
-  lookingForContainer: {
-    marginTop: 8,
-    padding: 10, // Increased padding
-    borderRadius: 8, // More rounded corners
-  },
-  lookingForLabel: {
-    fontSize: 11,
-    fontWeight: "bold",
-    opacity: 0.7,
-    marginBottom: 2,
-  },
-  lookingForText: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-});
+const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
+  StyleSheet.create({
+    cardContainer: {
+      width: CARD_WIDTH,
+      borderRadius: 8,
+      borderWidth: 1,
+      overflow: "hidden",
+      marginBottom: 12,
+    },
+    imageWrapper: {
+      width: "100%",
+      height: 120,
+      backgroundColor: themeColors.border + "10",
+      position: "relative",
+      borderTopLeftRadius: 8,
+      borderTopRightRadius: 8,
+      overflow: "hidden",
+    },
+    productImage: {
+      width: "100%",
+      height: "100%",
+      resizeMode: "cover",
+    },
+    conditionBadge: {
+      position: "absolute",
+      top: 8,
+      right: 8,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: 10,
+    },
+    conditionText: {
+      color: themeColors.primaryButtonText,
+      fontSize: 11,
+      fontWeight: "bold",
+    },
+    infoContainer: {
+      padding: 12,
+    },
+    productTitle: {
+      fontSize: 16,
+      fontWeight: "bold",
+      marginBottom: 5,
+    },
+    metaRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 4,
+      gap: 6,
+    },
+    metaText: {
+      fontSize: 12,
+      opacity: 0.7,
+    },
+    locationIcon: {
+      marginLeft: 8,
+    },
+    lookingForContainer: {
+      marginTop: 8,
+      padding: 10,
+      borderRadius: 8,
+    },
+    lookingForLabel: {
+      fontSize: 11,
+      fontWeight: "bold",
+      opacity: 0.7,
+      marginBottom: 2,
+    },
+    lookingForText: {
+      fontSize: 12,
+      fontWeight: "600",
+    },
+  });

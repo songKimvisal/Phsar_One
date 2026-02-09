@@ -22,7 +22,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProductDetailsForm() {
-  const { draft, updateDraft } = useSellDraft(); // Destructure updateDraft
+  const { draft, updateDraft } = useSellDraft(); 
   const { t, i18n } = useTranslation();
   const fields = POST_FIELDS_MAP[draft.subCategory] || [];
   const themeColors = useThemeColor();
@@ -32,12 +32,12 @@ export default function ProductDetailsForm() {
 
   const handleConfirmLocation = (location: { latitude: number; longitude: number }) => {
     setIsLocationConfirmed(true);
-    updateDraft("location", location); // Update draft with location
+    updateDraft("location", location); 
     console.log("Location confirmed:", location);
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1, backgroundColor: themeColors.background }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -50,8 +50,8 @@ export default function ProductDetailsForm() {
               {/* Photo Section */}
               <PhotoUploadSection
                 themeColors={themeColors}
-                photos={draft.photos} // Pass photos from draft
-                onUpdatePhotos={(newPhotos) => updateDraft("photos", newPhotos)} // Pass update function
+                photos={draft.photos}
+                onUpdatePhotos={(newPhotos) => updateDraft("photos", newPhotos)} 
               />
 
               {/* Dynamic Fields from postFields.ts */}
