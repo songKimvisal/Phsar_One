@@ -10,8 +10,10 @@ interface TradeHeaderProps {
 
 export default function TradeHeader({ onSearch }: TradeHeaderProps) {
   const themeColors = useThemeColor();
-  const { t, i18n } = useTranslation();
-  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+  const { t } = useTranslation(); // Removed i18n from destructuring as activeFont is removed
+  // const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen"; // Removed
+
+  const styles = getStyles(themeColors);
 
   return (
     <View
@@ -29,7 +31,7 @@ export default function TradeHeader({ onSearch }: TradeHeaderProps) {
       >
         <ThemedTextInput
           placeholder={t("trade_screen.search_placeholder")}
-          style={[styles.searchInput, { fontFamily: activeFont }]}
+          style={styles.searchInput} // Removed fontFamily
           onChangeText={onSearch}
         />
         <TouchableOpacity
@@ -47,13 +49,13 @@ export default function TradeHeader({ onSearch }: TradeHeaderProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (themeColors: ReturnType<typeof useThemeColor>) => StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 5,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: themeColors.border, // Themed border color
   },
   searchBarContainer: {
     height: 50,

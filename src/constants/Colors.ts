@@ -33,6 +33,10 @@ export const Colors = {
     primary: redScale[500],
     border: "#CED4DA",
     primaryButtonText: "#FFFFFF",
+    warning: "#FFA500", // Add warning color (Orange)
+    info: blueScale[500], // Add info color (Blue)
+    link: blueScale[500], // Add link color (Blue)
+    error: redScale[500], // Add error color
   },
   dark: {
     navbg: "#182030",
@@ -45,6 +49,10 @@ export const Colors = {
     primary: redScale[500],
     border: "#374151",
     primaryButtonText: "#FFFFFF",
+    warning: "#FFA500", // Add warning color (Orange)
+    info: blueScale[500], // Add info color (Blue)
+    link: blueScale[500], // Add link color (Blue)
+    error: redScale[500], // Add error color
   },
   reds: redScale,
   blues: blueScale,

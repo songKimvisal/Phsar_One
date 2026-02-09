@@ -6,21 +6,21 @@ import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 
 interface PriceAndDiscountFormProps {
   themeColors: ReturnType<typeof useThemeColor>;
-  t: (key: string) => string;
-  activeFont: string;
+  t: TFunction<"translation", undefined>;
+  activeFont: string; // Add this line
 }
 
 export default function PriceAndDiscountForm({
-  themeColors,
-  t,
-  activeFont,
 }: PriceAndDiscountFormProps) {
   const { draft, updateDraft } = useSellDraft();
+  const themeColors = useThemeColor(); // Get themeColors internally
+  const { t } = useTranslation(); // Get t internally
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [currencyItems, setCurrencyItems] = useState([
     { label: "USD", value: "USD" },
@@ -53,10 +53,7 @@ export default function PriceAndDiscountForm({
             value={draft.currency}
             items={currencyItems}
             setOpen={setCurrencyOpen}
-            setValue={(callback) => {
-              const value = callback(draft.currency);
-              updateDraft("currency", value);
-            }}
+            setValue={(value) => updateDraft("currency", value)} // Simplified setValue
             setItems={setCurrencyItems}
             containerStyle={styles.currencyPickerContainer}
             style={{
@@ -66,22 +63,22 @@ export default function PriceAndDiscountForm({
             textStyle={{
               color: themeColors.text,
               fontSize: 14,
-              fontFamily: activeFont,
+              // fontFamily: activeFont, // Removed
             }}
             placeholderStyle={{
               color: themeColors.text,
               fontSize: 14,
-              fontFamily: activeFont,
+              // fontFamily: activeFont, // Removed
             }}
             listItemLabelStyle={{
               color: themeColors.text,
               fontSize: 14,
-              fontFamily: activeFont,
+              // fontFamily: activeFont, // Removed
             }}
             selectedItemLabelStyle={{
               color: themeColors.text,
               fontSize: 14,
-              fontFamily: activeFont,
+              // fontFamily: activeFont, // Removed
             }}
             dropDownContainerStyle={{
               backgroundColor: themeColors.card,
@@ -109,7 +106,7 @@ export default function PriceAndDiscountForm({
         <DynamicPhosphorIcon
           name={draft.negotiable ? "CheckSquare" : "Square"}
           size={28}
-          color={draft.negotiable ? Colors.greens[500] : themeColors.text}
+          color={draft.negotiable ? themeColors.tint : themeColors.text} // Use themeColors.tint for active negotiable
         />
         <ThemedText style={styles.negotiableText}>
           {t("sellSection.Negotiable")}
@@ -125,12 +122,13 @@ export default function PriceAndDiscountForm({
           <TouchableOpacity
             style={[
               styles.discountOptionButton,
-              draft.discountType === "none" && styles.selectedDiscountOption,
+              { borderColor: themeColors.border }, // Themed border color
+              draft.discountType === "none" && { backgroundColor: themeColors.tint }, // Themed active background
             ]}
             onPress={() => updateDraft("discountType", "none")}
           >
             <ThemedText
-              style={draft.discountType === "none" && styles.selectedText}
+              style={draft.discountType === "none" && { color: themeColors.primaryButtonText }} // Themed active text color
             >
               {t("sellSection.None")}
             </ThemedText>
@@ -138,14 +136,14 @@ export default function PriceAndDiscountForm({
           <TouchableOpacity
             style={[
               styles.discountOptionButton,
-              draft.discountType === "percentage" &&
-                styles.selectedDiscountOption,
+              { borderColor: themeColors.border }, // Themed border color
+              draft.discountType === "percentage" && { backgroundColor: themeColors.tint }, // Themed active background
             ]}
             onPress={() => updateDraft("discountType", "percentage")}
           >
             <ThemedText
               style={
-                draft.discountType === "percentage" && styles.selectedText
+                draft.discountType === "percentage" && { color: themeColors.primaryButtonText } // Themed active text color
               }
             >
               {t("sellSection.Percentage")}
@@ -154,12 +152,13 @@ export default function PriceAndDiscountForm({
           <TouchableOpacity
             style={[
               styles.discountOptionButton,
-              draft.discountType === "fixed" && styles.selectedDiscountOption,
+              { borderColor: themeColors.border }, // Themed border color
+              draft.discountType === "fixed" && { backgroundColor: themeColors.tint }, // Themed active background
             ]}
             onPress={() => updateDraft("discountType", "fixed")}
           >
             <ThemedText
-              style={draft.discountType === "fixed" && styles.selectedText}
+              style={draft.discountType === "fixed" && { color: themeColors.primaryButtonText }} // Themed active text color
             >
               {t("sellSection.FixedAmount")}
             </ThemedText>
@@ -238,12 +237,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.light.border,
+    // borderColor: Colors.light.border, // Removed
   },
-  selectedDiscountOption: {
-    backgroundColor: Colors.light.tint,
-  },
-  selectedText: {
-    color: Colors.light.background,
-  },
+  // selectedDiscountOption: { // Removed
+  //   backgroundColor: Colors.light.tint,
+  // },
+  // selectedText: { // Removed
+  //   color: Colors.light.background,
+  // },
 });

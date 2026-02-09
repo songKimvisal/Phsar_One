@@ -1,22 +1,23 @@
 import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon";
 import { ThemedText } from "@src/components/ThemedText";
 import { ThemedTextInput } from "@src/components/ThemedTextInput";
-import { Colors } from "@src/constants/Colors";
+import { Colors } from "@src/constants/Colors"; // Keep Colors import for now to reference red/blue color
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 interface SellerContactFormProps {
   themeColors: ReturnType<typeof useThemeColor>;
-  t: (key: string) => string;
+  t: TFunction<"translation", undefined>; // Add this line
 }
 
 export default function SellerContactForm({
-  themeColors,
-  t,
 }: SellerContactFormProps) {
+  const themeColors = useThemeColor(); // Get themeColors internally
+  const { t } = useTranslation(); // Get t internally
   const { draft, updateDraft } = useSellDraft();
 
   return (
@@ -96,7 +97,7 @@ export default function SellerContactForm({
                   <DynamicPhosphorIcon
                     name="Trash"
                     size={24}
-                    color={Colors.reds[500]}
+                    color={themeColors.error}
                   />
                 </TouchableOpacity>
               )}
@@ -115,7 +116,7 @@ export default function SellerContactForm({
                     <DynamicPhosphorIcon
                       name="PlusCircle"
                       size={24}
-                      color={Colors.blues[500]}
+                      color={themeColors.tint}
                     />
                   </TouchableOpacity>
                 )}

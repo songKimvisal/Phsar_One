@@ -1,9 +1,9 @@
-import { useRouter } from "expo-router";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import TradeHeader from "@src/components/trade_components/TradeHeader";
 import TradeProductCard from "@src/components/trade_components/TradeProductCard";
 import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { useRouter } from "expo-router";
 import { Plus } from "phosphor-react-native";
 import React, { useState } from "react";
 import {

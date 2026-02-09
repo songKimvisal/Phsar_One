@@ -1,30 +1,29 @@
-import { ThemedText } from "@src/components/ThemedText";
 import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon";
+import { ThemedText } from "@src/components/ThemedText";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
+import { SellDraft } from "@src/context/SellDraftContext"; // Import for type hinting
+import { TradeDraft } from "@src/context/TradeDraftContext"; // Import for type hinting
 import useThemeColor from "@src/hooks/useThemeColor";
+import { TFunction } from "i18next";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
-import { SellDraft } from "@src/context/SellDraftContext"; // Import for type hinting
-import { TradeDraft } from "@src/context/TradeDraftContext"; // Import for type hinting
 
 interface AddressDropdownsProps {
-  themeColors: ReturnType<typeof useThemeColor>;
-  t: (key: string) => string;
-  activeFont: string;
   currentDraft: SellDraft | TradeDraft; // Generic type to accept either draft
   onUpdateDraft: (key: string, value: any) => void;
+  themeColors: ReturnType<typeof useThemeColor>;
+  t: TFunction<"translation", undefined>;
+  activeFont: string; // Add this line
 }
 
 export default function AddressDropdowns({
-  themeColors,
-  t,
-  activeFont,
   currentDraft,
   onUpdateDraft,
 }: AddressDropdownsProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation(); // Use useTranslation internally
+  const themeColors = useThemeColor(); // Use useThemeColor internally
   const currentLang = i18n.language;
 
   const [selectedProvince, setSelectedProvince] = useState(
@@ -33,7 +32,9 @@ export default function AddressDropdowns({
   const [selectedDistrict, setSelectedDistrict] = useState(
     currentDraft.district || null,
   );
-  const [selectedCommune, setSelectedCommune] = useState(currentDraft.commune || null);
+  const [selectedCommune, setSelectedCommune] = useState(
+    currentDraft.commune || null,
+  );
 
   const [provinceOpen, setProvinceOpen] = useState(false);
   const [districtOpen, setDistrictOpen] = useState(false);
@@ -135,35 +136,46 @@ export default function AddressDropdowns({
           textStyle={{
             color: themeColors.text,
             fontSize: 16,
-            fontFamily: activeFont,
           }}
           placeholderStyle={{
             color: themeColors.text,
             fontSize: 16,
-            fontFamily: activeFont,
           }}
           listItemLabelStyle={{
             color: themeColors.text,
             fontSize: 16,
-            fontFamily: activeFont,
           }}
           selectedItemLabelStyle={{
             color: themeColors.text,
             fontSize: 16,
-            fontFamily: activeFont,
           }}
           dropDownContainerStyle={{
             backgroundColor: themeColors.card,
             borderColor: themeColors.border,
           }}
           ArrowUpIconComponent={({ style }) => (
-            <DynamicPhosphorIcon name="CaretUp" size={20} color={themeColors.text} style={style} />
+            <DynamicPhosphorIcon
+              name="CaretUp"
+              size={20}
+              color={themeColors.text}
+              style={style}
+            />
           )}
           ArrowDownIconComponent={({ style }) => (
-            <DynamicPhosphorIcon name="CaretDown" size={20} color={themeColors.text} style={style} />
+            <DynamicPhosphorIcon
+              name="CaretDown"
+              size={20}
+              color={themeColors.text}
+              style={style}
+            />
           )}
           TickIconComponent={({ style }) => (
-            <DynamicPhosphorIcon name="Check" size={20} color={themeColors.text} style={style} />
+            <DynamicPhosphorIcon
+              name="Check"
+              size={20}
+              color={themeColors.text}
+              style={style}
+            />
           )}
           onOpen={() => {
             setDistrictOpen(false);
@@ -179,11 +191,12 @@ export default function AddressDropdowns({
 
               // Update district items based on selected province
               const newDistricts =
-                CAMBODIA_LOCATIONS.find((p) => p.name_en === item.value)
-                  ?.subdivisions.map((d) => ({
-                    label: currentLang === "km" ? d.name_km : d.name_en,
-                    value: d.name_en,
-                  })) || [];
+                CAMBODIA_LOCATIONS.find(
+                  (p) => p.name_en === item.value,
+                )?.subdivisions.map((d) => ({
+                  label: currentLang === "km" ? d.name_km : d.name_en,
+                  value: d.name_en,
+                })) || [];
               setDistrictItems(newDistricts);
               setCommuneItems([]);
             }
@@ -225,41 +238,53 @@ export default function AddressDropdowns({
             textStyle={{
               color: themeColors.text,
               fontSize: 16,
-              fontFamily: activeFont,
             }}
             placeholderStyle={{
               color: themeColors.text,
               fontSize: 16,
-              fontFamily: activeFont,
             }}
             listItemLabelStyle={{
               color: themeColors.text,
               fontSize: 16,
-              fontFamily: activeFont,
             }}
             selectedItemLabelStyle={{
               color: themeColors.text,
               fontSize: 16,
-              fontFamily: activeFont,
             }}
-                      dropDownContainerStyle={{
-                        backgroundColor: themeColors.card,
-                        borderColor: themeColors.border,
-                      }}
-                      ArrowUpIconComponent={({ style }) => (
-                        <DynamicPhosphorIcon name="CaretUp" size={20} color={themeColors.text} style={style} />
-                      )}
-                      ArrowDownIconComponent={({ style }) => (
-                        <DynamicPhosphorIcon name="CaretDown" size={20} color={themeColors.text} style={style} />
-                      )}
-                      TickIconComponent={({ style }) => (
-                        <DynamicPhosphorIcon name="Check" size={20} color={themeColors.text} style={style} />
-                      )}
-                      onOpen={() => {
-                        setProvinceOpen(false);
-                        setCommuneOpen(false);
-                      }}
-                      onSelectItem={(item) => {              if (item && item.value) {
+            dropDownContainerStyle={{
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border,
+            }}
+            ArrowUpIconComponent={({ style }) => (
+              <DynamicPhosphorIcon
+                name="CaretUp"
+                size={20}
+                color={themeColors.text}
+                style={style}
+              />
+            )}
+            ArrowDownIconComponent={({ style }) => (
+              <DynamicPhosphorIcon
+                name="CaretDown"
+                size={20}
+                color={themeColors.text}
+                style={style}
+              />
+            )}
+            TickIconComponent={({ style }) => (
+              <DynamicPhosphorIcon
+                name="Check"
+                size={20}
+                color={themeColors.text}
+                style={style}
+              />
+            )}
+            onOpen={() => {
+              setProvinceOpen(false);
+              setCommuneOpen(false);
+            }}
+            onSelectItem={(item) => {
+              if (item && item.value) {
                 onUpdateDraft("district", item.value);
                 setSelectedCommune(null);
                 onUpdateDraft("commune", "");
@@ -313,41 +338,53 @@ export default function AddressDropdowns({
             textStyle={{
               color: themeColors.text,
               fontSize: 16,
-              fontFamily: activeFont,
             }}
             placeholderStyle={{
               color: themeColors.text,
               fontSize: 16,
-              fontFamily: activeFont,
             }}
             listItemLabelStyle={{
               color: themeColors.text,
               fontSize: 16,
-              fontFamily: activeFont,
             }}
             selectedItemLabelStyle={{
               color: themeColors.text,
               fontSize: 16,
-              fontFamily: activeFont,
             }}
-                      dropDownContainerStyle={{
-                        backgroundColor: themeColors.card,
-                        borderColor: themeColors.border,
-                      }}
-                      ArrowUpIconComponent={({ style }) => (
-                        <DynamicPhosphorIcon name="CaretUp" size={20} color={themeColors.text} style={style} />
-                      )}
-                      ArrowDownIconComponent={({ style }) => (
-                        <DynamicPhosphorIcon name="CaretDown" size={20} color={themeColors.text} style={style} />
-                      )}
-                      TickIconComponent={({ style }) => (
-                        <DynamicPhosphorIcon name="Check" size={20} color={themeColors.text} style={style} />
-                      )}
-                      onOpen={() => {
-                        setProvinceOpen(false);
-                        setDistrictOpen(false);
-                      }}
-                      onSelectItem={(item) => {              if (item && item.value) {
+            dropDownContainerStyle={{
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border,
+            }}
+            ArrowUpIconComponent={({ style }) => (
+              <DynamicPhosphorIcon
+                name="CaretUp"
+                size={20}
+                color={themeColors.text}
+                style={style}
+              />
+            )}
+            ArrowDownIconComponent={({ style }) => (
+              <DynamicPhosphorIcon
+                name="CaretDown"
+                size={20}
+                color={themeColors.text}
+                style={style}
+              />
+            )}
+            TickIconComponent={({ style }) => (
+              <DynamicPhosphorIcon
+                name="Check"
+                size={20}
+                color={themeColors.text}
+                style={style}
+              />
+            )}
+            onOpen={() => {
+              setProvinceOpen(false);
+              setDistrictOpen(false);
+            }}
+            onSelectItem={(item) => {
+              if (item && item.value) {
                 onUpdateDraft("commune", item.value);
               }
             }}

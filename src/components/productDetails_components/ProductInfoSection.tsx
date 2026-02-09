@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@src/components/ThemedText";
-import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { formatPrice, Product } from "@src/types/productTypes";
+import { TFunction } from "i18next";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 
 interface ProductInfoSectionProps {
@@ -11,25 +12,24 @@ interface ProductInfoSectionProps {
   discountedPrice?: string;
   timeAgo: string;
   activeFont: string;
-  t: (key: string) => string; // Translation function
+  t: TFunction<"translation", undefined>;
 }
 
 const ProductInfoSection: React.FC<ProductInfoSectionProps> = ({
   product,
   discountedPrice,
   timeAgo,
-  activeFont,
-  t,
 }) => {
   const themeColors = useThemeColor();
+  const { t } = useTranslation();
+
+  const styles = getStyles(themeColors);
 
   return (
     <View style={styles.contentContainer}>
       {/* Title and Views */}
       <View style={styles.titleRow}>
-        <ThemedText style={[styles.productName, { fontFamily: activeFont }]}>
-          {product.title}
-        </ThemedText>
+        <ThemedText style={styles.productName}>{product.title}</ThemedText>
         <View style={styles.viewsContainer}>
           <Ionicons name="eye-outline" size={16} color={themeColors.text} />
           <ThemedText style={styles.viewsText}>
@@ -79,74 +79,75 @@ const ProductInfoSection: React.FC<ProductInfoSectionProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  contentContainer: {
-    padding: 16,
-  },
-  titleRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 4,
-  },
-  productName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    flex: 1,
-  },
-  viewsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  viewsText: {
-    fontSize: 14,
-    opacity: 0.6,
-  },
-  timeAgo: {
-    fontSize: 13,
-    opacity: 0.5,
-    marginBottom: 12,
-  },
-  priceContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
-    gap: 8,
-    marginBottom: 12,
-  },
-  price: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: Colors.greens[600],
-  },
-  originalPrice: {
-    fontSize: 20,
-    fontWeight: "500",
-    textDecorationLine: "line-through",
-  },
-  discountBadge: {
-    backgroundColor: Colors.reds[500],
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  discountText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-  negotiableBadge: {
-    backgroundColor: Colors.blues[100],
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  negotiableText: {
-    color: Colors.greens[500],
-    fontSize: 13,
-    fontWeight: "600",
-  },
-});
+const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
+  StyleSheet.create({
+    contentContainer: {
+      padding: 16,
+    },
+    titleRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: 4,
+    },
+    productName: {
+      fontSize: 24,
+      fontWeight: "bold",
+      flex: 1,
+    },
+    viewsContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+    },
+    viewsText: {
+      fontSize: 14,
+      opacity: 0.6,
+    },
+    timeAgo: {
+      fontSize: 13,
+      opacity: 0.5,
+      marginBottom: 12,
+    },
+    priceContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: 8,
+      marginBottom: 12,
+    },
+    price: {
+      fontSize: 28,
+      fontWeight: "bold",
+      color: themeColors.tint,
+    },
+    originalPrice: {
+      fontSize: 20,
+      fontWeight: "500",
+      textDecorationLine: "line-through",
+    },
+    discountBadge: {
+      backgroundColor: themeColors.error,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 6,
+    },
+    discountText: {
+      color: themeColors.primaryButtonText,
+      fontSize: 12,
+      fontWeight: "bold",
+    },
+    negotiableBadge: {
+      backgroundColor: themeColors.border + "20",
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 6,
+    },
+    negotiableText: {
+      color: themeColors.text,
+      fontSize: 13,
+      fontWeight: "600",
+    },
+  });
 
 export default ProductInfoSection;

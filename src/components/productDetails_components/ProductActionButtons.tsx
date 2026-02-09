@@ -17,6 +17,8 @@ const ProductActionButtons: React.FC<ProductActionButtonsProps> = ({
   const themeColors = useThemeColor();
   const { t } = useTranslation();
 
+  const styles = getStyles(themeColors);
+
   return (
     <View style={styles.actionButtons}>
       <TouchableOpacity style={styles.callButton} onPress={onCallSeller}>
@@ -42,43 +44,45 @@ const ProductActionButtons: React.FC<ProductActionButtonsProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  actionButtons: {
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 24,
-    paddingHorizontal: 16,
-  },
-  callButton: {
-    flex: 1,
-    backgroundColor: "#E74C3C",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 14,
-    borderRadius: 8,
-    gap: 8,
-  },
-  callButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  chatButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 14,
-    borderRadius: 8,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.1)",
-  },
-  chatButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-});
+const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
+  StyleSheet.create({
+    actionButtons: {
+      flexDirection: "row",
+      gap: 12,
+      marginBottom: 24,
+      paddingHorizontal: 16,
+    },
+    callButton: {
+      flex: 1,
+      backgroundColor: themeColors.tint,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 14,
+      borderRadius: 8,
+      gap: 8,
+    },
+    callButtonText: {
+      color: "white",
+      fontSize: 16,
+      fontWeight: "600",
+    },
+    chatButton: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 14,
+      borderRadius: 8,
+      gap: 8,
+      borderWidth: 1,
+      borderColor: themeColors.border,
+    },
+    chatButtonText: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: themeColors.text,
+    },
+  });
 
 export default ProductActionButtons;

@@ -29,8 +29,10 @@ interface TradeItem {
 export default function AddTradeProductScreen() {
   const router = useRouter();
   const themeColors = useThemeColor();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { draft, updateDraft, resetDraft } = useTradeDraft();
+
+  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen"; // Define activeFont
 
   // Product Information
   const [title, setTitle] = useState("");
@@ -49,7 +51,7 @@ export default function AddTradeProductScreen() {
   // Location state
   const [isLocationConfirmed, setIsLocationConfirmed] = useState(false);
 
-  const activeFont = "System"; // Replace with your font logic
+
 
   const conditionOptions = [
     { label: t("condition.brand_new"), value: "Brand New" },
@@ -206,9 +208,9 @@ export default function AddTradeProductScreen() {
         >
           {/* Photo Upload Section */}
           <PhotoUploadSection
-            themeColors={themeColors}
             photos={draft.photos}
             onUpdatePhotos={(newPhotos) => updateDraft("photos", newPhotos)}
+            themeColors={themeColors}
           />
 
           {/* Product Information Card */}
@@ -356,32 +358,35 @@ export default function AddTradeProductScreen() {
             {/* Current Looking For Items */}
             {lookingForItems.length > 0 && (
               <View style={styles.lookingForList}>
-                {lookingForItems.map((item, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      styles.lookingForItem,
-                      { backgroundColor: themeColors.background },
-                    ]}
-                  >
-                    <View style={styles.lookingForItemContent}>
-                      <ThemedText style={styles.lookingForItemName}>
-                        {item.name}
-                      </ThemedText>
-                      {item.description ? (
-                        <ThemedText style={styles.lookingForItemDesc}>
-                          {item.description}
-                        </ThemedText>
-                      ) : null}
-                    </View>
-                    <TouchableOpacity
-                      onPress={() => handleRemoveLookingForItem(index)}
-                      style={styles.removeItemButton}
+                {lookingForItems.map((item, index) => {
+                  console.log('LookingFor Item - name:', item.name, 'description:', item.description);
+                  return (
+                    <View
+                      key={index}
+                      style={[
+                        styles.lookingForItem,
+                        { backgroundColor: themeColors.background },
+                      ]}
                     >
-                      <X size={18} color={themeColors.text} />
-                    </TouchableOpacity>
-                  </View>
-                ))}
+                      <View style={styles.lookingForItemContent}>
+                        <ThemedText style={styles.lookingForItemName}>
+                          {String(item.name)} // Defensive String()
+                        </ThemedText>
+                        {item.description ? (
+                          <ThemedText style={styles.lookingForItemDesc}>
+                            {String(item.description)} // Defensive String()
+                          </ThemedText>
+                        ) : null}
+                      </View>
+                      <TouchableOpacity
+                        onPress={() => handleRemoveLookingForItem(index)}
+                        style={styles.removeItemButton}
+                      >
+                        <X size={18} color={themeColors.text} />
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
               </View>
             )}
 
@@ -455,19 +460,19 @@ export default function AddTradeProductScreen() {
             </ThemedText>
 
             <AddressDropdowns
+              currentDraft={draft}
+              onUpdateDraft={(key, value) => updateDraft(key as any, value)}
               themeColors={themeColors}
               t={t}
               activeFont={activeFont}
-              currentDraft={draft}
-              onUpdateDraft={(key, value) => updateDraft(key as any, value)}
             />
 
             <LocationPickerMap
-              themeColors={themeColors}
-              t={t}
               onConfirmLocation={handleConfirmLocation}
               currentDraft={draft}
               onUpdateDraft={(key, value) => updateDraft(key as any, value)}
+              themeColors={themeColors}
+              t={t}
             />
           </View>
 

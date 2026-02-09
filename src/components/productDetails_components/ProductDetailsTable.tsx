@@ -1,4 +1,5 @@
 import { ThemedText } from "@src/components/ThemedText";
+import useThemeColor from "@src/hooks/useThemeColor";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
@@ -10,58 +11,72 @@ interface ProductDetailsTableProps {
   activeFont: string;
 }
 
+const renderDetailValue = (value: any) => {
+  if (value === null || value === undefined) {
+    return "";
+  }
+  if (typeof value === "object") {
+    try {
+      return JSON.stringify(value);
+    } catch (e) {
+      return "[Complex Object]";
+    }
+  }
+  return String(value);
+};
+
 const ProductDetailsTable: React.FC<ProductDetailsTableProps> = ({
   mainCategory,
   subCategory,
   productDetails,
-  activeFont,
 }) => {
   const { t } = useTranslation();
+  const themeColors = useThemeColor();
 
   return (
     <View style={styles.section}>
-      <ThemedText style={[styles.sectionTitle, { fontFamily: activeFont }]}>
+      <ThemedText style={styles.sectionTitle}>
         {t("productDetail.details")}
       </ThemedText>
 
-      <View style={styles.descriptionRow}>
-        <ThemedText
-          style={[styles.descriptionLabel, { fontFamily: activeFont }]}
-        >
+      <View
+        style={[
+          styles.descriptionRow,
+          { borderBottomColor: themeColors.border },
+        ]}
+      >
+        <ThemedText style={styles.descriptionLabel}>
           {t("productDetail.mainCategory")}
         </ThemedText>
-        <ThemedText
-          style={[styles.descriptionValue, { fontFamily: activeFont }]}
-        >
-          {mainCategory}
-        </ThemedText>
+        <ThemedText style={styles.descriptionValue}>{mainCategory}</ThemedText>
       </View>
 
-      <View style={styles.descriptionRow}>
-        <ThemedText
-          style={[styles.descriptionLabel, { fontFamily: activeFont }]}
-        >
+      <View
+        style={[
+          styles.descriptionRow,
+          { borderBottomColor: themeColors.border },
+        ]}
+      >
+        <ThemedText style={styles.descriptionLabel}>
           {t("productDetail.subCategory")}
         </ThemedText>
-        <ThemedText
-          style={[styles.descriptionValue, { fontFamily: activeFont }]}
-        >
-          {subCategory}
-        </ThemedText>
+        <ThemedText style={styles.descriptionValue}>{subCategory}</ThemedText>
       </View>
 
       {/* Dynamic Product Details from POST_FIELDS_MAP */}
       {Object.entries(productDetails).map(([key, value]) => (
-        <View key={key} style={styles.descriptionRow}>
-          <ThemedText
-            style={[styles.descriptionLabel, { fontFamily: activeFont }]}
-          >
-            {t("fields." + key)}
+        <View
+          key={key}
+          style={[
+            styles.descriptionRow,
+            { borderBottomColor: themeColors.border },
+          ]}
+        >
+          <ThemedText style={styles.descriptionLabel}>
+            {String(t("fields." + String(key)))}
           </ThemedText>
-          <ThemedText
-            style={[styles.descriptionValue, { fontFamily: activeFont }]}
-          >
-            {value}
+          <ThemedText style={styles.descriptionValue}>
+            {renderDetailValue(value)}
           </ThemedText>
         </View>
       ))}
@@ -84,7 +99,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(0,0,0,0.05)",
   },
   descriptionLabel: {
     fontSize: 15,
