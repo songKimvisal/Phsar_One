@@ -1,13 +1,16 @@
 import { ThemedText } from "@/src/components/ThemedText";
 import { Colors } from "@/src/constants/Colors";
 import useThemeColor from "@/src/hooks/useThemeColor";
-import { Product, formatPrice, formatTimeAgo } from "@/src/types/productTypes";
+import { Product } from "@/src/types/productTypes"; 
+import { formatPrice, formatTimeAgo } from "@/src/utils/productUtils"; 
 import { Ionicons } from "@expo/vector-icons";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import { MapPin } from "phosphor-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { toCamelCase } from "@/src/utils/stringUtils"; 
+import { getLocalizedLocationName } from "@/src/utils/locationUtils"; 
 
 interface ProductCardProps {
   product: Product;
@@ -17,60 +20,11 @@ interface ProductCardProps {
 export default function ProductCard({ product, onPress }: ProductCardProps) {
   const themeColors = useThemeColor();
   const { t, i18n } = useTranslation();
-  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
+
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const toCamelCase = (str: string) => {
-    if (!str) return "";
-    const parts = str.split(" ");
-    return (
-      parts[0].toLowerCase() +
-      parts
-        .slice(1)
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join("")
-    );
-  };
-
-  const getLocalizedLocationName = (
-    englishName: string | null | undefined,
-    currentLanguage: string,
-    level: "province" | "district" | "commune",
-    provinceNameEn?: string | null,
-    districtNameEn?: string | null,
-  ): string | null => {
-    if (!englishName) return null;
-
-    const findLocalizedName = (
-      locationArray: any[] | undefined,
-      targetEnName: string,
-    ) => {
-      if (!locationArray) return null;
-      const found = locationArray.find((item) => item.name_en === targetEnName);
-      return found
-        ? currentLanguage === "kh"
-          ? found.name_km
-          : found.name_en
-        : null;
-    };
-
-    if (level === "province") {
-      return findLocalizedName(CAMBODIA_LOCATIONS, englishName);
-    } else if (level === "district" && provinceNameEn) {
-      const province = CAMBODIA_LOCATIONS.find(
-        (p) => p.name_en === provinceNameEn,
-      );
-      return findLocalizedName(province?.subdivisions, englishName);
-    } else if (level === "commune" && provinceNameEn && districtNameEn) {
-      const province = CAMBODIA_LOCATIONS.find(
-        (p) => p.name_en === provinceNameEn,
-      );
-      const district = province?.subdivisions?.find(
-        (d) => d.name_en === districtNameEn,
-      );
-      return findLocalizedName(district?.subdivisions, englishName);
-    }
-    return null;
+  const handleFavoritePress = () => {
+    setIsFavorite((prev) => !prev);
   };
 
   const timeAgo = formatTimeAgo(product.createdAt, t);
@@ -93,21 +47,17 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
     i18n.language,
     "district",
     product.address.province,
+    null,
   );
   const localizedProvince = getLocalizedLocationName(
     product.address.province,
     i18n.language,
     "province",
+    null, 
+    null,
   );
 
-  const fullAddress = localizedProvince || "N/A";
-
-  const handleFavoritePress = (e: any) => {
-    e.stopPropagation();
-    setIsFavorite(!isFavorite);
-    console.log("Toggle favorite for product:", product.id);
-  };
-
+  const fullAddress = [localizedCommune, localizedDistrict, localizedProvince].filter(Boolean).join(", ") || "N/A";
   return (
     <TouchableOpacity
       style={[
@@ -126,7 +76,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 
         {/* Discount Badge */}
         {hasDiscount && discountPercentage && (
-          <View style={styles.discountBadge}>
+          <View style={[styles.discountBadge, {backgroundColor: themeColors.tint}]}>
             <ThemedText style={styles.discountText}>
               -{discountPercentage}%
             </ThemedText>
@@ -150,7 +100,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
       <View style={styles.productInfo}>
         {/* Title */}
         <ThemedText
-          style={[styles.productName, { fontFamily: activeFont }]}
+          style={styles.productName}
           numberOfLines={1}
         >
           {product.title}
@@ -162,7 +112,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
             <ThemedText
               style={[
                 styles.productMeta,
-                { opacity: 0.6, fontFamily: activeFont },
+                { opacity: 0.6 },
               ]}
             >
               {timeAgo}
@@ -174,7 +124,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
               <ThemedText
                 style={[
                   styles.productMeta,
-                  { opacity: 0.6, fontFamily: activeFont },
+                  { opacity: 0.6 },
                 ]}
               >
                 {" "}
@@ -189,7 +139,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
                 <ThemedText
                   style={[
                     styles.productMeta,
-                    { opacity: 0.6, fontFamily: activeFont },
+                    { opacity: 0.6 },
                   ]}
                   numberOfLines={1}
                 >
@@ -205,7 +155,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
           <ThemedText
             style={[
               styles.productMeta,
-              { opacity: 0.6, fontFamily: activeFont },
+              { opacity: 0.6 },
             ]}
           >
             {[
@@ -227,17 +177,30 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
             style={[
               styles.productPrice,
               {
-                color: Colors.greens[600],
-                fontFamily:
-                  i18n.language === "kh" ? "khmer-bold" : "Oxygen-Bold",
+                color: themeColors.tint, 
+                fontWeight: "bold",
               },
             ]}
           >
             {formatPrice(product.price, product.currency)}
           </ThemedText>
           {product.negotiable && (
-            <View style={styles.negotiableBadge}>
-              <ThemedText style={styles.negotiableText}>
+            <View
+              style={[
+                styles.negotiableBadge,
+                {
+                  backgroundColor: themeColors.tint + "20", 
+                },
+              ]}
+            >
+              <ThemedText
+                style={[
+                  styles.negotiableText,
+                  {
+                    color: themeColors.tint, 
+                  },
+                ]}
+              >
                 {t("productDetail.negotiable")}
               </ThemedText>
             </View>
@@ -329,7 +292,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 2,
-    flexWrap: "wrap", // Allow content to wrap if too long
+    flexWrap: "wrap", 
   },
   metaItemContainer: {
     flexDirection: "row",

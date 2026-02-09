@@ -1,4 +1,6 @@
 import { POST_FIELDS_MAP } from "@src/constants/postFields";
+import { Product, Address, Location, SellerContact, ProductDraft } from "@src/types/productTypes"; // Added ProductDraft
+import i18n from "../i18n"; // Added i18n import
 
 export const getProductFields = (subCategory: string) => {
   return POST_FIELDS_MAP[subCategory] || POST_FIELDS_MAP["other"];
@@ -21,68 +23,160 @@ export const formatProductDetails = (
   return formattedDetails;
 };
 
-export interface Product {
-  id: string;
-  name: string;
-  images: string[];
-  views: number;
-  price: number;
-  location: string;
-  mainCategory: string;
-  subCategory: string;
-  description?: string;
-  [key: string]: any;
-  seller: {
-    id: string;
-    name: string;
-    avatar: string;
-    verified: boolean;
-    trusted: boolean;
-  };
-  createdAt: string;
-}
-
 export const generateMockProduct = (
   id: string,
   mainCategory: string,
   subCategory: string,
 ): Product => {
+  const mockPrice = Math.floor(Math.random() * 100000) + 1000;
+  // Note: For address and location, these are simplified mocks.
+  // In a real app, you might parse `mockLocationString` or use a geocoding service.
+  const mockAddress: Address = {
+    province: "Phnom Penh",
+    district: "Sen Sok",
+    commune: "Phnom Penh Thmey",
+  };
+  const mockGeoLocation: Location = {
+    latitude: 11.562108, // Example coordinate for Phnom Penh
+    longitude: 104.891678,
+  };
+  const mockSellerContact: SellerContact = {
+    sellerName: "Sarah Chen",
+    phones: ["+85512345678"],
+    email: "sarah.chen@example.com",
+  };
+
   const baseProduct: Product = {
     id,
-    name: `Sample ${subCategory}`,
-    images: [
+    title: `Sample ${subCategory}`,
+    description: `This is a great ${subCategory} in excellent condition.`,
+    mainCategory,
+    subCategory,
+    photos: [
       "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800",
       "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=800",
       "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800",
     ],
+    price: mockPrice.toString(),
+    currency: "USD",
+    negotiable: true,
+    discountType: "none",
+    discountValue: "0",
+    address: mockAddress,
+    location: mockGeoLocation,
+    details: {},
+    contact: mockSellerContact,
     views: Math.floor(Math.random() * 1000),
-    price: Math.floor(Math.random() * 100000) + 1000,
-    location: "Phum Bayab, Sangkat Phnom Penh Thmey, Khan Sen Sok",
-    mainCategory,
-    subCategory,
-    description: `This is a great ${subCategory} in excellent condition.`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: "active",
     seller: {
       id: "seller1",
       name: "Sarah Chen",
-      avatar:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
       verified: true,
       trusted: true,
     },
-    createdAt: new Date().toISOString(),
   };
 
   const fields = getProductFields(subCategory);
 
   fields.forEach((field) => {
     if (field.type === "select" && field.options) {
-      baseProduct[field.key] = field.options[0];
+      baseProduct.details[field.key] = field.options[0];
     } else if (field.type === "number") {
-      baseProduct[field.key] = Math.floor(Math.random() * 100);
+      baseProduct.details[field.key] = (Math.floor(Math.random() * 100)).toString();
     } else {
-      baseProduct[field.key] = `Sample ${field.label}`;
+      baseProduct.details[field.key] = `Sample ${field.label}`;
     }
   });
 
   return baseProduct;
+};
+
+// Moved from src/types/productTypes.ts
+export const draftToProduct = (draft: ProductDraft, id: string): Product => {
+  return {
+    id,
+    title: draft.title,
+    description: draft.description,
+    mainCategory: draft.mainCategory,
+    subCategory: draft.subCategory,
+    photos: draft.photos,
+    price: draft.price,
+    currency: draft.currency,
+    negotiable: draft.negotiable,
+    discountType: draft.discountType,
+    discountValue: draft.discountValue,
+    address: {
+      province: draft.province,
+      district: draft.district,
+      commune: draft.commune,
+    },
+    location: draft.location,
+    details: draft.details,
+    contact: draft.contact,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: "active",
+  };
+};
+
+export const formatAddress = (address: Address): string => {
+  const parts = [address.province, address.district, address.commune];
+  return parts.filter(Boolean).join(", ");
+};
+
+export const calculateDiscountPrice = (product: Product): number | null => {
+  const basePrice = parseFloat(product.price);
+  if (isNaN(basePrice) || product.discountType == "none") {
+    return null;
+  }
+  if (product.discountType === "percentage") {
+    const percentage = parseFloat(product.discountValue);
+    if (!isNaN(percentage)) {
+      return basePrice - (basePrice * percentage) / 100;
+    }
+  } else if (product.discountType === "fixed") {
+    const discount = parseFloat(product.discountValue);
+    if (!isNaN(discount)) {
+      return basePrice - discount;
+    }
+  }
+
+  return null;
+};
+
+export const formatPrice = (
+  price: string | number,
+  currency: "USD" | "KHR",
+): string => {
+  const numPrice = typeof price == "string" ? parseFloat(price) : price;
+  if (isNaN(numPrice)) return "";
+  if (currency == "USD") {
+    return `$${numPrice.toLocaleString()}`;
+  } else {
+    return `៛${numPrice.toLocaleString()}`;
+  }
+};
+
+export const formatTimeAgo = (dateString: string, t: unknown): string => {
+  const now = new Date();
+  const past = new Date(dateString);
+  const diffMs = now.getTime() - past.getTime();
+
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 60) return i18n.t("time_ago.minutes", { count: diffMins });
+
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return i18n.t("time_ago.hours", { count: diffHours });
+
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return i18n.t("time_ago.days", { count: diffDays });
+
+  const diffWeeks = Math.floor(diffDays / 7);
+  if (diffWeeks < 4) return i18n.t("time_ago.weeks", { count: diffWeeks });
+
+  const diffMonths = Math.floor(diffDays / 30);
+  return i18n.t("time_ago.months", { count: diffMonths });
 };

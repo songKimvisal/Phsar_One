@@ -10,7 +10,6 @@ interface ProductDescriptionProps {
 
 const ProductDescription: React.FC<ProductDescriptionProps> = ({
   description,
-  activeFont,
 }) => {
   const { t } = useTranslation();
 
@@ -20,12 +19,10 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({
 
   return (
     <View style={styles.section}>
-      <ThemedText style={[styles.sectionTitle, { fontFamily: activeFont }]}>
+      <ThemedText style={styles.sectionTitle}>
         {t("productDetail.description")}
       </ThemedText>
-      <ThemedText style={[styles.descriptionText, { fontFamily: activeFont }]}>
-        {description}
-      </ThemedText>
+      <ThemedText style={styles.descriptionText}>{description}</ThemedText>
     </View>
   );
 };

@@ -5,16 +5,11 @@ import { useSellDraft } from "@src/context/SellDraftContext";
 import { useTheme } from "@src/context/ThemeContext";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import {
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SellScreen() {
-  const { colors } = useTheme(); // Use 'colors' to match index.tsx and subcategory.tsx
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { updateDraft, resetDraft } = useSellDraft();
@@ -50,10 +45,10 @@ export default function SellScreen() {
               onPress={() => handleCategoryPress(item.id)}
             >
               <DynamicPhosphorIcon
-                name={item.icon} // Use the icon name from CATEGORY_MAP
+                name={item.icon}
                 size={32}
-                color={colors.text} // Use theme color for the icon
-                weight="duotone" // Example weight, can be customized
+                color={colors.text}
+                weight="duotone"
               />
               <ThemedText style={styles.cardText}>
                 {t(`categories.${item.nameKey}`)}
@@ -77,8 +72,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
-    flexDirection: "column", // Arrange icon and text vertically
-    gap: 8, // Add some space between icon and text
+    flexDirection: "column",
+    gap: 8,
   },
   cardText: { fontSize: 14, fontWeight: "500", textAlign: "center" },
 });
