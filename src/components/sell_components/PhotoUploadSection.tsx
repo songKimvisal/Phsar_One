@@ -15,19 +15,19 @@ import {
 } from "react-native";
 
 interface PhotoUploadSectionProps {
-  themeColors: ReturnType<typeof useThemeColor>;
   photos: string[];
   onUpdatePhotos: (newPhotos: string[]) => void;
+  themeColors: ReturnType<typeof useThemeColor>;
 }
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 export default function PhotoUploadSection({
-  themeColors,
   photos,
   onUpdatePhotos,
 }: PhotoUploadSectionProps) {
   const { t } = useTranslation();
+  const themeColors = useThemeColor(); 
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
@@ -67,129 +67,129 @@ export default function PhotoUploadSection({
     }
   };
 
-  // Removed goToPrevious and goToNext functions
+
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.card }]}>
       <View style={styles.headerContainer}>
-        <ThemedText style={styles.titleText}>
-          {t("sellSection.Add_Photos")}
-        </ThemedText>
-        <View style={styles.photoCountBadge}>
-          <ThemedText style={styles.photoCountText}>
-            {photos.length}
+          <ThemedText style={styles.titleText}>
+            {t("sellSection.Add_Photos")}
           </ThemedText>
+          <View style={[styles.photoCountBadge, { backgroundColor: themeColors.tint + "1A" }]}>
+            <ThemedText style={[styles.photoCountText, { color: themeColors.tint }]}>
+              {String(photos.length)}
+            </ThemedText>
+          </View>
         </View>
-      </View>
-
-      <View style={styles.photosGridContainer}>
-        {photos.map((uri, index) => (
-          <View key={index} style={styles.imageWrapper}>
-            <TouchableOpacity
-              onPress={() => openPreview(index)}
-              activeOpacity={0.8}
-            >
-              <Image source={{ uri }} style={styles.imagePreview} />
-              <View style={styles.imageOverlay} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.clearButton}
-              onPress={() => {
-                const newPhotos = [...photos];
-                newPhotos.splice(index, 1);
-                onUpdatePhotos(newPhotos);
-              }}
-              activeOpacity={0.7}
-            >
-              <ThemedText style={styles.clearButtonText}>×</ThemedText>
-            </TouchableOpacity>
-          </View>
-        ))}
-
-        <TouchableOpacity
-          onPress={pickImage}
-          style={[
-            styles.addPhotoButton,
-            { borderColor: themeColors.text + "30" },
-          ]}
-          activeOpacity={0.7}
-        >
-          <View style={styles.addPhotoContent}>
-            <ThemedText
-              style={[styles.addPhotoIcon, { color: themeColors.text + "60" }]}
-            >
-              +
-            </ThemedText>
-            <ThemedText
-              style={[styles.addPhotoText, { color: themeColors.text + "60" }]}
-            >
-              {t("sellSection.Add_Photos")}
-            </ThemedText>
-          </View>
-        </TouchableOpacity>
-      </View>
-
-      {/* Image Preview Modal */}
-      <Modal
-        visible={previewVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setPreviewVisible(false)}
-      >
-        <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <ThemedText style={styles.modalCounter}>
-              {selectedImageIndex + 1} / {photos.length}
-            </ThemedText>
-            <TouchableOpacity
-              onPress={() => setPreviewVisible(false)}
-              style={styles.modalCloseButton}
-            >
-              <ThemedText style={styles.modalCloseText}>✕</ThemedText>
-            </TouchableOpacity>
-          </View>
-
-          <FlatList
-            ref={flatListRef}
-            data={photos}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(_, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.modalImageWrapper}>
-                <Image
-                  source={{ uri: item }}
-                  style={styles.modalImage}
-                  resizeMode="contain"
-                />
-              </View>
-            )}
-            onMomentumScrollEnd={(event) => {
-              const newIndex = Math.floor(
-                event.nativeEvent.contentOffset.x / SCREEN_WIDTH,
-              );
-              setSelectedImageIndex(newIndex);
-            }}
-            initialScrollIndex={selectedImageIndex}
-            getItemLayout={(_, index) => ({
-              length: SCREEN_WIDTH,
-              offset: SCREEN_WIDTH * index,
-              index,
-            })}
-          />
-
+        <View style={styles.photosGridContainer}>
+          {photos.map((uri, index) => (
+            <View key={index} style={styles.imageWrapper}>
+              <TouchableOpacity
+                onPress={() => openPreview(index)}
+                activeOpacity={0.8}
+                accessibilityLabel={t("sellSection.View_Photo")}
+              >
+                <Image source={{ uri }} style={styles.imagePreview} />
+                <View style={styles.imageOverlay} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.clearButton, { backgroundColor: themeColors.text + "BF" }]}
+                onPress={() => {
+                  const newPhotos = [...photos];
+                  newPhotos.splice(index, 1);
+                  onUpdatePhotos(newPhotos);
+                }}
+                activeOpacity={0.7}
+                accessibilityLabel={t("sellSection.Delete_Photo")}
+              >
+                <ThemedText style={[styles.clearButtonText, { color: themeColors.primaryButtonText }]}>×</ThemedText>
+              </TouchableOpacity>
+            </View>
+          ))}
           <TouchableOpacity
-            onPress={deleteCurrentImage}
-            style={styles.modalDeleteButton}
+            onPress={pickImage}
+            style={[
+              styles.addPhotoButton,
+              { borderColor: themeColors.text + "30", backgroundColor: themeColors.card + "05" },
+            ]}
+            activeOpacity={0.7}
+            accessibilityLabel={t("sellSection.Add_Photos")}
           >
-            <ThemedText style={styles.modalDeleteText}>
-              {t("sellSection.Delete")}
-            </ThemedText>
+            <View style={styles.addPhotoContent}>
+              <ThemedText
+                style={[styles.addPhotoIcon, { color: themeColors.text + "60" }]}
+              >
+                +
+              </ThemedText>
+              <ThemedText
+                style={[styles.addPhotoText, { color: themeColors.text + "60" }]}
+              >
+                {t("sellSection.Add_Photos")}
+              </ThemedText>
+            </View>
           </TouchableOpacity>
-        </SafeAreaView>
-      </Modal>
-    </View>
+        </View>
+        {/* Image Preview Modal */}
+        <Modal
+          visible={previewVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setPreviewVisible(false)}
+        >
+          <SafeAreaView style={[styles.modalContainer, { backgroundColor: themeColors.background + "F2" }]}>
+            <View style={styles.modalHeader}>
+              <ThemedText style={[styles.modalCounter, { color: themeColors.primaryButtonText }]}>
+                {selectedImageIndex + 1} / {photos.length}
+              </ThemedText>
+              <TouchableOpacity
+                onPress={() => setPreviewVisible(false)}
+                style={styles.modalCloseButton}
+                accessibilityLabel={t("common.Close")}
+              >
+                <ThemedText style={[styles.modalCloseText, { color: themeColors.primaryButtonText }]}>✕</ThemedText>
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              ref={flatListRef}
+              data={photos}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(_, index) => index.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.modalImageWrapper}>
+                  <Image
+                    source={{ uri: item }}
+                    style={styles.modalImage}
+                    resizeMode="contain"
+                  />
+                </View>
+              )}
+              onMomentumScrollEnd={(event) => {
+                const newIndex = Math.floor(
+                  event.nativeEvent.contentOffset.x / SCREEN_WIDTH,
+                );
+                setSelectedImageIndex(newIndex);
+              }}
+              initialScrollIndex={selectedImageIndex}
+              getItemLayout={(_, index) => ({
+                length: SCREEN_WIDTH,
+                offset: SCREEN_WIDTH * index,
+                index,
+              })}
+            />
+            <TouchableOpacity
+              onPress={deleteCurrentImage}
+              style={[styles.modalDeleteButton, { backgroundColor: themeColors.error + "E5" }]}
+              accessibilityLabel={t("sellSection.Delete")}
+            >
+              <ThemedText style={[styles.modalDeleteText, { color: themeColors.primaryButtonText }]}>
+                {t("sellSection.Delete")}
+              </ThemedText>
+            </TouchableOpacity>
+          </SafeAreaView>
+        </Modal>
+      </View>
   );
 }
 
