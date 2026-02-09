@@ -1,10 +1,11 @@
 import { ThemedText } from "@src/components/ThemedText";
-import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import * as Location from "expo-location";
 import React, { useEffect, useRef, useState } from "react";
 import { Linking, StyleSheet, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import { SellDraft } from "@src/context/SellDraftContext"; // Import for type hinting
+import { TradeDraft } from "@src/context/TradeDraftContext"; // Import for type hinting
 
 const DEFAULT_REGION = {
   latitude: 11.5564,
@@ -20,6 +21,8 @@ interface LocationPickerMapProps {
     latitude: number;
     longitude: number;
   }) => void;
+  currentDraft: SellDraft | TradeDraft; // Generic type to accept either draft
+  onUpdateDraft: (key: string, value: any) => void;
 }
 
 interface CustomButtonProps {
@@ -34,18 +37,19 @@ export default function LocationPickerMap({
   themeColors,
   t,
   onConfirmLocation,
+  currentDraft,
+  onUpdateDraft,
 }: LocationPickerMapProps) {
-  const { draft, updateDraft } = useSellDraft();
   const mapRef = useRef<MapView>(null);
 
   const [hasSelectedLocation, setHasSelectedLocation] = useState(
     !!(
-      draft.location.latitude &&
-      draft.location.latitude !== DEFAULT_REGION.latitude
+      currentDraft.location.latitude &&
+      currentDraft.location.latitude !== DEFAULT_REGION.latitude
     ),
   );
   const [isConfirmed, setIsConfirmed] = useState(false);
-  const [markerCoord, setMarkerCoord] = useState(draft.location);
+  const [markerCoord, setMarkerCoord] = useState(currentDraft.location);
 
   useEffect(() => {
     (async () => {
@@ -60,7 +64,7 @@ export default function LocationPickerMap({
           latitude: currentLocation.coords.latitude,
           longitude: currentLocation.coords.longitude,
         };
-        updateDraft("location", newLocation);
+        onUpdateDraft("location", newLocation);
         setMarkerCoord(newLocation);
         mapRef.current?.animateToRegion(
           { ...newLocation, latitudeDelta: 0.01, longitudeDelta: 0.01 },
@@ -69,7 +73,7 @@ export default function LocationPickerMap({
         setHasSelectedLocation(true);
       }
     })();
-  }, []);
+  }, [currentDraft.location.latitude]); // Add dependency to re-run effect if initial location changes
 
   const styles = getStyles(themeColors);
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${markerCoord.latitude},${markerCoord.longitude}`;
@@ -94,7 +98,7 @@ export default function LocationPickerMap({
 
   const handleTap = (coordinate: { latitude: number; longitude: number }) => {
     setMarkerCoord(coordinate);
-    updateDraft("location", coordinate);
+    onUpdateDraft("location", coordinate);
     mapRef.current?.animateToRegion(
       { ...coordinate, latitudeDelta: 0.01, longitudeDelta: 0.01 },
       500,
@@ -108,7 +112,7 @@ export default function LocationPickerMap({
     longitude: number;
   }) => {
     setMarkerCoord(coordinate);
-    updateDraft("location", coordinate);
+    onUpdateDraft("location", coordinate);
     setHasSelectedLocation(true);
     setIsConfirmed(false);
   };
@@ -126,8 +130,8 @@ export default function LocationPickerMap({
           ref={mapRef}
           style={styles.map}
           initialRegion={
-            draft.location.latitude
-              ? { ...draft.location, latitudeDelta: 0.01, longitudeDelta: 0.01 }
+            currentDraft.location.latitude
+              ? { ...currentDraft.location, latitudeDelta: 0.01, longitudeDelta: 0.01 }
               : DEFAULT_REGION
           }
           onPress={(e) => !isConfirmed && handleTap(e.nativeEvent.coordinate)}

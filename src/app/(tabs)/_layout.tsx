@@ -71,7 +71,7 @@ export default function TabLayout() {
               <Text
                 style={{
                   fontSize: 11,
-                  fontFamily: activeFont,
+                  fontFamily: activeFont ?? undefined,
                   color: labelColor,
                 }}
               >
@@ -98,7 +98,7 @@ export default function TabLayout() {
             <Text
               style={{
                 fontSize: 11,
-                fontFamily: activeFont,
+                fontFamily: activeFont ?? undefined,
                 color: labelColor,
               }}
             >
@@ -125,7 +125,7 @@ export default function TabLayout() {
             <Text
               style={{
                 fontSize: 11,
-                fontFamily: activeFont,
+                fontFamily: activeFont ?? undefined,
                 color: labelColor,
               }}
             >
@@ -152,7 +152,7 @@ export default function TabLayout() {
             <Text
               style={{
                 fontSize: 11,
-                fontFamily: activeFont,
+                fontFamily: activeFont ?? undefined,
                 color: labelColor,
               }}
             >
@@ -175,7 +175,7 @@ export default function TabLayout() {
             <Text
               style={{
                 fontSize: 11,
-                fontFamily: activeFont,
+                fontFamily: activeFont ?? undefined,
                 color: labelColor,
               }}
             >

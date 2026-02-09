@@ -386,5 +386,38 @@
     "days": "{{count}} ថ្ងៃមុន",
     "weeks": "{{count}} សប្តាហ៍មុន",
     "months": "{{count}} ខែមុន"
-  }
+  },
+  "trade": {
+    "add_new_product": "បន្ថែមផលិតផលដោះដូរថ្មី",
+    "product_information": "ព័ត៌មានផលិតផល",
+    "product_title": "ចំណងជើងផលិតផល",
+    "product_title_placeholder": "ឧទាហរណ៍៖ MacBook Pro M1 2020",
+    "description": "ការពិពណ៌នា",
+    "description_placeholder": "ពិពណ៌នាលម្អិតអំពីផលិតផលរបស់អ្នក...",
+    "condition": "លក្ខខណ្ឌ",
+    "original_price": "តម្លៃដើម",
+    "original_price_placeholder": "បញ្ចូលតម្លៃដើម (ស្រេចចិត្ត)",
+    "looking_for": "កំពុងស្វែងរក",
+    "looking_for_description": "បន្ថែមទំនិញដែលអ្នកចាប់អារម្មណ៍ដោះដូរ",
+    "item_name": "ឈ្មោះទំនិញ",
+    "item_name_placeholder": "ឧទាហរណ៍៖ Gaming Laptop",
+    "item_description": "ការពិពណ៌នាទំនិញ",
+    "item_description_placeholder": "ឧទាហរណ៍៖ ល្អបំផុតជាមួយ RTX 3060 ឬខ្ពស់ជាង",
+    "add_item": "បន្ថែមទំនិញ",
+    "location": "ទីតាំង",
+    "contact_information": "ព័ត៌មានទំនាក់ទំនង",
+    "phone_number": "លេខទូរស័ព្ទ",
+    "phone_number_placeholder": "បញ្ចូលលេខទូរស័ព្ទរបស់អ្នក",
+    "post_trade_product": "ផ្សព្វផ្សាយផលិតផលដោះដូរ"
+  },
+  "condition": {
+    "brand_new": "ថ្មីស្រឡាង",
+    "excellent": "ល្អឥតខ្ចោះ",
+    "good": "ល្អ",
+    "fair": "មធ្យម",
+    "poor": "ខ្សោយ"
+  },
+  "optional": "ស្រេចចិត្ត",
+  "error": "កំហុស",
+  "success": "ជោគជ័យ"
 }

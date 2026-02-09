@@ -19,7 +19,7 @@ export function ThemedText({ style, children, ...props }: TextProps) {
   }
 
   return (
-    <Text style={[{ fontFamily, color: themeColors.text }, style]} {...props}>
+    <Text style={[{ fontFamily: fontFamily ?? undefined, color: themeColors.text }, style]} {...props}>
       {children}
     </Text>
   );

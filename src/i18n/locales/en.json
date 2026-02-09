@@ -387,5 +387,38 @@
     "days": "{{count}} days ago",
     "weeks": "{{count}} weeks ago",
     "months": "{{count}} months ago"
-  }
+  },
+  "trade": {
+    "add_new_product": "Add New Trade Product",
+    "product_information": "Product Information",
+    "product_title": "Product Title",
+    "product_title_placeholder": "e.g., MacBook Pro M1 2020",
+    "description": "Description",
+    "description_placeholder": "Describe your product in detail...",
+    "condition": "Condition",
+    "original_price": "Original Price",
+    "original_price_placeholder": "Enter original price (optional)",
+    "looking_for": "Looking For",
+    "looking_for_description": "Add items you're interested in trading for",
+    "item_name": "Item Name",
+    "item_name_placeholder": "e.g., Gaming Laptop",
+    "item_description": "Item Description",
+    "item_description_placeholder": "e.g., Preferably with RTX 3060 or higher GPU",
+    "add_item": "Add Item",
+    "location": "Location",
+    "contact_information": "Contact Information",
+    "phone_number": "Phone Number",
+    "phone_number_placeholder": "Enter your phone number",
+    "post_trade_product": "Post Trade Product"
+  },
+  "condition": {
+    "brand_new": "Brand New",
+    "excellent": "Excellent",
+    "good": "Good",
+    "fair": "Fair",
+    "poor": "Poor"
+  },
+  "optional": "Optional",
+  "error": "Error",
+  "success": "Success"
 }

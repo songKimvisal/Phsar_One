@@ -1,5 +1,4 @@
 import { ThemedText } from "@src/components/ThemedText";
-import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import * as ImagePicker from "expo-image-picker";
 import React, { useRef, useState } from "react";
@@ -17,14 +16,17 @@ import {
 
 interface PhotoUploadSectionProps {
   themeColors: ReturnType<typeof useThemeColor>;
+  photos: string[];
+  onUpdatePhotos: (newPhotos: string[]) => void;
 }
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 export default function PhotoUploadSection({
   themeColors,
+  photos,
+  onUpdatePhotos,
 }: PhotoUploadSectionProps) {
-  const { draft, updateDraft } = useSellDraft();
   const { t } = useTranslation();
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -37,8 +39,8 @@ export default function PhotoUploadSection({
       allowsMultipleSelection: true,
     });
     if (!result.canceled) {
-      updateDraft("photos", [
-        ...draft.photos,
+      onUpdatePhotos([
+        ...photos,
         ...result.assets.map((a) => a.uri),
       ]);
     }
@@ -54,9 +56,9 @@ export default function PhotoUploadSection({
   };
 
   const deleteCurrentImage = () => {
-    const newPhotos = [...draft.photos];
+    const newPhotos = [...photos];
     newPhotos.splice(selectedImageIndex, 1);
-    updateDraft("photos", newPhotos);
+    onUpdatePhotos(newPhotos);
 
     if (newPhotos.length === 0) {
       setPreviewVisible(false);
@@ -75,13 +77,13 @@ export default function PhotoUploadSection({
         </ThemedText>
         <View style={styles.photoCountBadge}>
           <ThemedText style={styles.photoCountText}>
-            {draft.photos.length}
+            {photos.length}
           </ThemedText>
         </View>
       </View>
 
       <View style={styles.photosGridContainer}>
-        {draft.photos.map((uri, index) => (
+        {photos.map((uri, index) => (
           <View key={index} style={styles.imageWrapper}>
             <TouchableOpacity
               onPress={() => openPreview(index)}
@@ -93,9 +95,9 @@ export default function PhotoUploadSection({
             <TouchableOpacity
               style={styles.clearButton}
               onPress={() => {
-                const newPhotos = [...draft.photos];
+                const newPhotos = [...photos];
                 newPhotos.splice(index, 1);
-                updateDraft("photos", newPhotos);
+                onUpdatePhotos(newPhotos);
               }}
               activeOpacity={0.7}
             >
@@ -137,7 +139,7 @@ export default function PhotoUploadSection({
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <ThemedText style={styles.modalCounter}>
-              {selectedImageIndex + 1} / {draft.photos.length}
+              {selectedImageIndex + 1} / {photos.length}
             </ThemedText>
             <TouchableOpacity
               onPress={() => setPreviewVisible(false)}
@@ -149,7 +151,7 @@ export default function PhotoUploadSection({
 
           <FlatList
             ref={flatListRef}
-            data={draft.photos}
+            data={photos}
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}

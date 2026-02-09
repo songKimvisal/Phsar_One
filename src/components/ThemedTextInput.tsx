@@ -12,7 +12,7 @@ export function ThemedTextInput({ style, ...props }: TextInputProps) {
       style={[
         {
           borderWidth: 1,
-          fontFamily,
+          fontFamily: fontFamily ?? undefined,
           color: themeColors.text,
           backgroundColor: themeColors.card,
           borderColor: themeColors.border,
