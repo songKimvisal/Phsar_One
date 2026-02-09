@@ -19,6 +19,8 @@ const initialDraft = {
   contact: { chatOnly: true, sellerName: "", phones: [""] as string[], email: "" }, // Modified contact with sellerName, phones array, and email
 };
 
+export type SellDraft = typeof initialDraft;
+
 type SellDraftContextType = {
   draft: typeof initialDraft;
   updateDraft: (key: string, value: any) => void;

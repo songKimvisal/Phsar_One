@@ -1,35 +1,39 @@
 import { ThemedText } from "@src/components/ThemedText";
 import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
-import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
+import { SellDraft } from "@src/context/SellDraftContext"; // Import for type hinting
+import { TradeDraft } from "@src/context/TradeDraftContext"; // Import for type hinting
 
 interface AddressDropdownsProps {
   themeColors: ReturnType<typeof useThemeColor>;
   t: (key: string) => string;
   activeFont: string;
+  currentDraft: SellDraft | TradeDraft; // Generic type to accept either draft
+  onUpdateDraft: (key: string, value: any) => void;
 }
 
 export default function AddressDropdowns({
   themeColors,
   t,
   activeFont,
+  currentDraft,
+  onUpdateDraft,
 }: AddressDropdownsProps) {
-  const { draft, updateDraft } = useSellDraft();
   const { i18n } = useTranslation();
   const currentLang = i18n.language;
 
   const [selectedProvince, setSelectedProvince] = useState(
-    draft.province || null,
+    currentDraft.province || null,
   );
   const [selectedDistrict, setSelectedDistrict] = useState(
-    draft.district || null,
+    currentDraft.district || null,
   );
-  const [selectedCommune, setSelectedCommune] = useState(draft.commune || null);
+  const [selectedCommune, setSelectedCommune] = useState(currentDraft.commune || null);
 
   const [provinceOpen, setProvinceOpen] = useState(false);
   const [districtOpen, setDistrictOpen] = useState(false);
@@ -167,11 +171,11 @@ export default function AddressDropdowns({
           }}
           onSelectItem={(item) => {
             if (item && item.value) {
-              updateDraft("province", item.value);
+              onUpdateDraft("province", item.value);
               setSelectedDistrict(null);
-              updateDraft("district", "");
+              onUpdateDraft("district", "");
               setSelectedCommune(null);
-              updateDraft("commune", "");
+              onUpdateDraft("commune", "");
 
               // Update district items based on selected province
               const newDistricts =
@@ -256,9 +260,9 @@ export default function AddressDropdowns({
                         setCommuneOpen(false);
                       }}
                       onSelectItem={(item) => {              if (item && item.value) {
-                updateDraft("district", item.value);
+                onUpdateDraft("district", item.value);
                 setSelectedCommune(null);
-                updateDraft("commune", "");
+                onUpdateDraft("commune", "");
 
                 // Update commune items based on selected district
                 const newCommunes =
@@ -344,7 +348,7 @@ export default function AddressDropdowns({
                         setDistrictOpen(false);
                       }}
                       onSelectItem={(item) => {              if (item && item.value) {
-                updateDraft("commune", item.value);
+                onUpdateDraft("commune", item.value);
               }
             }}
           />

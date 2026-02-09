@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import TradeHeader from "@src/components/trade_components/TradeHeader";
 import TradeProductCard from "@src/components/trade_components/TradeProductCard";
@@ -94,6 +95,7 @@ const DUMMY_TRADE_PRODUCTS: TradeProduct[] = [
 ];
 
 export default function TradeScreen() {
+  const router = useRouter();
   const themeColors = useThemeColor();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const bottomTabBarHeight = useBottomTabBarHeight();
@@ -103,8 +105,8 @@ export default function TradeScreen() {
   };
 
   const handleAddNewTrade = () => {
-    console.log("Add New Trade button pressed!");
-    // TODO: Navigate to the trade creation screen
+    // Navigate to the AddTradeProductScreen
+    router.push("/trade/AddTradeProductScreen");
   };
 
   const productsToDisplay = DUMMY_TRADE_PRODUCTS.filter((product) =>
@@ -129,7 +131,7 @@ export default function TradeScreen() {
         numColumns={2}
         contentContainerStyle={[
           styles.listContentContainer,
-          { paddingBottom: bottomTabBarHeight + 120 }, // Increased padding to account for FAB and tab bar
+          { paddingBottom: bottomTabBarHeight + 120 },
         ]}
         columnWrapperStyle={styles.columnWrapper}
       />
@@ -138,13 +140,13 @@ export default function TradeScreen() {
       <TouchableOpacity
         style={{
           position: "absolute",
-          width: 56, // Slightly reduced size
-          height: 56, // Slightly reduced size
-          borderRadius: 28, // Half of new width/height
+          width: 56,
+          height: 56,
+          borderRadius: 28,
           alignItems: "center",
           justifyContent: "center",
           right: 20,
-          bottom: bottomTabBarHeight + 40, // Increased bottom offset
+          bottom: bottomTabBarHeight + 40,
           backgroundColor: Colors.reds[500],
           shadowColor: "#000",
           shadowOffset: {
@@ -158,7 +160,6 @@ export default function TradeScreen() {
         onPress={handleAddNewTrade}
       >
         <Plus size={24} color="white" weight="bold" />
-        {/* Slightly reduced icon size */}
       </TouchableOpacity>
     </SafeAreaView>
   );

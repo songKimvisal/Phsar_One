@@ -22,7 +22,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProductDetailsForm() {
-  const { draft } = useSellDraft();
+  const { draft, updateDraft } = useSellDraft(); // Destructure updateDraft
   const { t, i18n } = useTranslation();
   const fields = POST_FIELDS_MAP[draft.subCategory] || [];
   const themeColors = useThemeColor();
@@ -32,8 +32,8 @@ export default function ProductDetailsForm() {
 
   const handleConfirmLocation = (location: { latitude: number; longitude: number }) => {
     setIsLocationConfirmed(true);
+    updateDraft("location", location); // Update draft with location
     console.log("Location confirmed:", location);
-    // You might want to do more here, e.g., enable a "Post Now" button or navigate
   };
 
   return (
@@ -48,7 +48,11 @@ export default function ProductDetailsForm() {
           ListHeaderComponent={
             <View style={[styles.formContainer]}>
               {/* Photo Section */}
-              <PhotoUploadSection themeColors={themeColors} />
+              <PhotoUploadSection
+                themeColors={themeColors}
+                photos={draft.photos} // Pass photos from draft
+                onUpdatePhotos={(newPhotos) => updateDraft("photos", newPhotos)} // Pass update function
+              />
 
               {/* Dynamic Fields from postFields.ts */}
               <DynamicPostFields
@@ -70,6 +74,8 @@ export default function ProductDetailsForm() {
                 themeColors={themeColors}
                 t={t}
                 onConfirmLocation={handleConfirmLocation}
+                currentDraft={draft}
+                onUpdateDraft={(key, value) => updateDraft(key as any, value)}
               />
 
               {/* Province/Capital, Khan/District, Sangkat/Commune Dropdowns */}
@@ -77,6 +83,8 @@ export default function ProductDetailsForm() {
                 themeColors={themeColors}
                 t={t}
                 activeFont={activeFont}
+                currentDraft={draft} // Pass current draft
+                onUpdateDraft={updateDraft} // Pass update function
               />
 
               {/* Seller Contact Detail Section */}
