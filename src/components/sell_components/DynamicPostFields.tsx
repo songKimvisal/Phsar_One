@@ -1,6 +1,6 @@
 import { Picker } from "@react-native-picker/picker";
-import { ThemedText } from "@src/components/ThemedText";
-import { ThemedTextInput } from "@src/components/ThemedTextInput";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
+import { ThemedTextInput } from "@src/components/shared_components/ThemedTextInput";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { toCamelCase } from "@src/utils/stringUtils";

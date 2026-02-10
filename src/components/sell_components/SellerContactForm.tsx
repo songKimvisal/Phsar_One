@@ -1,6 +1,6 @@
-import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon";
-import { ThemedText } from "@src/components/ThemedText";
-import { ThemedTextInput } from "@src/components/ThemedTextInput";
+import DynamicPhosphorIcon from "@src/components/shared_components/DynamicPhosphorIcon";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
+import { ThemedTextInput } from "@src/components/shared_components/ThemedTextInput";
 import { Colors } from "@src/constants/Colors"; // Keep Colors import for now to reference red/blue color
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";

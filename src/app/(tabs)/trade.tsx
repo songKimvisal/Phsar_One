@@ -1,5 +1,5 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import TradeHeader from "@src/components/trade_components/TradeHeader";
+import SearchBar from "@src/components/shared_components/SearchBar";
 import TradeProductCard from "@src/components/trade_components/TradeProductCard";
 import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
@@ -117,7 +117,7 @@ export default function TradeScreen() {
     <SafeAreaView
       style={[styles.container, { backgroundColor: themeColors.background }]}
     >
-      <TradeHeader onSearch={handleSearch} />
+      <SearchBar onSearch={handleSearch} />
 
       <FlatList
         data={productsToDisplay}

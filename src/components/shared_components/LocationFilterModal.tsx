@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ThemedText } from "../ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 
 interface LocationFilterModalProps {
   isVisible: boolean;

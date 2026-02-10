@@ -1,5 +1,5 @@
-import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon"; // Import DynamicPhosphorIcon
-import { ThemedText } from "@src/components/ThemedText";
+import DynamicPhosphorIcon from "@src/components/shared_components/DynamicPhosphorIcon"; // Import DynamicPhosphorIcon
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CATEGORY_MAP } from "@src/constants/CategoryData";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import { useTheme } from "@src/context/ThemeContext";

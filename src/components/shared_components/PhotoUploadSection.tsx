@@ -1,4 +1,4 @@
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import * as ImagePicker from "expo-image-picker";
 import React, { useRef, useState } from "react";

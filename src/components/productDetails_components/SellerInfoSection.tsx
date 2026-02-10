@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Product } from "@src/types/productTypes";
 import React from "react";

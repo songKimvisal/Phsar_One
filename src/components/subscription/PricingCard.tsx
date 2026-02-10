@@ -1,4 +1,4 @@
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowRightIcon, CheckCircleIcon } from "phosphor-react-native";
 import React from "react";
