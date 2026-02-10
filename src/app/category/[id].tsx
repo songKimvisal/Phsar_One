@@ -1,6 +1,6 @@
-import DynamicPhosphorIcon from "@/src/components/DynamicPhosphorIcon";
-import { ThemedText } from "@/src/components/ThemedText";
-import { CAMBODIA_LOCATIONS } from "@/src/constants/CambodiaLocations"; // Import CAMBODIA_LOCATIONS
+import DynamicPhosphorIcon from "@/src/components/shared_components/DynamicPhosphorIcon";
+import { ThemedText } from "@/src/components/shared_components/ThemedText";
+import { CAMBODIA_LOCATIONS } from "@/src/constants/CambodiaLocations";
 import { CATEGORY_MAP } from "@/src/constants/CategoryData";
 import EmptyState from "@src/components/category_components/EmptyState";
 import ProductCard from "@src/components/category_components/ProductCard";

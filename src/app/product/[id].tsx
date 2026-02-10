@@ -7,7 +7,7 @@ import ProductImageGallery from "@src/components/productDetails_components/Produ
 import ProductInfoSection from "@src/components/productDetails_components/ProductInfoSection";
 import ProductLocation from "@src/components/productDetails_components/ProductLocation";
 import SellerInfoSection from "@src/components/productDetails_components/SellerInfoSection";
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import useThemeColor from "@/src/hooks/useThemeColor";
 import {

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, TextProps } from "react-native";
-import useThemeColor from "../hooks/useThemeColor";
+import useThemeColor from "@src/hooks/useThemeColor";
 
 export function ThemedText({ style, children, ...props }: TextProps) {
   const { i18n } = useTranslation();

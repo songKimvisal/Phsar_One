@@ -1,4 +1,4 @@
-import ThemedStatusBar from "@/src/components/ThemedStatusBar";
+import ThemedStatusBar from "@/src/components/shared_components/ThemedStatusBar";
 import SellDraftProvider from "@/src/context/SellDraftContext";
 import { ThemeProvider } from "@/src/context/ThemeContext";
 import i18n from "@/src/i18n";

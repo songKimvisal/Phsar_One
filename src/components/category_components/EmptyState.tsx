@@ -1,4 +1,4 @@
-import { ThemedText } from "@/src/components/ThemedText";
+import { ThemedText } from "@/src/components/shared_components/ThemedText";
 import useThemeColor from "@/src/hooks/useThemeColor";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";

@@ -1,7 +1,7 @@
-import { ThemedText } from "@src/components/ThemedText";
-import AddressDropdowns from "@src/components/sell_components/AddressDropdowns";
-import LocationPickerMap from "@src/components/sell_components/LocationPickerMap";
-import PhotoUploadSection from "@src/components/sell_components/PhotoUploadSection";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
+import AddressDropdowns from "@src/components/shared_components/AddressDropdowns";
+import LocationPickerMap from "@src/components/shared_components/LocationPickerMap";
+import PhotoUploadSection from "@src/components/shared_components/PhotoUploadSection";
 import { Colors } from "@src/constants/Colors";
 import { useTradeDraft } from "@src/context/TradeDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";

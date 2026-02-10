@@ -1,7 +1,7 @@
 import PricingCard, {
   PricingPlan,
 } from "@src/components/subscription/PricingCard";
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { useRouter } from "expo-router";
 import { CaretLeftIcon } from "phosphor-react-native";

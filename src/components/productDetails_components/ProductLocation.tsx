@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import React from "react";
 import { Linking, StyleSheet, TouchableOpacity } from "react-native";

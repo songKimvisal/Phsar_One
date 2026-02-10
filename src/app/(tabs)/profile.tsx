@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import { useTheme } from "@src/context/ThemeContext";
 import useThemeColor from "@src/hooks/useThemeColor";

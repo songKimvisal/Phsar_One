@@ -1,4 +1,4 @@
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import * as Location from "expo-location";
 import React, { useEffect, useRef, useState } from "react";

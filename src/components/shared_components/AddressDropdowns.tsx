@@ -1,5 +1,5 @@
-import DynamicPhosphorIcon from "@src/components/DynamicPhosphorIcon";
-import { ThemedText } from "@src/components/ThemedText";
+import DynamicPhosphorIcon from "@src/components/shared_components/DynamicPhosphorIcon";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import { SellDraft } from "@src/context/SellDraftContext"; // Import for type hinting
 import { TradeDraft } from "@src/context/TradeDraftContext"; // Import for type hinting

@@ -1,5 +1,5 @@
 import ProductCard from "@src/components/category_components/ProductCard";
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Product } from "@src/types/productTypes";
 import { useRouter } from "expo-router";

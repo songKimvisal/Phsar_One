@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { useRouter } from "expo-router";
 import { X } from "phosphor-react-native";

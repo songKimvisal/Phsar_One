@@ -1,4 +1,4 @@
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Clock, MapPin, User } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";

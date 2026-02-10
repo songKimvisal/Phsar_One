@@ -1,16 +1,15 @@
-import { ThemedText } from "@/src/components/ThemedText";
+import { ThemedText } from "@/src/components/shared_components/ThemedText";
 import { Colors } from "@/src/constants/Colors";
 import useThemeColor from "@/src/hooks/useThemeColor";
-import { Product } from "@/src/types/productTypes"; 
-import { formatPrice, formatTimeAgo } from "@/src/utils/productUtils"; 
+import { Product } from "@/src/types/productTypes";
+import { getLocalizedLocationName } from "@/src/utils/locationUtils";
+import { formatPrice, formatTimeAgo } from "@/src/utils/productUtils";
+import { toCamelCase } from "@/src/utils/stringUtils";
 import { Ionicons } from "@expo/vector-icons";
-import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import { MapPin } from "phosphor-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { toCamelCase } from "@/src/utils/stringUtils"; 
-import { getLocalizedLocationName } from "@/src/utils/locationUtils"; 
 
 interface ProductCardProps {
   product: Product;
@@ -53,11 +52,14 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
     product.address.province,
     i18n.language,
     "province",
-    null, 
+    null,
     null,
   );
 
-  const fullAddress = [localizedCommune, localizedDistrict, localizedProvince].filter(Boolean).join(", ") || "N/A";
+  const fullAddress =
+    [localizedCommune, localizedDistrict, localizedProvince]
+      .filter(Boolean)
+      .join(", ") || "N/A";
   return (
     <TouchableOpacity
       style={[
@@ -76,7 +78,12 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 
         {/* Discount Badge */}
         {hasDiscount && discountPercentage && (
-          <View style={[styles.discountBadge, {backgroundColor: themeColors.tint}]}>
+          <View
+            style={[
+              styles.discountBadge,
+              { backgroundColor: themeColors.tint },
+            ]}
+          >
             <ThemedText style={styles.discountText}>
               -{discountPercentage}%
             </ThemedText>
@@ -99,34 +106,21 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
       {/* Product Info */}
       <View style={styles.productInfo}>
         {/* Title */}
-        <ThemedText
-          style={styles.productName}
-          numberOfLines={1}
-        >
+        <ThemedText style={styles.productName} numberOfLines={1}>
           {product.title}
         </ThemedText>
 
         {/* Meta: Time, Location, and Views */}
         <View style={styles.metaContainer}>
           <View style={styles.metaItemContainer}>
-            <ThemedText
-              style={[
-                styles.productMeta,
-                { opacity: 0.6 },
-              ]}
-            >
+            <ThemedText style={[styles.productMeta, { opacity: 0.6 }]}>
               {timeAgo}
             </ThemedText>
           </View>
 
           {fullAddress && (
             <>
-              <ThemedText
-                style={[
-                  styles.productMeta,
-                  { opacity: 0.6 },
-                ]}
-              >
+              <ThemedText style={[styles.productMeta, { opacity: 0.6 }]}>
                 {" "}
                 •{" "}
               </ThemedText>
@@ -137,10 +131,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
                   style={styles.mapPinIcon}
                 />
                 <ThemedText
-                  style={[
-                    styles.productMeta,
-                    { opacity: 0.6 },
-                  ]}
+                  style={[styles.productMeta, { opacity: 0.6 }]}
                   numberOfLines={1}
                 >
                   {fullAddress}
@@ -152,12 +143,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 
         {/* Condition and Year (if available in details) */}
         {(product.details?.condition || product.details?.year) && (
-          <ThemedText
-            style={[
-              styles.productMeta,
-              { opacity: 0.6 },
-            ]}
-          >
+          <ThemedText style={[styles.productMeta, { opacity: 0.6 }]}>
             {[
               product.details?.condition
                 ? t(
@@ -177,7 +163,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
             style={[
               styles.productPrice,
               {
-                color: themeColors.tint, 
+                color: themeColors.tint,
                 fontWeight: "bold",
               },
             ]}
@@ -189,7 +175,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
               style={[
                 styles.negotiableBadge,
                 {
-                  backgroundColor: themeColors.tint + "20", 
+                  backgroundColor: themeColors.tint + "20",
                 },
               ]}
             >
@@ -197,7 +183,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
                 style={[
                   styles.negotiableText,
                   {
-                    color: themeColors.tint, 
+                    color: themeColors.tint,
                   },
                 ]}
               >
@@ -292,7 +278,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 2,
-    flexWrap: "wrap", 
+    flexWrap: "wrap",
   },
   metaItemContainer: {
     flexDirection: "row",

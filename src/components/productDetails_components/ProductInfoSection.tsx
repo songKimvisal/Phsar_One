@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ThemedText } from "@src/components/ThemedText";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { formatPrice, Product } from "@src/types/productTypes";
 import { TFunction } from "i18next";
