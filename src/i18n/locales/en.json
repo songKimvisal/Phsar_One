@@ -344,7 +344,8 @@
     "search_placeholder": "Search for items...",
     "clear_filter": "Clear filter",
     "condition_good": "Good",
-    "looking_for": "Looking for"
+    "looking_for": "Looking for",
+    "no_listings_found": "No trade listings found."
   },
   "home_screen": {
     "recent_listings": "Recent Listings"
@@ -370,11 +371,13 @@
     "safety5": "Avoid sharing card details on unfamiliar websites or suspicious links."
   },
   "common": {
+    "product_not_found": "Product not found.",
     "results": "results",
     "noProducts": "No products found",
     "noProductsInSubcategory": "No products found in this subcategory",
     "showAll": "Show All",
     "listings": "listings",
+    "view_in_google_map": "View In Google Map",
     "separator_bullet": "•",
     "clear": "Clear",
     "apply": "Apply",
@@ -389,6 +392,17 @@
     "months": "{{count}} months ago"
   },
   "trade": {
+    "estimated_trade_value_range": "Estimated Trade Value Range",
+    "estimated_trade_value_range_description": "What do you think your item is worth for trade?",
+    "minimum_value": "Minimum Value",
+    "maximum_value": "Maximum Value",
+    "estimated_range": "Estimated Range",
+    "specifications": "Specifications",
+    "trade_preferences": "Trade Preferences",
+    "trade_preferences_description": "The owner is interested in trading for the following items:",
+    "estimated_trade_value_range_label": "$ Estimated Trade Value Range",
+    "send_trade_offer": "Send Trade Offer",
+    "trade_tip": "Tip: Chat with the owner first to confirm details before sending a trade offer.",
     "add_new_product": "Add New Trade Product",
     "product_information": "Product Information",
     "product_title": "Product Title",

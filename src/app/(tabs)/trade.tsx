@@ -1,3 +1,4 @@
+import { useTradeProducts } from "@/src/context/TradeProductsContext";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import SearchBar from "@src/components/shared_components/SearchBar";
 import TradeProductCard from "@src/components/trade_components/TradeProductCard";
@@ -6,6 +7,7 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { useRouter } from "expo-router";
 import { Plus } from "phosphor-react-native";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FlatList,
   SafeAreaView,
@@ -13,92 +15,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-// Placeholder for product type, adjust as per actual data structure
-interface TradeProduct {
-  id: string;
-  image: string;
-  title: string;
-  seller: string;
-  timeAgo: string;
-  location: string;
-  lookingFor: string[];
-  condition: string;
-}
-
-const DUMMY_TRADE_PRODUCTS: TradeProduct[] = [
-  {
-    id: "1",
-    image:
-      "https://imgs.search.brave.com/xwNZhHGydKTcMrOfpJW2CVcIZSDfkMCz-SaN0oQYUlE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTQ3/ODYxMDY1Mi9waG90/by9oY21jLXZpZXRu/YW0tbWFjYm9vay1w/cm8tMTQtaW5jaGVz/LW0yLmpwZz9zPTYx/Mng2MTImdz0wJms9/MjAmYz1yN24zWldr/NUtiSUVXNk1tcEFH/V2FYc1VJS3ZMLUtn/c2tJNmZTLXQ1anY0/PQ",
-    title: "MacBook Pro M1",
-    seller: "Sarah Chen",
-    timeAgo: "2 hours ago",
-    location: "Sen Sok",
-    lookingFor: ["Gaming Laptop", "ROG", "MSI"],
-    condition: "Good",
-  },
-  {
-    id: "2",
-    image:
-      "https://imgs.search.brave.com/xwNZhHGydKTcMrOfpJW2CVcIZSDfkMCz-SaN0oQYUlE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTQ3/ODYxMDY1Mi9waG90/by9oY21jLXZpZXRu/YW0tbWFjYm9vay1w/cm8tMTQtaW5jaGVz/LW0yLmpwZz9zPTYx/Mng2MTImdz0wJms9/MjAmYz1yN24zWldr/NUtiSUVXNk1tcEFH/V2FYc1VJS3ZMLUtn/c2tJNmZTLXQ1anY0/PQ",
-    title: "Steam Deck",
-    seller: "By Lina",
-    timeAgo: "2 hours ago",
-    location: "Sen Sok",
-    lookingFor: ["Handheld Gaming Device"],
-    condition: "Good",
-  },
-  {
-    id: "3",
-    image:
-      "https://imgs.search.brave.com/xwNZhHGydKTcMrOfpJW2CVcIZSDfkMCz-SaN0oQYUlE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTQ3/ODYxMDY1Mi9waG90/by9oY21jLXZpZXRu/YW0tbWFjYm9vay1w/cm8tMTQtaW5jaGVz/LW0yLmpwZz9zPTYx/Mng2MTImdz0wJms9/MjAmYz1yN24zWldr/NUtiSUVXNk1tcEFH/V2FYc1VJS3ZMLUtn/c2tJNmZTLXQ1anY0/PQ",
-    title: "MacBook Pro M1",
-    seller: "By Sarah Chen",
-    timeAgo: "2 hours ago",
-    location: "Sen Sok",
-    lookingFor: ["Gaming Laptop", "ROG", "MSI"],
-    condition: "Good",
-  },
-  {
-    id: "4",
-    image:
-      "https://imgs.search.brave.com/xwNZhHGydKTcMrOfpJW2CVcIZSDfkMCz-SaN0oQYUlE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTQ3/ODYxMDY1Mi9waG90/by9oY21jLXZpZXRu/YW0tbWFjYm9vay1w/cm8tMTQtaW5jaGVz/LW0yLmpwZz9zPTYx/Mng2MTImdz0wJms9/MjAmYz1yN24zWldr/NUtiSUVXNk1tcEFH/V2FYc1VJS3ZMLUtn/c2tJNmZTLXQ1anY0/PQ",
-    title: "Steam Deck",
-    seller: "By Lina",
-    timeAgo: "2 hours ago",
-    location: "Sen Sok",
-    lookingFor: ["Handheld Gaming Device"],
-    condition: "Good",
-  },
-  {
-    id: "5",
-    image:
-      "https://imgs.search.brave.com/xwNZhHGydKTcMrOfpJW2CVcIZSDfkMCz-SaN0oQYUlE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTQ3/ODYxMDY1Mi9waG90/by9oY21jLXZpZXRu/YW0tbWFjYm9vay1w/cm8tMTQtaW5jaGVz/LW0yLmpwZz9zPTYx/Mng2MTImdz0wJms9/MjAmYz1yN24zWldr/NUtiSUVXNk1tcEFH/V2FYc1VJS3ZMLUtn/c2tJNmZTLXQ1anY0/PQ",
-    title: "MacBook Pro M1",
-    seller: "Sarah Chen",
-    timeAgo: "2 hours ago",
-    location: "Sen Sok",
-    lookingFor: ["Gaming Laptop", "ROG", "MSI"],
-    condition: "Good",
-  },
-  {
-    id: "6",
-    image:
-      "https://imgs.search.brave.com/xwNZhHGydKTcMrOfpJW2CVcIZSDfkMCz-SaN0oQYUlE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTQ3/ODYxMDY1Mi9waG90/by9oY21jLXZpZXRu/YW0tbWFjYm9vay1w/cm8tMTQtaW5jaGVz/LW0yLmpwZz9zPTYx/Mng2MTImdz0wJms9/MjAmYz1yN24zWldr/NUtiSUVXNk1tcEFH/V2FYc1VJS3ZMLUtn/c2tJNmZTLXQ1anY0/PQ",
-    title: "MacBook Pro M1",
-    seller: "Sarah Chen",
-    timeAgo: "2 hours ago",
-    location: "Sen Sok",
-    lookingFor: ["Gaming Laptop", "ROG", "MSI"],
-    condition: "Good",
-  },
-];
-
 export default function TradeScreen() {
   const router = useRouter();
   const themeColors = useThemeColor();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const bottomTabBarHeight = useBottomTabBarHeight();
+  const { t } = useTranslation();
+  const { products } = useTradeProducts();
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -109,7 +32,7 @@ export default function TradeScreen() {
     router.push("/trade/AddTradeProductScreen");
   };
 
-  const productsToDisplay = DUMMY_TRADE_PRODUCTS.filter((product) =>
+  const productsToDisplay = products.filter((product) =>
     product.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
@@ -121,12 +44,29 @@ export default function TradeScreen() {
 
       <FlatList
         data={productsToDisplay}
-        renderItem={({ item }) => (
-          <TradeProductCard
-            product={item}
-            onPress={() => console.log("Product pressed:", item.id)}
-          />
-        )}
+        renderItem={({ item }) => {
+          const mappedProduct = {
+            id: item.id,
+            image: item.images[0],
+            title: item.title,
+            seller: item.seller,
+            timeAgo: `${item.timeAgo.value} ${item.timeAgo.unit}`,
+            location: t(`provinces.${item.province}`),
+            lookingFor: item.lookingFor.map((lf) => lf.name),
+            condition: item.condition,
+          };
+          return (
+            <TradeProductCard
+              product={mappedProduct}
+              onPress={() =>
+                router.push({
+                  pathname: "/trade/[id]",
+                  params: { id: item.id },
+                })
+              }
+            />
+          );
+        }}
         keyExtractor={(item) => item.id}
         numColumns={2}
         contentContainerStyle={[
@@ -175,6 +115,6 @@ const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: "space-between",
-    marginBottom: 0,
+    marginBottom: 16,
   },
 });

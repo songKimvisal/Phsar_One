@@ -62,6 +62,67 @@ export interface ProductDraft {
   details: Record<string, any>;
   contact: SellerContact;
 }
+
+export interface TradeItemPreference {
+  name: string;
+  description?: string;
+}
+
+export interface TradeProductDetail {
+  id: string;
+  images: string[];
+  title: string;
+  description: string;
+  condition: string;
+  originalPrice: number;
+  telephone: string;
+  province: string | null;
+  district: string | null;
+  commune: string | null;
+  coordinates: Location;
+  lookingFor: TradeItemPreference[];
+  estimatedTradeValueRange: string;
+  owner: {
+    name: string;
+    isVerified: boolean;
+    avatar: string;
+  };
+  postedDate: string;
+}
+
+export interface TradeProduct {
+  id: string;
+  images: string[];
+  title: string;
+  seller: string;
+  timeAgo: {
+    value: number;
+    unit: "minutes" | "hours" | "days" | "weeks" | "months";
+  };
+  lookingFor: Array<{
+    name: string;
+    description?: string;
+  }>;
+  condition: string;
+  originalPrice?: number;
+  province: string;
+  district: string;
+  commune?: string;
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
+  description?: string;
+  telephone?: string;
+  estimatedTradeValueRange?: string;
+  owner?: {
+    name: string;
+    isVerified: boolean;
+    avatar: string;
+  };
+  postedDate?: string;
+}
+
 export const draftToProduct = (draft: ProductDraft, id: string): Product => {
   return {
     id,

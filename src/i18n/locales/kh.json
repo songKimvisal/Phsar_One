@@ -343,7 +343,8 @@
     "search_placeholder": "ស្វែងរកទំនិញ...",
     "clear_filter": "ជម្រះតម្រង",
     "condition_good": "ល្អ",
-    "looking_for": "ស្វែងរក"
+    "looking_for": "ស្វែងរក",
+    "no_listings_found": "មិនបានរកឃើញការផ្សាយពាណិជ្ជកម្មដោះដូរទេ។"
   },
   "home_screen": {
     "recent_listings": "ការផ្សាយថ្មីៗ"
@@ -369,11 +370,13 @@
     "safety5": "ជៀសវាងការចែករំលែកព័ត៌មានកាត ឬទិន្នន័យផ្ទាល់ខ្លួនលើគេហទំព័រឬតំណភ្ជាប់ដែលមិនគួរឱ្យទុកចិត្ត។"
   },
   "common": {
+    "product_not_found": "មិនបានរកឃើញផលិតផល។",
     "results": "លទ្ធផល",
     "noProducts": "មិនមានផលិតផលត្រូវបានរកឃើញ",
     "noProductsInSubcategory": "មិនមានផលិតផលនៅក្នុងប្រភេទរងនេះទេ",
     "showAll": "បង្ហាញទាំងអស់",
     "listings": "ការផ្សាយលក់",
+    "view_in_google_map": "មើលក្នុង Google Map",
     "separator_bullet": "•",
     "clear": "សម្អាត",
     "apply": "អនុវត្ត",
@@ -388,6 +391,17 @@
     "months": "{{count}} ខែមុន"
   },
   "trade": {
+    "estimated_trade_value_range": "តម្លៃប៉ាន់ស្មានសម្រាប់ការដោះដូរ",
+    "estimated_trade_value_range_description": "តើអ្នកគិតថាទំនិញរបស់អ្នកមានតម្លៃប៉ុន្មានសម្រាប់ការដោះដូរ?",
+    "minimum_value": "តម្លៃអប្បបរមា",
+    "maximum_value": "តម្លៃអតិបរមា",
+    "estimated_range": "ចន្លោះតម្លៃប៉ាន់ស្មាន",
+    "specifications": "លក្ខណៈពិសេស",
+    "trade_preferences": "ចំណូលចិត្តការដោះដូរ",
+    "trade_preferences_description": "ម្ចាស់ចាប់អារម្មណ៍ចំពោះការដោះដូរទំនិញដូចខាងក្រោម:",
+    "estimated_trade_value_range_label": "$ តម្លៃប៉ាន់ស្មានសម្រាប់ការដោះដូរ",
+    "send_trade_offer": "ផ្ញើការផ្តល់ជូនការដោះដូរ",
+    "trade_tip": "គន្លឹះ៖ ជជែកជាមួយម្ចាស់មុនដើម្បីបញ្ជាក់ព័ត៌មានលម្អិត មុនពេលផ្ញើការផ្តល់ជូនការដោះដូរ។",
     "add_new_product": "បន្ថែមផលិតផលដោះដូរថ្មី",
     "product_information": "ព័ត៌មានផលិតផល",
     "product_title": "ចំណងជើងផលិតផល",
