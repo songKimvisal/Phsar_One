@@ -9,7 +9,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { MapPin } from "phosphor-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View, Dimensions } from "react-native";
+
+const { width: screenWidth } = Dimensions.get("window");
+const CARD_WIDTH = (screenWidth - 38) / 2;
 
 interface ProductCardProps {
   product: Product;
@@ -200,7 +203,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 const styles = StyleSheet.create({
   productCard: {
     borderRadius: 6,
-    width: "48%",
+    width: CARD_WIDTH,
     marginBottom: 6,
     overflow: "hidden",
     borderWidth: 1,

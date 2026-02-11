@@ -95,7 +95,7 @@ export default function TradeProductDetailScreen() {
             <View
               style={[
                 styles.conditionBadge,
-                { backgroundColor: themeColors.success },
+                { backgroundColor: themeColors.primary },
               ]}
             >
               <ThemedText style={styles.conditionBadgeText}>

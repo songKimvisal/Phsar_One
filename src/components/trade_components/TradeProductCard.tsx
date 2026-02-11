@@ -1,6 +1,6 @@
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { Clock, MapPin, User } from "phosphor-react-native";
+import { Clock, MagnifyingGlass, MapPin, User } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import {
   Dimensions,
@@ -27,7 +27,7 @@ interface TradeProductCardProps {
 }
 
 const { width } = Dimensions.get("window");
-const CARD_WIDTH = (width - 48) / 2;
+const CARD_WIDTH = (width - 38) / 2;
 
 export default function TradeProductCard({
   product,
@@ -91,10 +91,13 @@ export default function TradeProductCard({
             { backgroundColor: themeColors.secondaryBackground },
           ]}
         >
-          <ThemedText style={styles.lookingForLabel}>
-            {t("trade_screen.looking_for")}
-          </ThemedText>
-          <ThemedText style={styles.lookingForText} numberOfLines={1}>
+          <View style={styles.lookingForHeader}>
+            <MagnifyingGlass size={14} color={themeColors.text} weight="fill" />
+            <ThemedText style={styles.lookingForLabel}>
+              {t("trade_screen.looking_for")}
+            </ThemedText>
+          </View>
+          <ThemedText style={styles.lookingForText}>
             {product.lookingFor.filter(Boolean).join(", ")}
           </ThemedText>
         </View>
@@ -131,7 +134,7 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
       top: 8,
       right: 8,
       paddingHorizontal: 8,
-      paddingVertical: 3,
+      paddingVertical: 4,
       borderRadius: 10,
     },
     conditionText: {
@@ -169,6 +172,11 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
       fontSize: 11,
       fontWeight: "bold",
       opacity: 0.7,
+    },
+    lookingForHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
       marginBottom: 2,
     },
     lookingForText: {
