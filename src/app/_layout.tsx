@@ -2,15 +2,15 @@ import ThemedStatusBar from "@/src/components/shared_components/ThemedStatusBar"
 import SellDraftProvider from "@/src/context/SellDraftContext";
 import { ThemeProvider } from "@/src/context/ThemeContext";
 import i18n from "@/src/i18n";
-import { ClerkProvider } from '@clerk/clerk-expo';
-import { tokenCache } from '@clerk/clerk-expo/token-cache';
+import { ClerkProvider } from "@clerk/clerk-expo";
+import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -48,24 +48,24 @@ export default function RootLayout() {
     return null;
   }
 
-  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
   return (
     <SafeAreaProvider>
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
         <ThemeProvider>
-        <I18nextProvider i18n={i18n}>
-          <SellDraftProvider>
-            <ThemedStatusBar />
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="sell" />
-              <Stack.Screen name="settings" />
-            </Stack>
-          </SellDraftProvider>
-        </I18nextProvider>
-      </ThemeProvider>
+          <I18nextProvider i18n={i18n}>
+            <SellDraftProvider>
+              <ThemedStatusBar />
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="sell" />
+                <Stack.Screen name="settings" />
+              </Stack>
+            </SellDraftProvider>
+          </I18nextProvider>
+        </ThemeProvider>
       </ClerkProvider>
     </SafeAreaProvider>
   );

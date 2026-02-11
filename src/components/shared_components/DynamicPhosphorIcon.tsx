@@ -12,7 +12,7 @@ const DynamicPhosphorIcon: React.FC<DynamicPhosphorIconProps> = ({
 }) => {
   const IconComponent = PhosphorIcons[
     name as keyof typeof PhosphorIcons
-  ] as React.ComponentType<IconProps>;
+  ] as React.ComponentType<IconProps>; // eslint-disable-next-line import/namespace
 
   if (!IconComponent) {
     console.warn(`Phosphor Icon "${name}" not found.`);

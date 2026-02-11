@@ -4,7 +4,7 @@ import DynamicPostFields from "@src/components/sell_components/DynamicPostFields
 import LocationPickerMap from "@src/components/shared_components/LocationPickerMap";
 import PhotoUploadSection from "@src/components/shared_components/PhotoUploadSection";
 import PriceAndDiscountForm from "@src/components/sell_components/PriceAndDiscountForm";
-import SellerContactForm from "@src/components/sell_components/SellerContactForm";
+import SellerContactForm from "@src/components/shared_components/SellerContactForm";
 import { Colors } from "@src/constants/Colors";
 import { POST_FIELDS_MAP } from "@src/constants/postFields";
 import { useSellDraft } from "@src/context/SellDraftContext";

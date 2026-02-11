@@ -1,23 +1,21 @@
 import DynamicPhosphorIcon from "@src/components/shared_components/DynamicPhosphorIcon";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { ThemedTextInput } from "@src/components/shared_components/ThemedTextInput";
-import { Colors } from "@src/constants/Colors"; // Keep Colors import for now to reference red/blue color
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { TFunction } from "i18next";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { TFunction } from "i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 interface SellerContactFormProps {
   themeColors: ReturnType<typeof useThemeColor>;
-  t: TFunction<"translation", undefined>; // Add this line
+  t: TFunction<"translation", undefined>;
 }
 
-export default function SellerContactForm({
-}: SellerContactFormProps) {
-  const themeColors = useThemeColor(); // Get themeColors internally
-  const { t } = useTranslation(); // Get t internally
+export default function SellerContactForm({}: SellerContactFormProps) {
+  const themeColors = useThemeColor();
+  const { t } = useTranslation();
   const { draft, updateDraft } = useSellDraft();
 
   return (

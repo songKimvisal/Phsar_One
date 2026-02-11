@@ -166,6 +166,7 @@ export default function ProductDetail() {
     product.subCategory,
     product.details,
   );
+
   const discountedPrice = calculateDiscountPrice(product);
   const formattedDiscountedPrice =
     discountedPrice !== null ? String(discountedPrice) : undefined;
