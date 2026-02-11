@@ -18,7 +18,7 @@ const DUMMY_TRADE_PRODUCTS: TradeProduct[] = [
     timeAgo: { value: 2, unit: "hours" },
     lookingFor: [
       {
-        name: "Gaming Laptop ROG Zephyrus",
+        name: "Gaming Laptop ROG Zephyrus ",
         description:
           "Preferably with RTX 3060 or higher GPU, 16GB+ RAM, good cooling system",
       },
@@ -52,7 +52,7 @@ const DUMMY_TRADE_PRODUCTS: TradeProduct[] = [
     title: "Steam Deck",
     seller: "By Lina",
     timeAgo: { value: 2, unit: "hours" },
-    lookingFor: [{ name: "Handheld Gaming Device" }],
+    lookingFor: [{ name: "Handheld Gaming Device " }],
     condition: "good",
     originalPrice: 399,
     province: "phnomPenh",

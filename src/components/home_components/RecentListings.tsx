@@ -264,16 +264,15 @@ export default function RecentListings() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 2,
+    paddingHorizontal: 16,
     marginTop: 20,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 8,
-    marginLeft: 16,
   },
   row: {
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
   },
 });
