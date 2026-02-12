@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import { useTheme } from "@src/context/ThemeContext";
@@ -6,7 +5,6 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import {
-  BellSimpleIcon,
   BookmarkSimpleIcon,
   CardholderIcon,
   CaretRightIcon,
@@ -15,7 +13,6 @@ import {
   CheckCircleIcon,
   ClockCounterClockwiseIcon,
   GearSixIcon,
-  GlobeSimpleIcon,
   HeadsetIcon,
   MoonIcon,
   NotePencilIcon,
@@ -36,11 +33,7 @@ export default function ProfileScreen() {
   const { i18n, t } = useTranslation();
   const { theme, setMode } = useTheme();
   const themeColors = useThemeColor();
-  const toggleLanguage = async () => {
-    const nextLanguage = i18n.language === "kh" ? "en" : "kh";
-    await i18n.changeLanguage(nextLanguage);
-    await AsyncStorage.setItem("user-language", nextLanguage);
-  };
+
   const router = useRouter();
   const toggleTheme = () => {
     setMode(theme === "light" ? "dark" : "light");
@@ -56,9 +49,9 @@ export default function ProfileScreen() {
             activeOpacity={0.85}
           >
             <LinearGradient
-              colors={["#E73121", "#8B1D14"]} // reds[500] → reds[700]
-              start={{ x: 0, y: 0 }} // top
-              end={{ x: 0, y: 1 }} // bottom
+              colors={["#E73121", "#8B1D14"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
               style={styles.upgradeBtn}
             >
               <View
@@ -90,36 +83,6 @@ export default function ProfileScreen() {
                 <SunIcon size={24} weight="regular" color={themeColors.text} />
               )}
             </TouchableOpacity>
-
-            {/* Switch Language */}
-            <TouchableOpacity
-              style={styles.languageIcon}
-              onPress={toggleLanguage}
-            >
-              {theme == "light" ? (
-                <GlobeSimpleIcon
-                  size={24}
-                  weight="regular"
-                  color={themeColors.text}
-                />
-              ) : (
-                <GlobeSimpleIcon
-                  size={24}
-                  weight="regular"
-                  color={themeColors.text}
-                />
-              )}
-              <ThemedText style={styles.languageTitle}>
-                {t("navigation.toggle_language")}
-              </ThemedText>
-            </TouchableOpacity>
-
-            {/* Notification */}
-            <BellSimpleIcon
-              size={28}
-              color={themeColors.text}
-              style={styles.iconBtn}
-            />
 
             {/* Settings */}
             <TouchableOpacity onPress={() => router.push("/settings")}>

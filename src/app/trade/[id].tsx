@@ -1,5 +1,6 @@
 import { useTradeProducts } from "@/src/context/TradeProductsContext";
 import ProductImageGallery from "@src/components/productDetails_components/ProductImageGallery";
+import ThemedCard from "@src/components/shared_components/ThemedCard";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
@@ -106,15 +107,7 @@ export default function TradeProductDetailScreen() {
         </View>
 
         {/* Product Info Section */}
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: themeColors.card,
-              borderColor: themeColors.border,
-            },
-          ]}
-        >
+        <ThemedCard style={styles.cardMargin}>
           <View style={styles.productTitlePriceRow}>
             <ThemedText style={styles.productTitle}>{product.title}</ThemedText>
             {product.originalPrice && (
@@ -129,18 +122,10 @@ export default function TradeProductDetailScreen() {
           <ThemedText style={styles.productDescription}>
             {product.description}
           </ThemedText>
-        </View>
+        </ThemedCard>
 
         {/* Specifications */}
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: themeColors.card,
-              borderColor: themeColors.border,
-            },
-          ]}
-        >
+        <ThemedCard style={styles.cardMargin}>
           <ThemedText style={styles.sectionTitle}>
             {t("trade.specifications")}
           </ThemedText>
@@ -234,18 +219,10 @@ export default function TradeProductDetailScreen() {
               ))}
             </View>
           </View>
-        </View>
+        </ThemedCard>
 
         {/* Trade Preferences */}
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: themeColors.card,
-              borderColor: themeColors.border,
-            },
-          ]}
-        >
+        <ThemedCard style={styles.cardMargin}>
           <ThemedText style={styles.sectionTitle}>
             {t("trade.trade_preferences")}
           </ThemedText>
@@ -303,18 +280,10 @@ export default function TradeProductDetailScreen() {
               {product.estimatedTradeValueRange}
             </ThemedText>
           </View>
-        </View>
+        </ThemedCard>
 
         {/* Owner Information */}
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: themeColors.card,
-              borderColor: themeColors.border,
-            },
-          ]}
-        >
+        <ThemedCard style={styles.cardMargin}>
           <ThemedText style={styles.sectionTitle}>
             {t("productDetail.sellerInfo")}
           </ThemedText>
@@ -336,7 +305,7 @@ export default function TradeProductDetailScreen() {
               )}
             </View>
           </View>
-        </View>
+        </ThemedCard>
 
         {/* Action Buttons */}
         <View style={styles.actionButtonsContainer}>
@@ -436,12 +405,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 12,
   },
-  card: {
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
+  cardMargin: {
     marginHorizontal: 16,
-    borderWidth: 1,
   },
   sectionTitle: {
     fontSize: 18,
@@ -464,6 +429,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     color: Colors.reds[500],
+    flexShrink: 0,
   },
   productDescription: {
     fontSize: 15,
@@ -479,6 +445,7 @@ const styles = StyleSheet.create({
   specLabel: {
     fontSize: 16,
     fontWeight: "400",
+    flexShrink: 1,
   },
   specLabelContainer: {
     flexDirection: "row",
@@ -490,6 +457,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     opacity: 0.7,
     textAlign: "right",
+    flexShrink: 1,
   },
   viewMapButton: {
     backgroundColor: Colors.reds[500],
@@ -542,11 +510,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     marginBottom: 4,
+    flexShrink: 1,
   },
   lookingForItemDesc: {
     fontSize: 14,
     opacity: 0.6,
     lineHeight: 20,
+    flexShrink: 1,
   },
   estimatedValueContainer: {
     flexDirection: "row",
@@ -558,10 +528,12 @@ const styles = StyleSheet.create({
   estimatedValueLabel: {
     fontSize: 14,
     fontWeight: "500",
+    flexShrink: 1,
   },
   estimatedValue: {
     fontSize: 14,
     fontWeight: "bold",
+    flexShrink: 1,
   },
   ownerInfoRow: {
     flexDirection: "row",
@@ -577,6 +549,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 2,
+    flexShrink: 1,
   },
   ownerVerified: {
     fontSize: 14,
