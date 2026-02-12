@@ -141,6 +141,7 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
       color: themeColors.primaryButtonText,
       fontSize: 11,
       fontWeight: "bold",
+      lineHeight: 14,
     },
     infoContainer: {
       padding: 12,
@@ -149,6 +150,7 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
       fontSize: 16,
       fontWeight: "bold",
       marginBottom: 5,
+      lineHeight: 20,
     },
     metaRow: {
       flexDirection: "row",
@@ -159,6 +161,8 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
     metaText: {
       fontSize: 12,
       opacity: 0.7,
+      flexShrink: 1,
+      lineHeight: 16,
     },
     locationIcon: {
       marginLeft: 8,
@@ -172,6 +176,8 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
       fontSize: 11,
       fontWeight: "bold",
       opacity: 0.7,
+      flexShrink: 1,
+      lineHeight: 14, // Explicit line height
     },
     lookingForHeader: {
       flexDirection: "row",
@@ -182,5 +188,6 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
     lookingForText: {
       fontSize: 12,
       fontWeight: "600",
+      lineHeight: 16, // Explicit line height
     },
   });

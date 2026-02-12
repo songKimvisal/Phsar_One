@@ -2,7 +2,10 @@ import AddressDropdowns from "@src/components/shared_components/AddressDropdowns
 import DynamicPhosphorIcon from "@src/components/shared_components/DynamicPhosphorIcon";
 import LocationPickerMap from "@src/components/shared_components/LocationPickerMap";
 import PhotoUploadSection from "@src/components/shared_components/PhotoUploadSection";
+import ThemedCard from "@src/components/shared_components/ThemedCard";
+import ThemedInput from "@src/components/shared_components/ThemedInput";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
+import ConditionSelector from "@src/components/trade_components/ConditionSelector";
 import { Colors } from "@src/constants/Colors";
 import { useTradeDraft } from "@src/context/TradeDraftContext";
 import { useTradeProducts } from "@src/context/TradeProductsContext";
@@ -18,7 +21,6 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -233,7 +235,7 @@ export default function AddTradeProductScreen() {
           >
             <X size={24} color={themeColors.text} weight="bold" />
           </TouchableOpacity>
-          <ThemedText style={styles.headerTitle}>
+          <ThemedText style={styles.headerTitle} numberOfLines={1}>
             {t("trade.add_new_product")}
           </ThemedText>
           <View style={styles.headerSpacer} />
@@ -252,140 +254,59 @@ export default function AddTradeProductScreen() {
           />
 
           {/* Product Information Card */}
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor: themeColors.card,
-                borderColor: themeColors.border,
-              },
-            ]}
-          >
+          <ThemedCard>
             <ThemedText style={styles.sectionTitle}>
               {t("trade.product_information")}
             </ThemedText>
 
             {/* Title */}
-            <View style={styles.inputGroup}>
-              <ThemedText style={styles.inputLabel}>
-                {t("trade.product_title")} *
-              </ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: themeColors.background,
-                    borderColor: themeColors.border,
-                    color: themeColors.text,
-                  },
-                ]}
-                placeholder={t("trade.product_title_placeholder")}
-                placeholderTextColor={themeColors.text + "60"}
-                value={title}
-                onChangeText={setTitle}
-              />
-            </View>
+            <ThemedInput
+              label={t("trade.product_title")}
+              required
+              placeholder={t("trade.product_title_placeholder")}
+              value={title}
+              onChangeText={setTitle}
+            />
 
             {/* Description */}
-            <View style={styles.inputGroup}>
-              <ThemedText style={styles.inputLabel}>
-                {t("trade.description")} *
-              </ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  styles.textArea,
-                  {
-                    backgroundColor: themeColors.background,
-                    borderColor: themeColors.border,
-                    color: themeColors.text,
-                  },
-                ]}
-                placeholder={t("trade.description_placeholder")}
-                placeholderTextColor={themeColors.text + "60"}
-                value={description}
-                onChangeText={setDescription}
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-              />
-            </View>
+            <ThemedInput
+              label={t("trade.description")}
+              required
+              placeholder={t("trade.description_placeholder")}
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+              inputStyle={styles.textArea}
+            />
 
             {/* Condition */}
-            <View style={styles.inputGroup}>
-              <ThemedText style={styles.inputLabel}>
+            <View>
+              <ThemedText
+                style={[{ fontSize: 14, fontWeight: "500", marginBottom: 8 }]}
+              >
                 {t("trade.condition")} *
               </ThemedText>
-              <View style={styles.conditionContainer}>
-                {conditionOptions.map((option) => (
-                  <TouchableOpacity
-                    key={option.value}
-                    style={[
-                      styles.conditionButton,
-                      {
-                        backgroundColor:
-                          condition === option.value
-                            ? Colors.reds[500]
-                            : themeColors.background,
-                        borderColor:
-                          condition === option.value
-                            ? Colors.reds[500]
-                            : themeColors.border,
-                      },
-                    ]}
-                    onPress={() => setCondition(option.value)}
-                  >
-                    <ThemedText
-                      style={[
-                        styles.conditionText,
-                        {
-                          color:
-                            condition === option.value
-                              ? "#FFFFFF"
-                              : themeColors.text,
-                        },
-                      ]}
-                    >
-                      {option.label}
-                    </ThemedText>
-                  </TouchableOpacity>
-                ))}
-              </View>
+              <ConditionSelector
+                condition={condition}
+                onSelectCondition={setCondition}
+                options={conditionOptions}
+              />
             </View>
 
             {/* Original Price (Optional) */}
-            <View style={styles.inputGroup}>
-              <ThemedText style={styles.inputLabel}>
-                {t("trade.original_price")} ({t("optional")})
-              </ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: themeColors.background,
-                    borderColor: themeColors.border,
-                    color: themeColors.text,
-                  },
-                ]}
-                placeholder={t("trade.original_price_placeholder")}
-                placeholderTextColor={themeColors.text + "60"}
-                value={originalPrice}
-                onChangeText={setOriginalPrice}
-                keyboardType="numeric"
-              />
-            </View>
-          </View>
+            <ThemedInput
+              label={`${t("trade.original_price")} (${t("optional")})`}
+              placeholder={t("trade.original_price_placeholder")}
+              value={originalPrice}
+              onChangeText={setOriginalPrice}
+              keyboardType="numeric"
+            />
+          </ThemedCard>
 
           {/* Trade Preferences Card */}
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor: themeColors.card,
-                borderColor: themeColors.border,
-              },
-            ]}
-          >
+          <ThemedCard>
             <ThemedText style={styles.sectionTitle}>
               {t("trade.looking_for")} *
             </ThemedText>
@@ -394,49 +315,24 @@ export default function AddTradeProductScreen() {
             </ThemedText>
 
             {/* Looking For Item Input */}
-            <View style={styles.inputGroup}>
-              <ThemedText style={styles.inputLabel}>
-                {t("trade.item_name")} *
-              </ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: themeColors.background,
-                    borderColor: themeColors.border,
-                    color: themeColors.text,
-                  },
-                ]}
-                placeholder={t("trade.item_name_placeholder")}
-                placeholderTextColor={themeColors.text + "60"}
-                value={lookingForName}
-                onChangeText={setLookingForName}
-              />
-            </View>
+            <ThemedInput
+              label={t("trade.item_name")}
+              required
+              placeholder={t("trade.item_name_placeholder")}
+              value={lookingForName}
+              onChangeText={setLookingForName}
+            />
 
-            <View style={styles.inputGroup}>
-              <ThemedText style={styles.inputLabel}>
-                {t("trade.item_description")} ({t("optional")})
-              </ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  styles.textArea,
-                  {
-                    backgroundColor: themeColors.background,
-                    borderColor: themeColors.border,
-                    color: themeColors.text,
-                  },
-                ]}
-                placeholder={t("trade.item_description_placeholder")}
-                placeholderTextColor={themeColors.text + "60"}
-                value={lookingForDescription}
-                onChangeText={setLookingForDescription}
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-              />
-            </View>
+            <ThemedInput
+              label={`${t("trade.item_description")} (${t("optional")})`}
+              placeholder={t("trade.item_description_placeholder")}
+              value={lookingForDescription}
+              onChangeText={setLookingForDescription}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+              inputStyle={styles.textArea}
+            />
 
             {/* Trade Value Estimation */}
             <View
@@ -452,7 +348,9 @@ export default function AddTradeProductScreen() {
 
             <View style={styles.valueRangeContainer}>
               <View style={[styles.valueInputWrapper, { flex: 1 }]}>
-                <ThemedText style={styles.inputLabel}>
+                <ThemedText
+                  style={[{ fontSize: 14, fontWeight: "500", marginBottom: 8 }]}
+                >
                   {t("trade.minimum_value")}
                 </ThemedText>
                 <View style={styles.currencyInputContainer}>
@@ -461,21 +359,13 @@ export default function AddTradeProductScreen() {
                   >
                     $
                   </ThemedText>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      styles.valueInput,
-                      {
-                        backgroundColor: themeColors.background,
-                        borderColor: themeColors.border,
-                        color: themeColors.text,
-                      },
-                    ]}
+                  <ThemedInput
                     placeholder="1200"
-                    placeholderTextColor={themeColors.text + "60"}
                     value={estimatedMinValue}
                     onChangeText={setEstimatedMinValue}
                     keyboardType="numeric"
+                    inputStyle={styles.valueInput}
+                    containerStyle={{ marginBottom: 0 }}
                   />
                 </View>
               </View>
@@ -485,7 +375,9 @@ export default function AddTradeProductScreen() {
               </View>
 
               <View style={[styles.valueInputWrapper, { flex: 1 }]}>
-                <ThemedText style={styles.inputLabel}>
+                <ThemedText
+                  style={[{ fontSize: 14, fontWeight: "500", marginBottom: 8 }]}
+                >
                   {t("trade.maximum_value")}
                 </ThemedText>
                 <View style={styles.currencyInputContainer}>
@@ -494,21 +386,13 @@ export default function AddTradeProductScreen() {
                   >
                     $
                   </ThemedText>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      styles.valueInput,
-                      {
-                        backgroundColor: themeColors.background,
-                        borderColor: themeColors.border,
-                        color: themeColors.text,
-                      },
-                    ]}
+                  <ThemedInput
                     placeholder="1500"
-                    placeholderTextColor={themeColors.text + "60"}
                     value={estimatedMaxValue}
                     onChangeText={setEstimatedMaxValue}
                     keyboardType="numeric"
+                    inputStyle={styles.valueInput}
+                    containerStyle={{ marginBottom: 0 }}
                   />
                 </View>
               </View>
@@ -522,31 +406,25 @@ export default function AddTradeProductScreen() {
                   { backgroundColor: themeColors.background },
                 ]}
               >
-                <ThemedText style={styles.estimatedRangeLabel}>
+                <ThemedText
+                  style={[styles.estimatedRangeLabel, { flexShrink: 1 }]}
+                >
                   {t("trade.estimated_range")}:
                 </ThemedText>
                 <ThemedText
                   style={[
                     styles.estimatedRangeValue,
-                    { color: Colors.reds[500] },
+                    { color: Colors.reds[500], flexShrink: 1 },
                   ]}
                 >
                   ${estimatedMinValue} - ${estimatedMaxValue}
                 </ThemedText>
               </View>
             )}
-          </View>
+          </ThemedCard>
 
           {/* Location Card */}
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor: themeColors.card,
-                borderColor: themeColors.border,
-              },
-            ]}
-          >
+          <ThemedCard>
             <ThemedText style={styles.sectionTitle}>
               {t("trade.location")} *
             </ThemedText>
@@ -566,45 +444,31 @@ export default function AddTradeProductScreen() {
               themeColors={themeColors}
               t={t}
             />
-          </View>
+          </ThemedCard>
 
           {/* Contact Information Card */}
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor: themeColors.card,
-                borderColor: themeColors.border,
-              },
-            ]}
-          >
+          <ThemedCard>
             <ThemedText style={styles.sectionTitle}>
               {t("trade.contact_information")}
             </ThemedText>
 
             {phoneNumbers.map((phone, index) => (
-              <View key={index} style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>
+              <View key={index} style={{ marginBottom: 16 }}>
+                <ThemedText
+                  style={[{ fontSize: 14, fontWeight: "500", marginBottom: 8 }]}
+                >
                   {t("trade.phone_number")} {index + 1}
                 </ThemedText>
                 <View style={styles.phoneInputContainer}>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      styles.phoneInput,
-                      {
-                        backgroundColor: themeColors.background,
-                        borderColor: themeColors.border,
-                        color: themeColors.text,
-                      },
-                    ]}
+                  <ThemedInput
                     value={phone}
                     onChangeText={(text) =>
                       handleUpdatePhoneNumber(text, index)
                     }
                     keyboardType="phone-pad"
                     placeholder={t("trade.phone_number_placeholder")}
-                    placeholderTextColor={themeColors.text + "60"}
+                    inputStyle={styles.phoneInput}
+                    containerStyle={{ marginBottom: 0, flex: 1 }}
                   />
                   {phoneNumbers.length > 1 && (
                     <TouchableOpacity
@@ -634,7 +498,7 @@ export default function AddTradeProductScreen() {
                 </View>
               </View>
             ))}
-          </View>
+          </ThemedCard>
 
           {/* Submit Button */}
           <TouchableOpacity
@@ -700,40 +564,10 @@ const styles = StyleSheet.create({
     opacity: 0.6,
     marginBottom: 16,
   },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 12,
-    fontSize: 16,
-  },
   textArea: {
     minHeight: 100,
     paddingTop: 12,
   },
-  conditionContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  conditionButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  conditionText: {
-    fontSize: 14,
-    fontWeight: "500",
-  },
-
   submitButton: {
     padding: 16,
     borderRadius: 12,

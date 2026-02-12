@@ -9,7 +9,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { MapPin } from "phosphor-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, StyleSheet, TouchableOpacity, View, Dimensions } from "react-native";
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const { width: screenWidth } = Dimensions.get("window");
 const CARD_WIDTH = (screenWidth - 38) / 2;
@@ -116,7 +122,10 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
         {/* Meta: Time, Location, and Views */}
         <View style={styles.metaContainer}>
           <View style={styles.metaItemContainer}>
-            <ThemedText style={[styles.productMeta, { opacity: 0.6 }]}>
+            <ThemedText
+              style={[styles.productMeta, { opacity: 0.6, flexShrink: 1 }]}
+              numberOfLines={1}
+            >
               {timeAgo}
             </ThemedText>
           </View>
@@ -146,7 +155,10 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 
         {/* Condition and Year (if available in details) */}
         {(product.details?.condition || product.details?.year) && (
-          <ThemedText style={[styles.productMeta, { opacity: 0.6 }]}>
+          <ThemedText
+            style={[styles.productMeta, { opacity: 0.6, flexShrink: 1 }]}
+            numberOfLines={1}
+          >
             {[
               product.details?.condition
                 ? t(
@@ -168,8 +180,10 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
               {
                 color: themeColors.tint,
                 fontWeight: "bold",
+                flexShrink: 1,
               },
             ]}
+            numberOfLines={1}
           >
             {formatPrice(product.price, product.currency)}
           </ThemedText>
@@ -231,6 +245,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 11,
     fontWeight: "bold",
+    lineHeight: 14,
   },
   favoriteButton: {
     position: "absolute",
@@ -250,10 +265,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 2,
+    lineHeight: 20,
   },
   productMeta: {
     fontSize: 12,
     marginTop: 2,
+    lineHeight: 16,
   },
   priceRow: {
     flexDirection: "row",
@@ -265,6 +282,7 @@ const styles = StyleSheet.create({
   productPrice: {
     fontSize: 16,
     fontWeight: "bold",
+    lineHeight: 20,
   },
   negotiableBadge: {
     backgroundColor: Colors.blues[100],
@@ -276,6 +294,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: Colors.blues[700],
     fontWeight: "600",
+    lineHeight: 12,
   },
   metaContainer: {
     flexDirection: "row",
