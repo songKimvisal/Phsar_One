@@ -9,16 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { MapPin } from "phosphor-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-    Dimensions,
-    Image,
-    StyleSheet,
-    TouchableOpacity,
-    View,
-} from "react-native";
-
-const { width: screenWidth } = Dimensions.get("window");
-const CARD_WIDTH = (screenWidth - 38) / 2;
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 interface ProductCardProps {
   product: Product;
@@ -216,10 +207,11 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 
 const styles = StyleSheet.create({
   productCard: {
-    borderRadius: 6,
-    width: "48%",
-    marginBottom: 6,
+    flex: 1,
+    borderRadius: 8,
+    borderCurve: "continuous",
     overflow: "hidden",
+    // Remove marginBottom: 6 if it exists
   },
   imageWrapper: {
     width: "100%",
@@ -258,6 +250,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   productInfo: {
+    flex: 1, // Add this
     padding: 10,
   },
   productName: {
@@ -274,14 +267,14 @@ const styles = StyleSheet.create({
   priceRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 5,
+    marginTop: 6,
     gap: 6,
     flexWrap: "wrap",
   },
   productPrice: {
-    fontSize: 16,
+    fontSize: 14, // Reduce from 16
     fontWeight: "bold",
-    lineHeight: 20,
+    flexShrink: 1, // Already there, good
   },
   negotiableBadge: {
     backgroundColor: Colors.blues[100],
