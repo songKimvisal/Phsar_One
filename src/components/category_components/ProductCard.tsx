@@ -199,11 +199,10 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 
 const styles = StyleSheet.create({
   productCard: {
-    borderRadius: 6,
-    width: "48%",
-    marginBottom: 6,
+    flex: 1, // Add this
+    borderRadius: 8,
+    borderCurve: "continuous",
     overflow: "hidden",
-    borderWidth: 1,
   },
   imageWrapper: {
     width: "100%",

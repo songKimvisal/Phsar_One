@@ -2,14 +2,14 @@ import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { useRouter } from "expo-router";
 import {
-  Armchair,
-  Buildings,
-  Car,
-  Desktop,
-  DeviceMobile,
-  Lightning,
-  ShirtFolded,
-  Sparkle,
+    Armchair,
+    Buildings,
+    Car,
+    Desktop,
+    DeviceMobile,
+    Lightning,
+    ShirtFolded,
+    Sparkle,
 } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";

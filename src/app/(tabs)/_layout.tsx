@@ -2,11 +2,11 @@ import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Tabs } from "expo-router";
 import {
-  ArrowsClockwiseIcon,
-  ChatCircleIcon,
-  HouseIcon,
-  PlusCircleIcon,
-  UserIcon,
+    ArrowsClockwiseIcon,
+    ChatCircleIcon,
+    HouseIcon,
+    PlusCircleIcon,
+    UserIcon,
 } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import { Image, Text } from "react-native";
@@ -45,7 +45,8 @@ export default function TabLayout() {
               marginRight: 16,
               elevation: 1,
               backgroundColor: themeColors.navbg,
-              borderRadius: 999,
+              borderRadius: 20,
+              borderCurve: "continuous",
               height: 66,
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 0 },

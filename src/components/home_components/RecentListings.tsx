@@ -5,7 +5,7 @@ import { Product } from "@src/types/productTypes";
 import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 const mockProducts: Product[] = [
   {
@@ -249,23 +249,26 @@ export default function RecentListings() {
       <ThemedText style={styles.title}>
         {t("home_screen.recent_listings")}
       </ThemedText>
-      <FlatList
-        data={mockProducts}
-        renderItem={renderProduct}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={false}
-      />
+      <View style={styles.row}>
+        {mockProducts.map((item) => (
+          <View key={item.id} style={styles.productItem}>
+            {renderProduct({ item })}
+          </View>
+        ))}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 2,
-    marginTop: 20,
+    marginHorizontal: 6,
+    marginBottom: 64,
+  },
+  row: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6, // Controls the gap between items
   },
   title: {
     fontSize: 20,
@@ -273,7 +276,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginLeft: 16,
   },
-  row: {
-    justifyContent: "space-evenly",
+  productItem: {
+    flex: 1,
+    minWidth: 0,
+    aspectRatio: 0.85,
   },
 });
