@@ -66,7 +66,7 @@ export const Colors = {
     warning: "#FFA500",
     info: blueScale[500],
     link: blueScale[500],
-    error: redScale[700],
+    error: redScale[500],
     success: greenScale[500],
     warningBackground: yellowScale[600],
   },

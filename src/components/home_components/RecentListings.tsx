@@ -262,23 +262,15 @@ export default function RecentListings() {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 6,
-    marginBottom: 64,
-  },
-  row: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6, // Controls the gap between items
+    paddingHorizontal: 2,
+    marginTop: 20,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 8,
-    marginLeft: 16,
   },
-  productItem: {
-    flex: 1,
-    minWidth: 0,
-    aspectRatio: 0.85,
+  row: {
+    justifyContent: "space-evenly",
   },
 });
