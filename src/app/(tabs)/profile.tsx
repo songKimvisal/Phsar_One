@@ -1,4 +1,5 @@
 import DynamicPhosphorIcon from "@/src/components/shared_components/DynamicPhosphorIcon";
+import { useUser } from "@clerk/clerk-expo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
@@ -12,12 +13,13 @@ import {
     CaretRightIcon,
     ChartBarIcon,
     ChartPieSliceIcon,
-    CheckCircleIcon,
+    CheckFatIcon,
+    ClockCountdownIcon,
     ClockCounterClockwiseIcon,
     GearSixIcon,
     HeadsetIcon,
     MoonIcon,
-    NotePencilIcon,
+    PencilSimpleLineIcon,
     PresentationChartIcon,
     SparkleIcon,
     StorefrontIcon,
@@ -28,13 +30,23 @@ import {
 } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+    Image,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
+  const { user } = useUser();
   const { i18n, t } = useTranslation();
   const { theme, setMode } = useTheme();
   const themeColors = useThemeColor();
+
+  const fullName = user?.fullName || user?.firstName || "User";
+  const userImageUrl = user?.imageUrl;
 
   const router = useRouter();
   const toggleTheme = () => {
@@ -98,15 +110,6 @@ export default function ProfileScreen() {
               </ThemedText>
             </TouchableOpacity>
 
-            <TouchableOpacity>
-              {/* Notification */}
-              <DynamicPhosphorIcon
-                name="BellSimple"
-                size={28}
-                color={themeColors.text}
-              />
-            </TouchableOpacity>
-
             {/* Light/Dark mode */}
             <TouchableOpacity onPress={toggleTheme}>
               {theme == "light" ? (
@@ -131,10 +134,21 @@ export default function ProfileScreen() {
               { backgroundColor: themeColors.card },
             ]}
           >
-            <UserCircleIcon size={60} color={themeColors.text} weight="fill" />
+            {userImageUrl ? (
+              <Image
+                source={{ uri: userImageUrl }}
+                style={styles.avatarImage}
+              />
+            ) : (
+              <UserCircleIcon
+                size={60}
+                color={themeColors.text}
+                weight="fill"
+              />
+            )}
           </View>
           <View style={styles.userTextContainer}>
-            <ThemedText style={styles.userName}>John Doe</ThemedText>
+            <ThemedText style={styles.userName}>{fullName}</ThemedText>
             <ThemedText style={styles.userType}>
               {t("user_actions.regular_account")}
             </ThemedText>
@@ -151,20 +165,17 @@ export default function ProfileScreen() {
             label={t("user_actions.active")}
           />
           <GridItem
-            icon={<CheckCircleIcon color={Colors.reds[500]} weight="fill" />}
+            icon={<CheckFatIcon color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.sold")}
           />
           <GridItem
-            icon={<NotePencilIcon color={Colors.reds[500]} weight="fill" />}
+            icon={
+              <PencilSimpleLineIcon color={Colors.reds[500]} weight="fill" />
+            }
             label={t("user_actions.drafts")}
           />
           <GridItem
-            icon={
-              <ClockCounterClockwiseIcon
-                color={Colors.reds[500]}
-                weight="fill"
-              />
-            }
+            icon={<ClockCountdownIcon color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.expired")}
           />
         </ProfileSection>
@@ -175,45 +186,47 @@ export default function ProfileScreen() {
           viewAllLabel={t("user_actions.viewAll")}
         >
           <GridItem
-            icon={<ChartPieSliceIcon size={28} color={themeColors.text} />}
+            icon={<ChartPieSliceIcon size={24} color={themeColors.text} />}
             label={t("user_actions.overview")}
           />
           <GridItem
-            icon={<ChartBarIcon size={28} color={themeColors.text} />}
+            icon={<ChartBarIcon size={24} color={themeColors.text} />}
             label={t("user_actions.insight")}
           />
           <GridItem
-            icon={<TagSimpleIcon size={28} color={themeColors.text} />}
+            icon={<TagSimpleIcon size={24} color={themeColors.text} />}
             label={t("user_actions.myTrade")}
           />
           <GridItem
-            icon={<PresentationChartIcon size={28} color={themeColors.text} />}
+            icon={<PresentationChartIcon size={24} color={themeColors.text} />}
             label={t("user_actions.performance")}
           />
         </ProfileSection>
 
         {/* 5. Footer Grid */}
-        <View style={styles.footerGrid}>
+        <View
+          style={[styles.footerGrid, { backgroundColor: themeColors.card }]}
+        >
+          <GridItem
+            icon={<StorefrontIcon size={24} color={themeColors.text} />}
+            label={t("user_actions.following")}
+          />
           <GridItem
             icon={
-              <ClockCounterClockwiseIcon size={26} color={themeColors.text} />
+              <ClockCounterClockwiseIcon size={24} color={themeColors.text} />
             }
             label={t("user_actions.history")}
           />
           <GridItem
-            icon={<StorefrontIcon size={26} color={themeColors.text} />}
-            label={t("user_actions.following")}
-          />
-          <GridItem
-            icon={<BookmarkSimpleIcon size={26} color={themeColors.text} />}
+            icon={<BookmarkSimpleIcon size={24} color={themeColors.text} />}
             label={t("user_actions.bookMark")}
           />
           <GridItem
-            icon={<CardholderIcon size={26} color={themeColors.text} />}
+            icon={<CardholderIcon size={24} color={themeColors.text} />}
             label={t("user_actions.billing")}
           />
           <GridItem
-            icon={<HeadsetIcon size={26} color={themeColors.text} />}
+            icon={<HeadsetIcon size={24} color={themeColors.text} />}
             label={t("user_actions.helpCenter")}
           />
         </View>
@@ -234,12 +247,7 @@ function ProfileSection({
 }) {
   const themeColors = useThemeColor();
   return (
-    <View
-      style={[
-        styles.section,
-        { borderBottomWidth: 1, borderBottomColor: themeColors.border },
-      ]}
-    >
+    <View style={[styles.section, { backgroundColor: themeColors.card }]}>
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>{title}</ThemedText>
         <TouchableOpacity style={styles.viewAll}>
@@ -308,6 +316,11 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     justifyContent: "center",
     alignItems: "center",
+    overflow: "hidden",
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
   },
   userTextContainer: {
     marginLeft: 15,
@@ -321,17 +334,21 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   section: {
+    marginHorizontal: 16,
+    borderRadius: 16,
+    marginBottom: 8,
+    borderCurve: "continuous",
     paddingVertical: 15,
   },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    marginBottom: 15,
+    marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "600",
   },
   viewAll: {
     flexDirection: "row",
@@ -355,9 +372,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   footerGrid: {
+    marginHorizontal: 16,
+    borderRadius: 16,
+    borderCurve: "continuous",
     flexDirection: "row",
+    alignItems: "flex-start",
     justifyContent: "space-around",
-    paddingVertical: 30,
-    paddingHorizontal: 10,
+    paddingVertical: 16,
+    paddingHorizontal: 8,
   },
 });

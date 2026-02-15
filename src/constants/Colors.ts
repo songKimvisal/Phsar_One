@@ -57,7 +57,7 @@ export const Colors = {
     text: "#F9FAFB",
     background: "#111827",
     secondaryBackground: "#2C3E50",
-    card: "#1F2937",
+    card: "#141d2e",
     tint: redScale[500],
     tabIconDefault: "#4B5563",
     primary: redScale[500],
@@ -69,6 +69,7 @@ export const Colors = {
     error: redScale[500],
     success: greenScale[500],
     warningBackground: yellowScale[600],
+
   },
   reds: redScale,
   blues: blueScale,

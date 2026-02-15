@@ -34,34 +34,42 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
   const discountPercentage =
     product.discountType === "percentage" ? product.discountValue : null;
 
-  const localizedCommune = product.address?.commune ? getLocalizedLocationName(
-    product.address.commune,
-    i18n.language,
-    "commune",
-    product.address.province,
-    product.address.district,
-  ) : null;
+  const localizedCommune = product.address?.commune
+    ? getLocalizedLocationName(
+        product.address.commune,
+        i18n.language,
+        "commune",
+        product.address.province,
+        product.address.district,
+      )
+    : null;
 
-  const localizedDistrict = product.address?.district ? getLocalizedLocationName(
-    product.address.district,
-    i18n.language,
-    "district",
-    product.address.province,
-    null,
-  ) : null;
+  const localizedDistrict = product.address?.district
+    ? getLocalizedLocationName(
+        product.address.district,
+        i18n.language,
+        "district",
+        product.address.province,
+        null,
+      )
+    : null;
 
-  const localizedProvince = product.address?.province ? getLocalizedLocationName(
-    product.address.province,
-    i18n.language,
-    "province",
-    null,
-    null,
-  ) : (product.location_name || ""); // Fallback to database location_name
+  const localizedProvince = product.address?.province
+    ? getLocalizedLocationName(
+        product.address.province,
+        i18n.language,
+        "province",
+        null,
+        null,
+      )
+    : product.location_name || ""; // Fallback to database location_name
 
   const fullAddress =
     [localizedCommune, localizedDistrict, localizedProvince]
       .filter(Boolean)
-      .join(", ") || localizedProvince || "N/A";
+      .join(", ") ||
+    localizedProvince ||
+    "N/A";
   return (
     <TouchableOpacity
       style={[
@@ -122,22 +130,38 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 
         {/* Time and Condition Row */}
         <View style={styles.metaRow}>
-          <Ionicons name="time-outline" size={12} color={themeColors.text} style={styles.icon} />
+          <Ionicons
+            name="time-outline"
+            size={12}
+            color={themeColors.text}
+            style={styles.icon}
+          />
           <ThemedText style={styles.metaText} numberOfLines={1}>
             {timeAgo}
-            {product.details?.condition ? ` • ${t(`fieldOptions.condition.${toCamelCase(product.details.condition)}`)}` : ""}
+            {product.details?.condition
+              ? ` • ${t(`fieldOptions.condition.${toCamelCase(product.details.condition)}`)}`
+              : ""}
             {product.details?.year ? ` • ${product.details.year}` : ""}
           </ThemedText>
         </View>
 
         {/* Price Row */}
         <View style={styles.priceRow}>
-          <ThemedText style={[styles.productPrice, { color: themeColors.tint }]}>
+          <ThemedText
+            style={[styles.productPrice, { color: themeColors.tint }]}
+          >
             {formatPrice(product.price, product.currency)}
           </ThemedText>
           {product.negotiable && (
-            <View style={[styles.negotiableBadge, { backgroundColor: themeColors.tint + "20" }]}>
-              <ThemedText style={[styles.negotiableText, { color: themeColors.tint }]}>
+            <View
+              style={[
+                styles.negotiableBadge,
+                { backgroundColor: themeColors.tint + "20" },
+              ]}
+            >
+              <ThemedText
+                style={[styles.negotiableText, { color: themeColors.tint }]}
+              >
                 {t("productDetail.negotiable")}
               </ThemedText>
             </View>

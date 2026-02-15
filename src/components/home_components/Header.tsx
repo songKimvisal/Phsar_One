@@ -1,8 +1,8 @@
 import useThemeColor from "@src/hooks/useThemeColor";
-import { MagnifyingGlassIcon } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import DynamicPhosphorIcon from "../shared_components/DynamicPhosphorIcon";
 
 export default function Header() {
   const themeColors = useThemeColor();
@@ -22,7 +22,7 @@ export default function Header() {
       <View style={styles.iconsRight}>
         <TouchableOpacity>
           {/* Notification */}
-          <MagnifyingGlassIcon size={28} color={themeColors.text} />
+          <DynamicPhosphorIcon name="Bell" size={24} color={themeColors.text} />
         </TouchableOpacity>
       </View>
     </View>

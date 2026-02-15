@@ -86,12 +86,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 28,
-    borderWidth: 1,
+    borderRadius: 99,
   },
   chipLabel: {
     paddingLeft: 8,
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: "400",
   },
 });

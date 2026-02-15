@@ -25,6 +25,7 @@ export interface Product {
   negotiable: boolean;
   discountType: "none" | "percentage" | "fixed";
   discountValue: string;
+  location_name?: string | null; // Added for Supabase sync
   address: Address;
   location: Location;
   details: Record<string, any>;
@@ -32,7 +33,7 @@ export interface Product {
   views?: number;
   createdAt: string;
   updatedAt: string;
-  status: "active" | "sold" | "interactive";
+  status: "active" | "sold" | "interactive" | "expired" | "draft" | "hidden";
   seller?: {
     id: string;
     name: string;
