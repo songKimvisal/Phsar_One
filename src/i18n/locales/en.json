@@ -40,6 +40,9 @@
     "furniture": "Furniture",
     "other": "Other"
   },
+  "category": {
+    "no_products": "No Products Found"
+  },
   "subcategories": {
     "Phone": "Phone",
     "Tablet": "Tablet",

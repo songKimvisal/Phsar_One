@@ -30,36 +30,38 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
   const mainImage = product.photos[0] || "https://via.placeholder.com/300";
 
   // Calculate if there's a discount
-  const hasDiscount = product.discountType !== "none";
+  const hasDiscount = product.discountType && product.discountType !== "none";
   const discountPercentage =
     product.discountType === "percentage" ? product.discountValue : null;
 
-  const localizedCommune = getLocalizedLocationName(
+  const localizedCommune = product.address?.commune ? getLocalizedLocationName(
     product.address.commune,
     i18n.language,
     "commune",
     product.address.province,
     product.address.district,
-  );
-  const localizedDistrict = getLocalizedLocationName(
+  ) : null;
+
+  const localizedDistrict = product.address?.district ? getLocalizedLocationName(
     product.address.district,
     i18n.language,
     "district",
     product.address.province,
     null,
-  );
-  const localizedProvince = getLocalizedLocationName(
+  ) : null;
+
+  const localizedProvince = product.address?.province ? getLocalizedLocationName(
     product.address.province,
     i18n.language,
     "province",
     null,
     null,
-  );
+  ) : (product.location_name || ""); // Fallback to database location_name
 
   const fullAddress =
     [localizedCommune, localizedDistrict, localizedProvince]
       .filter(Boolean)
-      .join(", ") || "N/A";
+      .join(", ") || localizedProvince || "N/A";
   return (
     <TouchableOpacity
       style={[
@@ -106,95 +108,36 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
       {/* Product Info */}
       <View style={styles.productInfo}>
         {/* Title */}
-        <ThemedText style={styles.productName} numberOfLines={1}>
+        <ThemedText style={styles.productName} numberOfLines={2}>
           {product.title}
         </ThemedText>
 
-        {/* Meta: Time, Location, and Views */}
-        <View style={styles.metaContainer}>
-          <View style={styles.metaItemContainer}>
-            <ThemedText
-              style={[styles.productMeta, { opacity: 0.6, flexShrink: 1 }]}
-              numberOfLines={1}
-            >
-              {timeAgo}
-            </ThemedText>
-          </View>
-
-          {fullAddress && (
-            <>
-              <ThemedText style={[styles.productMeta, { opacity: 0.6 }]}>
-                {" "}
-                •{" "}
-              </ThemedText>
-              <View style={styles.metaItemContainer}>
-                <MapPin
-                  size={12}
-                  color={themeColors.text}
-                  style={styles.mapPinIcon}
-                />
-                <ThemedText
-                  style={[styles.productMeta, { opacity: 0.6 }]}
-                  numberOfLines={1}
-                >
-                  {fullAddress}
-                </ThemedText>
-              </View>
-            </>
-          )}
+        {/* Location Row */}
+        <View style={styles.metaRow}>
+          <MapPin size={12} color={themeColors.text} style={styles.icon} />
+          <ThemedText style={styles.metaText} numberOfLines={1}>
+            {fullAddress}
+          </ThemedText>
         </View>
 
-        {/* Condition and Year (if available in details) */}
-        {(product.details?.condition || product.details?.year) && (
-          <ThemedText
-            style={[styles.productMeta, { opacity: 0.6, flexShrink: 1 }]}
-            numberOfLines={1}
-          >
-            {[
-              product.details?.condition
-                ? t(
-                    `fieldOptions.condition.${toCamelCase(product.details.condition)}`,
-                  )
-                : "",
-              product.details?.year || "",
-            ]
-              .filter(Boolean)
-              .join(` ${t("common.separator_bullet")} `)}
+        {/* Time and Condition Row */}
+        <View style={styles.metaRow}>
+          <Ionicons name="time-outline" size={12} color={themeColors.text} style={styles.icon} />
+          <ThemedText style={styles.metaText} numberOfLines={1}>
+            {timeAgo}
+            {product.details?.condition ? ` • ${t(`fieldOptions.condition.${toCamelCase(product.details.condition)}`)}` : ""}
+            {product.details?.year ? ` • ${product.details.year}` : ""}
           </ThemedText>
-        )}
+        </View>
 
-        {/* Price and Negotiable Badge */}
+        {/* Price Row */}
         <View style={styles.priceRow}>
-          <ThemedText
-            style={[
-              styles.productPrice,
-              {
-                color: themeColors.tint,
-                fontWeight: "bold",
-                flexShrink: 1,
-              },
-            ]}
-            numberOfLines={1}
-          >
+          <ThemedText style={[styles.productPrice, { color: themeColors.tint }]}>
             {formatPrice(product.price, product.currency)}
           </ThemedText>
           {product.negotiable && (
-            <View
-              style={[
-                styles.negotiableBadge,
-                {
-                  backgroundColor: themeColors.tint + "20",
-                },
-              ]}
-            >
-              <ThemedText
-                style={[
-                  styles.negotiableText,
-                  {
-                    color: themeColors.tint,
-                  },
-                ]}
-              >
+            <View style={[styles.negotiableBadge, { backgroundColor: themeColors.tint + "20" }]}>
+              <ThemedText style={[styles.negotiableText, { color: themeColors.tint }]}>
                 {t("productDetail.negotiable")}
               </ThemedText>
             </View>
@@ -254,27 +197,34 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   productName: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
-    marginBottom: 2,
-    lineHeight: 20,
+    marginBottom: 4,
+    lineHeight: 18,
   },
-  productMeta: {
-    fontSize: 12,
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 2,
-    lineHeight: 16,
+  },
+  metaText: {
+    fontSize: 11,
+    opacity: 0.6,
+    marginLeft: 4,
+    flex: 1,
+  },
+  icon: {
+    opacity: 0.6,
   },
   priceRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 6,
+    marginTop: 8,
     gap: 6,
-    flexWrap: "wrap",
   },
   productPrice: {
-    fontSize: 14, // Reduce from 16
+    fontSize: 15,
     fontWeight: "bold",
-    flexShrink: 1, // Already there, good
   },
   negotiableBadge: {
     backgroundColor: Colors.blues[100],

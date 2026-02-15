@@ -1,9 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@src/context/ThemeContext";
 import { router, Stack } from "expo-router";
+import { CaretLeftIcon } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 export default function SellLayout() {
   const { colors } = useTheme(); //
   const { t } = useTranslation();
@@ -24,21 +24,8 @@ export default function SellLayout() {
           headerShown: true,
           title: t("sellSection.Choose_Subcategory"),
           headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{
-                marginLeft: Platform.OS === "ios" ? 0 : 10,
-                width: 30,
-                height: 30,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Ionicons
-                name={Platform.OS === "ios" ? "chevron-back" : "arrow-back"}
-                size={24}
-                color={colors.text}
-              />
+            <TouchableOpacity onPress={() => router.back()}>
+              <CaretLeftIcon size={24} color={colors.text} />
             </TouchableOpacity>
           ),
         }}

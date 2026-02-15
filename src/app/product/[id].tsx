@@ -25,76 +25,67 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  ActivityIndicator,
 } from "react-native";
 
-// Mock product data - replace with your API call
-const mockProducts: Product[] = [
-  {
-    id: "1",
-    title: "Mercedes CLA45",
-    description:
-      "Luxury sedan in excellent condition with low mileage. Perfect for city driving and long trips.",
-    mainCategory: "Vehicles",
-    subCategory: "Car",
-    photos: [
-      "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800",
-      "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=800",
-      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800",
-    ],
-    price: "50000",
-    currency: "KHR",
-    negotiable: true,
-    discountType: "percentage",
-    discountValue: "5",
-    address: {
-      province: "Phnom Penh",
-      district: "Sen Sok",
-      commune: "Phnom Penh Thmey",
-    },
-    location: {
-      latitude: 11.5564,
-      longitude: 104.9282,
-    },
-    details: {
-      brand: "Mercedes",
-      model: "CLA45",
-      year: "2023",
-      mileage: "0",
-      fuelType: "Petrol",
-      transmission: "Manual",
-      color: "White",
-    },
-    contact: {
-      sellerName: "Sarah Chen",
-      phones: ["012 345 678", "098 765 432"],
-      email: "sarah.chen@email.com",
-    },
-    views: 200,
-    createdAt: "2024-01-15T10:00:00Z",
-    updatedAt: "2024-01-15T10:00:00Z",
-    status: "active",
-    seller: {
-      id: "seller1",
-      name: "Sarah Chen",
-      avatar:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
-      verified: true,
-      trusted: true,
-      rating: 4.8,
-      totalListings: 24,
-    },
-  },
-];
+import { useProductDetails } from "@src/hooks/useProductDetails";
+// ... existing imports ...
 
 export default function ProductDetail() {
   const { id } = useLocalSearchParams();
   const themeColors = useThemeColor();
-  const { t } = useTranslation();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [isFavorite, setIsFavorite] = useState(false);
+  const { product: rawProduct, loading } = useProductDetails(id as string);
 
-  const product = mockProducts.find((p) => p.id === id);
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.center, { backgroundColor: themeColors.background }]}>
+        <ActivityIndicator size="large" color="#E44336" />
+      </View>
+    );
+  }
+
+  if (!rawProduct) {
+    return (
+      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+        <Stack.Screen options={{ title: "Product Not Found", headerShown: false }} />
+        <ThemedText style={styles.notFoundText}>Product not found.</ThemedText>
+      </View>
+    );
+  }
+
+  // Map database data to the Product interface expected by UI components
+  const product: Product = {
+    ...rawProduct,
+    id: rawProduct.id,
+    photos: rawProduct.images || [],
+    createdAt: rawProduct.created_at,
+    negotiable: rawProduct.is_negotiable,
+    currency: rawProduct.metadata?.currency || "USD",
+    address: {
+      province: rawProduct.location_name || "",
+      district: rawProduct.metadata?.district || "",
+      commune: rawProduct.metadata?.commune || "",
+    },
+    location: rawProduct.metadata?.location || { latitude: 0, longitude: 0 },
+    details: rawProduct.metadata || {},
+    contact: {
+      sellerName: rawProduct.seller?.first_name || "Unknown",
+      phones: rawProduct.seller?.phone ? [rawProduct.seller.phone] : [],
+      email: rawProduct.seller?.email || "",
+    },
+    seller: {
+      id: rawProduct.seller?.id,
+      name: rawProduct.seller?.first_name || "Seller",
+      avatar: rawProduct.seller?.avatar_url,
+      verified: true,
+      trusted: true,
+      rating: 5.0,
+      totalListings: 1,
+    }
+  };
 
   const handleShare = () => {
     console.log("Sharing product...");
@@ -273,6 +264,10 @@ export default function ProductDetail() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
   },
   scrollView: {
     flex: 1,

@@ -46,9 +46,8 @@ export default function SellScreen() {
             >
               <DynamicPhosphorIcon
                 name={item.icon}
-                size={32}
+                size={28}
                 color={colors.text}
-                weight="duotone"
               />
               <ThemedText style={styles.cardText}>
                 {t(`categories.${item.nameKey}`)}

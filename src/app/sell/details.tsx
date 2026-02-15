@@ -1,43 +1,71 @@
-import { ThemedText } from "@src/components/shared_components/ThemedText";
-import AddressDropdowns from "@src/components/shared_components/AddressDropdowns";
 import DynamicPostFields from "@src/components/sell_components/DynamicPostFields";
+import PriceAndDiscountForm from "@src/components/sell_components/PriceAndDiscountForm";
+import AddressDropdowns from "@src/components/shared_components/AddressDropdowns";
 import LocationPickerMap from "@src/components/shared_components/LocationPickerMap";
 import PhotoUploadSection from "@src/components/shared_components/PhotoUploadSection";
-import PriceAndDiscountForm from "@src/components/sell_components/PriceAndDiscountForm";
 import SellerContactForm from "@src/components/shared_components/SellerContactForm";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import { POST_FIELDS_MAP } from "@src/constants/postFields";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { usePostProduct } from "@src/hooks/usePostProduct";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    FlatList,
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+    Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProductDetailsForm() {
-  const { draft, updateDraft } = useSellDraft(); 
+  const { draft, updateDraft } = useSellDraft();
   const { t, i18n } = useTranslation();
   const fields = POST_FIELDS_MAP[draft.subCategory] || [];
   const themeColors = useThemeColor();
   const activeFont = i18n.language === "kh" ? "khmer-regular" : "undefined";
+  
+  const { postProduct, isPosting } = usePostProduct();
+  const router = useRouter();
 
   const [isLocationConfirmed, setIsLocationConfirmed] = useState(false);
 
-  const handleConfirmLocation = (location: { latitude: number; longitude: number }) => {
+  const handleConfirmLocation = (location: {
+    latitude: number;
+    longitude: number;
+  }) => {
     setIsLocationConfirmed(true);
-    updateDraft("location", location); 
+    updateDraft("location", location);
     console.log("Location confirmed:", location);
   };
 
+  const handlePost = async () => {
+    if (!draft.photos || draft.photos.length === 0) {
+      Alert.alert(t("common.error"), "Please upload at least one photo.");
+      return;
+    }
+
+    try {
+      await postProduct(draft);
+      Alert.alert(t("common.success"), "Your product has been posted!");
+      router.replace("/(tabs)");
+    } catch (error: any) {
+      console.error("Post handle error:", error);
+      Alert.alert(t("common.error"), error.message || "Failed to post product.");
+    }
+  };
+
   return (
-    <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1, backgroundColor: themeColors.background }}>
+    <SafeAreaView
+      edges={["left", "right", "bottom"]}
+      style={{ flex: 1, backgroundColor: themeColors.background }}
+    >
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -51,7 +79,7 @@ export default function ProductDetailsForm() {
               <PhotoUploadSection
                 themeColors={themeColors}
                 photos={draft.photos}
-                onUpdatePhotos={(newPhotos) => updateDraft("photos", newPhotos)} 
+                onUpdatePhotos={(newPhotos) => updateDraft("photos", newPhotos)}
               />
 
               {/* Dynamic Fields from postFields.ts */}
@@ -90,9 +118,13 @@ export default function ProductDetailsForm() {
               {/* Seller Contact Detail Section */}
               <SellerContactForm themeColors={themeColors} t={t} />
 
-              <TouchableOpacity style={styles.submitBtn} onPress={() => {}}>
+              <TouchableOpacity 
+                style={[styles.submitBtn, isPosting && { opacity: 0.7 }]} 
+                onPress={handlePost}
+                disabled={isPosting}
+              >
                 <ThemedText style={styles.submitBtnText}>
-                  {t("sellSection.Post_Now")}
+                  {isPosting ? "Posting..." : t("sellSection.Post_Now")}
                 </ThemedText>
               </TouchableOpacity>
             </View>

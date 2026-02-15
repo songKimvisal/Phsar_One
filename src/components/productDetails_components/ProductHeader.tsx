@@ -19,9 +19,7 @@ const ProductHeader: React.FC<ProductHeaderProps> = ({
   const themeColors = useThemeColor();
 
   return (
-    <View
-      style={[styles.header, { backgroundColor: themeColors.background }]}
-    >
+    <View style={[styles.header, { backgroundColor: themeColors.background }]}>
       <TouchableOpacity
         onPress={() => router.back()}
         style={styles.headerButton}
@@ -40,7 +38,7 @@ const ProductHeader: React.FC<ProductHeaderProps> = ({
           <Ionicons
             name={isFavorite ? "heart" : "heart-outline"}
             size={24}
-            color={isFavorite ? themeColors.tint : themeColors.text} 
+            color={isFavorite ? themeColors.tint : themeColors.text}
           />
         </TouchableOpacity>
       </View>
