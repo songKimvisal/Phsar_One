@@ -1,7 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import DynamicPhosphorIcon from "@src/components/shared_components/DynamicPhosphorIcon";
-import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { MagnifyingGlassIcon } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -9,12 +7,6 @@ import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 export default function Header() {
   const themeColors = useThemeColor();
   const { t, i18n } = useTranslation();
-
-  const toggleLanguage = async () => {
-    const nextLanguage = i18n.language === "kh" ? "en" : "kh";
-    await i18n.changeLanguage(nextLanguage);
-    await AsyncStorage.setItem("user-language", nextLanguage);
-  };
 
   return (
     <View
@@ -28,25 +20,10 @@ export default function Header() {
         />
       </View>
       <View style={styles.iconsRight}>
-        <TouchableOpacity style={styles.languageIcon} onPress={toggleLanguage}>
-          <DynamicPhosphorIcon
-            name="GlobeSimple"
-            size={24}
-            weight="regular"
-            color={themeColors.text}
-          />
-          <ThemedText style={styles.languageTitle}>
-            {t("navigation.toggle_language")}
-          </ThemedText>
+        <TouchableOpacity>
+          {/* Notification */}
+          <MagnifyingGlassIcon size={28} color={themeColors.text} />
         </TouchableOpacity>
-
-        {/* Notification */}
-        <DynamicPhosphorIcon
-          name="BellSimple"
-          size={28}
-          color={themeColors.text}
-          style={styles.iconBtn}
-        />
       </View>
     </View>
   );

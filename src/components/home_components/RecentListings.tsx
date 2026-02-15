@@ -269,6 +269,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 8,
+    marginLeft: 8,
   },
   row: {
     flexDirection: "row",
@@ -277,6 +278,8 @@ const styles = StyleSheet.create({
   },
   productItem: {
     flex: 1,
-    minWidth: 0,
+    minWidth: "45%", // This forces 2 columns - key line!
+    maxWidth: "50%", // This prevents more than 2 columns
+    aspectRatio: 0.85,
   },
 });

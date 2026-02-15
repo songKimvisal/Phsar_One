@@ -2,14 +2,14 @@ import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { useRouter } from "expo-router";
 import {
-    Armchair,
-    Buildings,
-    Car,
-    Desktop,
-    DeviceMobile,
-    Lightning,
-    ShirtFolded,
-    Sparkle,
+    ArmchairIcon,
+    BuildingsIcon,
+    CarIcon,
+    DesktopIcon,
+    DeviceMobileIcon,
+    LightningIcon,
+    ShirtFoldedIcon,
+    SparkleIcon,
 } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
@@ -18,14 +18,14 @@ export default function ProductCategory() {
   const themeColors = useThemeColor();
   const router = useRouter();
   const CATEGORIES = [
-    { id: "1", nameKey: "smart_phone", icon: DeviceMobile },
-    { id: "2", nameKey: "vehicles", icon: Car },
-    { id: "3", nameKey: "beauty", icon: Sparkle },
-    { id: "4", nameKey: "furniture", icon: Armchair },
-    { id: "5", nameKey: "clothing", icon: ShirtFolded },
-    { id: "6", nameKey: "computer", icon: Desktop },
-    { id: "7", nameKey: "real_estates", icon: Buildings },
-    { id: "8", nameKey: "electronic", icon: Lightning },
+    { id: "1", nameKey: "smart_phone", icon: DeviceMobileIcon },
+    { id: "2", nameKey: "vehicles", icon: CarIcon },
+    { id: "3", nameKey: "beauty", icon: SparkleIcon },
+    { id: "4", nameKey: "furniture", icon: ArmchairIcon },
+    { id: "5", nameKey: "clothing", icon: ShirtFoldedIcon },
+    { id: "6", nameKey: "computer", icon: DesktopIcon },
+    { id: "7", nameKey: "real_estates", icon: BuildingsIcon },
+    { id: "8", nameKey: "electronic", icon: LightningIcon },
   ];
 
   const handlePress = (id: string, nameKey: string) => {
@@ -36,9 +36,6 @@ export default function ProductCategory() {
   };
   return (
     <View style={styles.categoryContainer}>
-      <ThemedText style={styles.categoryText}>
-        {t("navigation.category")}
-      </ThemedText>
       <View style={styles.chipContainer}>
         {CATEGORIES.map((item) => {
           const Icon = item.icon;
@@ -54,7 +51,7 @@ export default function ProductCategory() {
                 },
               ]}
             >
-              <Icon size={24} color={themeColors.text} weight="duotone"></Icon>
+              <Icon size={16} color={themeColors.text}></Icon>
               <ThemedText style={styles.chipLabel}>
                 {t(`categories.${item.nameKey}`)}
               </ThemedText>
@@ -71,18 +68,18 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    paddingVertical: 16,
+    paddingVertical: 8,
     paddingHorizontal: 16,
   },
   categoryText: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 15,
+    marginBottom: 12,
   },
   chipContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
+    gap: 6,
   },
   chip: {
     flexDirection: "row",

@@ -1,7 +1,6 @@
 import Header from "@/src/components/home_components/Header";
 import ProductCategory from "@/src/components/home_components/ProductCategory";
 import RecentListings from "@/src/components/home_components/RecentListings";
-import SearchBar from "@src/components/shared_components/SearchBar";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,7 +18,6 @@ export default function Index() {
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         <Header />
-        <SearchBar onSearch={(query) => console.log("Search query:", query)} />
         <ProductCategory />
         <RecentListings />
       </ScrollView>

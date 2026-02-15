@@ -1,3 +1,5 @@
+import DynamicPhosphorIcon from "@/src/components/shared_components/DynamicPhosphorIcon";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import { useTheme } from "@src/context/ThemeContext";
@@ -5,24 +7,24 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import {
-  BookmarkSimpleIcon,
-  CardholderIcon,
-  CaretRightIcon,
-  ChartBarIcon,
-  ChartPieSliceIcon,
-  CheckCircleIcon,
-  ClockCounterClockwiseIcon,
-  GearSixIcon,
-  HeadsetIcon,
-  MoonIcon,
-  NotePencilIcon,
-  PresentationChartIcon,
-  SparkleIcon,
-  StorefrontIcon,
-  SunIcon,
-  TagIcon,
-  TagSimpleIcon,
-  UserCircleIcon,
+    BookmarkSimpleIcon,
+    CardholderIcon,
+    CaretRightIcon,
+    ChartBarIcon,
+    ChartPieSliceIcon,
+    CheckCircleIcon,
+    ClockCounterClockwiseIcon,
+    GearSixIcon,
+    HeadsetIcon,
+    MoonIcon,
+    NotePencilIcon,
+    PresentationChartIcon,
+    SparkleIcon,
+    StorefrontIcon,
+    SunIcon,
+    TagIcon,
+    TagSimpleIcon,
+    UserCircleIcon,
 } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -37,6 +39,12 @@ export default function ProfileScreen() {
   const router = useRouter();
   const toggleTheme = () => {
     setMode(theme === "light" ? "dark" : "light");
+  };
+
+  const toggleLanguage = async () => {
+    const nextLanguage = i18n.language === "kh" ? "en" : "kh";
+    await i18n.changeLanguage(nextLanguage);
+    await AsyncStorage.setItem("user-language", nextLanguage);
   };
 
   return (
@@ -75,6 +83,30 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           <View style={styles.rightIcons}>
+            <TouchableOpacity
+              style={styles.languageIcon}
+              onPress={toggleLanguage}
+            >
+              <DynamicPhosphorIcon
+                name="GlobeSimple"
+                size={24}
+                weight="regular"
+                color={themeColors.text}
+              />
+              <ThemedText style={styles.languageTitle}>
+                {t("navigation.toggle_language")}
+              </ThemedText>
+            </TouchableOpacity>
+
+            <TouchableOpacity>
+              {/* Notification */}
+              <DynamicPhosphorIcon
+                name="BellSimple"
+                size={28}
+                color={themeColors.text}
+              />
+            </TouchableOpacity>
+
             {/* Light/Dark mode */}
             <TouchableOpacity onPress={toggleTheme}>
               {theme == "light" ? (
@@ -86,11 +118,7 @@ export default function ProfileScreen() {
 
             {/* Settings */}
             <TouchableOpacity onPress={() => router.push("/settings")}>
-              <GearSixIcon
-                size={28}
-                color={themeColors.text}
-                style={[{ marginLeft: 15 }, styles.iconBtn]}
-              />
+              <GearSixIcon size={28} color={themeColors.text} />
             </TouchableOpacity>
           </View>
         </View>
@@ -237,7 +265,6 @@ const styles = StyleSheet.create({
   languageIcon: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 10,
     marginLeft: 8,
     paddingVertical: 4,
   },
@@ -267,10 +294,8 @@ const styles = StyleSheet.create({
   },
   rightIcons: {
     flexDirection: "row",
+    gap: 12,
     alignItems: "center",
-  },
-  iconBtn: {
-    padding: 4, // Matches the touch area of your home icons
   },
   userInfo: {
     flexDirection: "row",
