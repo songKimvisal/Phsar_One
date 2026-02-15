@@ -163,20 +163,24 @@ export default function ProfileScreen() {
           <GridItem
             icon={<TagIcon color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.active")}
+            onPress={() => router.push("/user/listings?status=active")}
           />
           <GridItem
             icon={<CheckFatIcon color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.sold")}
+            onPress={() => router.push("/user/listings?status=sold")}
           />
           <GridItem
             icon={
               <PencilSimpleLineIcon color={Colors.reds[500]} weight="fill" />
             }
             label={t("user_actions.drafts")}
+            onPress={() => router.push("/user/listings?status=draft")}
           />
           <GridItem
             icon={<ClockCountdownIcon color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.expired")}
+            onPress={() => router.push("/user/listings?status=expired")}
           />
         </ProfileSection>
 
@@ -261,9 +265,17 @@ function ProfileSection({
 }
 
 // Reusable Grid Item
-function GridItem({ icon, label }: { icon: React.ReactNode; label: string }) {
+function GridItem({ 
+  icon, 
+  label, 
+  onPress 
+}: { 
+  icon: React.ReactNode; 
+  label: string; 
+  onPress?: () => void;
+}) {
   return (
-    <TouchableOpacity style={styles.gridItem}>
+    <TouchableOpacity style={styles.gridItem} onPress={onPress}>
       {icon}
       <ThemedText style={styles.gridLabel}>{label}</ThemedText>
     </TouchableOpacity>
