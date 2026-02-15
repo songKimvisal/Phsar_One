@@ -64,6 +64,8 @@ export default function ProductDetail() {
     createdAt: rawProduct.created_at,
     negotiable: rawProduct.is_negotiable,
     currency: rawProduct.metadata?.currency || "USD",
+    mainCategory: rawProduct.metadata?.mainCategory || "", // Extracted from metadata
+    subCategory: rawProduct.metadata?.subCategory || "",   // Extracted from metadata
     address: {
       province: rawProduct.location_name || "",
       district: rawProduct.metadata?.district || "",
@@ -157,6 +159,10 @@ export default function ProductDetail() {
     product.subCategory,
     product.details,
   );
+
+  console.log("Detail Debug - SubCategory:", product.subCategory);
+  console.log("Detail Debug - Raw Metadata:", JSON.stringify(product.details, null, 2));
+  console.log("Detail Debug - Formatted Details:", JSON.stringify(productDetails, null, 2));
 
   const discountedPrice = calculateDiscountPrice(product);
   const formattedDiscountedPrice =
