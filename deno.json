@@ -1,0 +1,17 @@
+{
+  "tasks": {
+    "start": "supabase functions serve clerk-sync --env-file supabase/.env.local"
+  },
+  "imports": {
+    "std/": "https://deno.land/std@0.168.0/",
+    "supabase": "https://esm.sh/@supabase/supabase-js@2",
+    "svix": "https://esm.sh/svix@1.15.0"
+  },
+  "scopes": {
+    "supabase/functions/": {
+      "std/": "https://deno.land/std@0.168.0/",
+      "supabase": "https://esm.sh/@supabase/supabase-js@2",
+      "svix": "https://esm.sh/svix@1.15.0"
+    }
+  }
+}
