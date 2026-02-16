@@ -22,11 +22,11 @@ import { useTranslation } from "react-i18next";
 import {
     ActivityIndicator,
     Linking,
-    SafeAreaView,
     ScrollView,
     StyleSheet,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useProductDetails } from "@src/hooks/useProductDetails";
 // ... existing imports ...

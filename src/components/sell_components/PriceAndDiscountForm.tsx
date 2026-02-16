@@ -1,248 +1,134 @@
-import DynamicPhosphorIcon from "@src/components/shared_components/DynamicPhosphorIcon";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { ThemedTextInput } from "@src/components/shared_components/ThemedTextInput";
 import { Colors } from "@src/constants/Colors";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
-import React, { useState } from "react";
+import { Check } from "phosphor-react-native";
+import React from "react";
 import { useTranslation } from "react-i18next";
-import { TFunction } from "i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
 
-interface PriceAndDiscountFormProps {
-  themeColors: ReturnType<typeof useThemeColor>;
-  t: TFunction<"translation", undefined>;
-  activeFont: string; // Add this line
-}
-
-export default function PriceAndDiscountForm({
-}: PriceAndDiscountFormProps) {
+export default function PriceAndDiscountForm() {
   const { draft, updateDraft } = useSellDraft();
-  const themeColors = useThemeColor(); // Get themeColors internally
-  const { t } = useTranslation(); // Get t internally
-  const [currencyOpen, setCurrencyOpen] = useState(false);
-  const [currencyItems, setCurrencyItems] = useState([
-    { label: "USD", value: "USD" },
-    { label: "KHR", value: "KHR" },
-  ]);
+  const themeColors = useThemeColor();
+  const { t } = useTranslation();
 
   return (
     <>
-      {/* Price Input and Currency Picker */}
-      <View style={styles.inputGroup}>
-        <ThemedText style={styles.inputLabel}>
-          {t("sellSection.Price")}
-        </ThemedText>
-        <View style={styles.priceAndCurrencyWrapper}>
+      {/* Pricing Section */}
+      <View style={styles.fieldSection}>
+        <View style={styles.labelRow}>
+          <ThemedText style={styles.inputLabel}>Pricing</ThemedText>
+          <ThemedText style={{ color: Colors.reds[500] }}>*</ThemedText>
+        </View>
+        <View style={styles.inputWrapper}>
           <ThemedTextInput
-            style={[
-              styles.input,
-              styles.priceInput,
-              {
-                color: themeColors.text,
-                borderColor: themeColors.border,
-              },
-            ]}
+            style={[styles.input, { borderColor: "#E5E7EB" }]}
             value={draft.price}
             onChangeText={(text) => updateDraft("price", text)}
             keyboardType="numeric"
+            placeholder="0.00"
           />
-          <DropDownPicker
-            open={currencyOpen}
-            value={draft.currency}
-            items={currencyItems}
-            setOpen={setCurrencyOpen}
-            setValue={(value) => updateDraft("currency", value)} // Simplified setValue
-            setItems={setCurrencyItems}
-            containerStyle={styles.currencyPickerContainer}
-            style={{
-              backgroundColor: themeColors.card,
-              borderColor: themeColors.border,
-            }}
-            textStyle={{
-              color: themeColors.text,
-              fontSize: 14,
-              // fontFamily: activeFont, // Removed
-            }}
-            placeholderStyle={{
-              color: themeColors.text,
-              fontSize: 14,
-              // fontFamily: activeFont, // Removed
-            }}
-            listItemLabelStyle={{
-              color: themeColors.text,
-              fontSize: 14,
-              // fontFamily: activeFont, // Removed
-            }}
-            selectedItemLabelStyle={{
-              color: themeColors.text,
-              fontSize: 14,
-              // fontFamily: activeFont, // Removed
-            }}
-            dropDownContainerStyle={{
-              backgroundColor: themeColors.card,
-              borderColor: themeColors.border,
-            }}
-            ArrowUpIconComponent={({ style }) => (
-              <DynamicPhosphorIcon name="CaretUp" size={20} color={themeColors.text} style={style} />
-            )}
-            ArrowDownIconComponent={({ style }) => (
-              <DynamicPhosphorIcon name="CaretDown" size={20} color={themeColors.text} style={style} />
-            )}
-            TickIconComponent={({ style }) => (
-              <DynamicPhosphorIcon name="Check" size={20} color={themeColors.text} style={style} />
-            )}
-            zIndex={4000}
-          />
+          <ThemedText style={styles.unitText}>$</ThemedText>
         </View>
       </View>
 
-      {/* Negotiable Toggle */}
+      {/* Negotiable Checkbox */}
       <TouchableOpacity
-        style={styles.negotiableToggle}
+        style={styles.checkboxRow}
         onPress={() => updateDraft("negotiable", !draft.negotiable)}
+        activeOpacity={0.7}
       >
-        <DynamicPhosphorIcon
-          name={draft.negotiable ? "CheckSquare" : "Square"}
-          size={28}
-          color={draft.negotiable ? themeColors.tint : themeColors.text} // Use themeColors.tint for active negotiable
-        />
-        <ThemedText style={styles.negotiableText}>
-          {t("sellSection.Negotiable")}
-        </ThemedText>
+        <View
+          style={[
+            styles.checkbox,
+            { borderColor: "#E5E7EB" },
+            draft.negotiable && {
+              backgroundColor: Colors.reds[500],
+              borderColor: Colors.reds[500],
+            },
+          ]}
+        >
+          {draft.negotiable && <Check size={16} color="#FFF" weight="bold" />}
+        </View>
+        <ThemedText style={styles.checkboxLabel}>Negotiable</ThemedText>
       </TouchableOpacity>
 
-      {/* Discount Options */}
-      <View style={styles.inputGroup}>
-        <ThemedText style={styles.inputLabel}>
-          {t("sellSection.Discount")}
-        </ThemedText>
-        <View style={styles.discountOptionsContainer}>
-          <TouchableOpacity
-            style={[
-              styles.discountOptionButton,
-              { borderColor: themeColors.border }, // Themed border color
-              draft.discountType === "none" && { backgroundColor: themeColors.tint }, // Themed active background
-            ]}
-            onPress={() => updateDraft("discountType", "none")}
-          >
-            <ThemedText
-              style={draft.discountType === "none" && { color: themeColors.primaryButtonText }} // Themed active text color
-            >
-              {t("sellSection.None")}
-            </ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.discountOptionButton,
-              { borderColor: themeColors.border }, // Themed border color
-              draft.discountType === "percentage" && { backgroundColor: themeColors.tint }, // Themed active background
-            ]}
-            onPress={() => updateDraft("discountType", "percentage")}
-          >
-            <ThemedText
-              style={
-                draft.discountType === "percentage" && { color: themeColors.primaryButtonText } // Themed active text color
-              }
-            >
-              {t("sellSection.Percentage")}
-            </ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.discountOptionButton,
-              { borderColor: themeColors.border }, // Themed border color
-              draft.discountType === "fixed" && { backgroundColor: themeColors.tint }, // Themed active background
-            ]}
-            onPress={() => updateDraft("discountType", "fixed")}
-          >
-            <ThemedText
-              style={draft.discountType === "fixed" && { color: themeColors.primaryButtonText }} // Themed active text color
-            >
-              {t("sellSection.FixedAmount")}
-            </ThemedText>
-          </TouchableOpacity>
+      {/* Discount Section */}
+      <View style={styles.fieldSection}>
+        <View style={styles.labelRow}>
+          <ThemedText style={styles.inputLabel}>Discount</ThemedText>
+          <ThemedText style={{ color: Colors.reds[500] }}>*</ThemedText>
         </View>
-
-        {(draft.discountType === "percentage" ||
-          draft.discountType === "fixed") && (
+        <View style={styles.inputWrapper}>
           <ThemedTextInput
-            style={[
-              styles.input,
-              {
-                color: themeColors.text,
-                borderColor: themeColors.border,
-                marginTop: 20,
-              },
-            ]}
+            style={[styles.input, { borderColor: "#E5E7EB" }]}
             value={draft.discountValue}
             onChangeText={(text) => updateDraft("discountValue", text)}
             keyboardType="numeric"
-            placeholder={
-              draft.discountType === "percentage"
-                ? t("sellSection.DiscountPercentagePlaceholder")
-                : t("sellSection.DiscountFixedAmountPlaceholder")
-            }
+            placeholder="0.00"
           />
-        )}
+          <ThemedText style={styles.unitText}>$</ThemedText>
+        </View>
       </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  inputGroup: {
-    marginBottom: 15,
+  fieldSection: {
+    marginBottom: 2,
+  },
+  labelRow: {
+    flexDirection: "row",
+    gap: 2,
+    marginBottom: 8,
   },
   inputLabel: {
     fontSize: 16,
-    marginBottom: 5,
+    fontWeight: "600",
+    color: "#111827",
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 16,
-    height: 50,
-  },
-  priceAndCurrencyWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    zIndex: 4000,
-  },
-  priceInput: {
     flex: 1,
-    marginRight: 10,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderCurve: "continuous",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    backgroundColor: "#FFF",
+    height: 44,
   },
-  currencyPickerContainer: {
-    width: 100,
+  unitText: {
+    position: "absolute",
+    right: 16,
+    fontSize: 18,
+    fontWeight: "400",
+    color: "#111827",
   },
-  negotiableToggle: {
+  checkboxRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 15,
-    marginBottom: 15,
+    gap: 12,
+    marginBottom: 24,
+    marginTop: 8,
   },
-  negotiableText: {
-    marginLeft: 10,
-    fontSize: 18,
-  },
-  discountOptionsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 10,
-  },
-  discountOptionButton: {
-    padding: 10,
-    borderRadius: 8,
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
     borderWidth: 1,
-    // borderColor: Colors.light.border, // Removed
+    justifyContent: "center",
+    alignItems: "center",
   },
-  // selectedDiscountOption: { // Removed
-  //   backgroundColor: Colors.light.tint,
-  // },
-  // selectedText: { // Removed
-  //   color: Colors.light.background,
-  // },
+  checkboxLabel: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#374151",
+  },
 });

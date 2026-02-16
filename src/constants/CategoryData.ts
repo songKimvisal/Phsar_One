@@ -22,7 +22,7 @@ export const CATEGORY_MAP: Record<
       Motorcycle: "Motorcycle",
       Lorries: "Truck",
       Tractors: "Tractor",
-      "Tuk Tuk & Remork": "TaxiCab",
+      "Tuk Tuk & Remork": "Taxi",
       "Parts & Accessories": "Wrench",
       "Vehicles For Rent": "Key",
       other: "Shapes",

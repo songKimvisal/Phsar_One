@@ -1,13 +1,13 @@
 import { ThemedText } from "@src/components/shared_components/ThemedText";
+import { SellDraft } from "@src/context/SellDraftContext";
+import { TradeDraft } from "@src/context/TradeDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import * as Location from "expo-location";
+import { TFunction } from "i18next";
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Linking, StyleSheet, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { SellDraft } from "@src/context/SellDraftContext"; 
-import { TradeDraft } from "@src/context/TradeDraftContext"; 
-import { useTranslation } from "react-i18next"; 
-import { TFunction } from "i18next";
 
 const DEFAULT_REGION = {
   latitude: 11.5564,
@@ -41,7 +41,7 @@ export default function LocationPickerMap({
   onUpdateDraft,
 }: LocationPickerMapProps) {
   const { t } = useTranslation();
-  const themeColors = useThemeColor(); 
+  const themeColors = useThemeColor();
   const mapRef = useRef<MapView>(null);
 
   const [hasSelectedLocation, setHasSelectedLocation] = useState(
@@ -61,26 +61,25 @@ export default function LocationPickerMap({
         return;
       }
       if (!hasSelectedLocation) {
-            try { 
-              let currentLocation = await Location.getCurrentPositionAsync({});
-              const newLocation = {
-                latitude: currentLocation.coords.latitude,
-                longitude: currentLocation.coords.longitude,
-              };
-              onUpdateDraft("location", newLocation);
-              setMarkerCoord(newLocation);
-              mapRef.current?.animateToRegion(
-                { ...newLocation, latitudeDelta: 0.01, longitudeDelta: 0.01 },
-                1000,
-              );
-              setHasSelectedLocation(true);
-            } catch (error) {
-              console.error("Error getting current location:", error);
-            
-            }
-          }
-        })();
-      }, [currentDraft.location.latitude]); 
+        try {
+          let currentLocation = await Location.getCurrentPositionAsync({});
+          const newLocation = {
+            latitude: currentLocation.coords.latitude,
+            longitude: currentLocation.coords.longitude,
+          };
+          onUpdateDraft("location", newLocation);
+          setMarkerCoord(newLocation);
+          mapRef.current?.animateToRegion(
+            { ...newLocation, latitudeDelta: 0.01, longitudeDelta: 0.01 },
+            1000,
+          );
+          setHasSelectedLocation(true);
+        } catch (error) {
+          console.error("Error getting current location:", error);
+        }
+      }
+    })();
+  }, [currentDraft.location.latitude]);
   const styles = getStyles(themeColors);
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${markerCoord.latitude},${markerCoord.longitude}`;
 
@@ -125,9 +124,6 @@ export default function LocationPickerMap({
 
   return (
     <>
-      <ThemedText style={styles.locationTitle}>
-        {t("sellSection.Pin_Location")}
-      </ThemedText>
       <View
         style={styles.mapContainer}
         onStartShouldSetResponderCapture={() => !isConfirmed}
@@ -137,7 +133,11 @@ export default function LocationPickerMap({
           style={styles.map}
           initialRegion={
             currentDraft.location.latitude
-              ? { ...currentDraft.location, latitudeDelta: 0.01, longitudeDelta: 0.01 }
+              ? {
+                  ...currentDraft.location,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }
               : DEFAULT_REGION
           }
           onPress={(e) => !isConfirmed && handleTap(e.nativeEvent.coordinate)}
@@ -190,8 +190,9 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
     locationTitle: { marginTop: 20, fontSize: 16, marginBottom: 10 },
     mapContainer: {
       height: 200,
-      borderRadius: 10,
-      marginBottom: 15,
+      borderRadius: 16,
+      borderCurve: "continuous",
+      marginBottom: 8,
       overflow: "hidden",
     },
     map: {
@@ -202,12 +203,12 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
       backgroundColor: "rgba(0,0,0,0.3)",
     },
     buttonContainer: {
-      marginBottom: 20,
+      marginBottom: 8,
     },
     customButton: {
       backgroundColor: themeColors.tint,
-      padding: 15,
-      borderRadius: 10,
+      padding: 12,
+      borderRadius: 99,
       alignItems: "center",
     },
     disabledButton: {
@@ -216,7 +217,7 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
     customButtonText: {
       color: themeColors.primaryButtonText,
       fontSize: 16,
-      fontWeight: "bold",
+      fontWeight: "500",
     },
     confirmedContainer: {
       flexDirection: "row",

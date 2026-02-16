@@ -20,12 +20,7 @@ export default function SellerContactForm({}: SellerContactFormProps) {
 
   return (
     <>
-      <ThemedText
-        style={[
-          styles.sectionTitle,
-          { fontSize: 25, marginBottom: 30, fontWeight: "bold" },
-        ]}
-      >
+      <ThemedText style={[styles.sectionTitle]}>
         {t("sellSection.SellerContactDetail")}
       </ThemedText>
 
@@ -39,7 +34,7 @@ export default function SellerContactForm({}: SellerContactFormProps) {
             styles.input,
             {
               color: themeColors.text,
-              borderColor: themeColors.border,
+              borderColor: "#E5E7EB",
             },
           ]}
           value={draft.contact.sellerName}
@@ -66,7 +61,7 @@ export default function SellerContactForm({}: SellerContactFormProps) {
                   styles.phoneInput,
                   {
                     color: themeColors.text,
-                    borderColor: themeColors.border,
+                    borderColor: "#E5E7EB",
                   },
                 ]}
                 value={phone}
@@ -132,7 +127,7 @@ export default function SellerContactForm({}: SellerContactFormProps) {
             styles.input,
             {
               color: themeColors.text,
-              borderColor: themeColors.border,
+              borderColor: "#E5E7EB",
             },
           ]}
           value={draft.contact.email}
@@ -148,23 +143,23 @@ export default function SellerContactForm({}: SellerContactFormProps) {
 
 const styles = StyleSheet.create({
   sectionTitle: {
-    marginTop: 20,
-    fontSize: 16,
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: "600",
   },
   inputGroup: {
-    marginBottom: 15,
+    marginBottom: 2,
   },
   inputLabel: {
     fontSize: 16,
-    marginBottom: 5,
+    marginTop: 12,
+    marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 10,
     fontSize: 16,
-    height: 50,
+    height: 44,
   },
   phoneInputContainer: {
     flexDirection: "row",

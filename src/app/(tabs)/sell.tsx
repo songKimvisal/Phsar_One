@@ -3,15 +3,21 @@ import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CATEGORY_MAP } from "@src/constants/CategoryData";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { useRouter, Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { FlatList, StyleSheet, TouchableOpacity, View, Dimensions } from "react-native";
+import {
+    Dimensions,
+    FlatList,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 const COLUMN_COUNT = 3;
-const GAP = 12;
-const CARD_WIDTH = (width - 32 - (GAP * (COLUMN_COUNT - 1))) / COLUMN_COUNT;
+const GAP = 8;
+const CARD_WIDTH = (width - 32 - GAP * (COLUMN_COUNT - 1)) / COLUMN_COUNT;
 
 export default function SellScreen() {
   const themeColors = useThemeColor();
@@ -32,7 +38,7 @@ export default function SellScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       <Stack.Screen options={{ headerShown: false }} />
-      
+
       {/* Custom Header Section */}
       <View style={styles.header}>
         <ThemedText style={styles.title}>
@@ -53,7 +59,10 @@ export default function SellScreen() {
           <TouchableOpacity
             style={[
               styles.card,
-              { backgroundColor: themeColors.card, borderColor: themeColors.border },
+              {
+                backgroundColor: themeColors.card,
+                borderColor: themeColors.text + "10",
+              },
             ]}
             onPress={() => handleCategoryPress(item.id)}
             activeOpacity={0.7}
@@ -81,9 +90,9 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     alignItems: "center",
   },
-  title: { 
-    fontSize: 28, 
-    fontWeight: "800", 
+  title: {
+    fontSize: 28,
+    fontWeight: "600",
     textAlign: "center",
     marginBottom: 8,
   },
@@ -94,7 +103,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 16,
-    paddingBottom: 40,
+    paddingBottom: 4,
   },
   columnWrapper: {
     justifyContent: "flex-start",
@@ -103,17 +112,13 @@ const styles = StyleSheet.create({
   },
   card: {
     width: CARD_WIDTH,
-    height: CARD_WIDTH * 1.2,
-    borderRadius: 16,
+    height: CARD_WIDTH,
+    borderRadius: 10,
+    borderCurve: "continuous",
     borderWidth: 1,
-    padding: 8,
     justifyContent: "center",
     alignItems: "center",
     elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
   },
   iconCircle: {
     width: 60,
@@ -123,9 +128,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-  cardText: { 
-    fontSize: 13, 
-    fontWeight: "700", 
+  cardText: {
+    fontSize: 13,
+    fontWeight: "500",
     textAlign: "center",
     lineHeight: 16,
   },

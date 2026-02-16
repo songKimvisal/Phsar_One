@@ -18,7 +18,6 @@ import { useTranslation } from "react-i18next";
 import {
   Image,
   Linking,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -26,6 +25,7 @@ import {
   View,
   useColorScheme,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TradeProductDetailScreen() {
   const router = useRouter();

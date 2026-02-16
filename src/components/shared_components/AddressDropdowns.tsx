@@ -1,406 +1,301 @@
-import DynamicPhosphorIcon from "@src/components/shared_components/DynamicPhosphorIcon";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
-import { SellDraft } from "@src/context/SellDraftContext"; // Import for type hinting
-import { TradeDraft } from "@src/context/TradeDraftContext"; // Import for type hinting
+import { SellDraft } from "@src/context/SellDraftContext";
+import { TradeDraft } from "@src/context/TradeDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { TFunction } from "i18next";
-import React, { useEffect, useState } from "react";
+import {
+    CaretDownIcon,
+    MagnifyingGlassIcon,
+    XIcon,
+} from "phosphor-react-native";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
+import {
+    FlatList,
+    Modal,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ThemedTextInput } from "./ThemedTextInput";
 
 interface AddressDropdownsProps {
-  currentDraft: SellDraft | TradeDraft; // Generic type to accept either draft
+  currentDraft: SellDraft | TradeDraft;
   onUpdateDraft: (key: string, value: any) => void;
   themeColors: ReturnType<typeof useThemeColor>;
   t: TFunction<"translation", undefined>;
-  activeFont: string; // Add this line
+  activeFont: string;
 }
 
 export default function AddressDropdowns({
   currentDraft,
   onUpdateDraft,
 }: AddressDropdownsProps) {
-  const { t, i18n } = useTranslation(); // Use useTranslation internally
-  const themeColors = useThemeColor(); // Use useThemeColor internally
+  const { t, i18n } = useTranslation();
+  const themeColors = useThemeColor();
+  const insets = useSafeAreaInsets();
   const currentLang = i18n.language;
 
-  const [selectedProvince, setSelectedProvince] = useState(
-    currentDraft.province || null,
-  );
-  const [selectedDistrict, setSelectedDistrict] = useState(
-    currentDraft.district || null,
-  );
-  const [selectedCommune, setSelectedCommune] = useState(
-    currentDraft.commune || null,
-  );
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState<
+    "province" | "district" | "commune" | null
+  >(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const [provinceOpen, setProvinceOpen] = useState(false);
-  const [districtOpen, setDistrictOpen] = useState(false);
-  const [communeOpen, setCommuneOpen] = useState(false);
+  const getLabel = (
+    type: "province" | "district" | "commune",
+    value: string,
+  ) => {
+    if (!value) return "";
 
-  const initialProvinces = CAMBODIA_LOCATIONS.map((p) => ({
-    label: currentLang === "kh" ? p.name_km : p.name_en,
-    value: p.name_en,
-  }));
+    if (type === "province") {
+      const p = CAMBODIA_LOCATIONS.find((loc) => loc.name_en === value);
+      return currentLang === "kh" ? p?.name_km : p?.name_en;
+    }
 
-  const initialDistricts = selectedProvince
-    ? CAMBODIA_LOCATIONS.find(
-        (p) => p.name_en === selectedProvince,
-      )?.subdivisions.map((d) => ({
-        label: currentLang === "kh" ? d.name_km : d.name_en,
-        value: d.name_en,
-      })) || []
-    : [];
+    if (type === "district") {
+      const p = CAMBODIA_LOCATIONS.find(
+        (loc) => loc.name_en === currentDraft.province,
+      );
+      const d = p?.subdivisions.find((dist) => dist.name_en === value);
+      return currentLang === "kh" ? d?.name_km : d?.name_en;
+    }
 
-  const initialCommunes =
-    selectedDistrict && selectedProvince
-      ? CAMBODIA_LOCATIONS.find((p) => p.name_en === selectedProvince)
-          ?.subdivisions.find((d) => d.name_en === selectedDistrict)
-          ?.subdivisions.map((c) => ({
-            label: currentLang === "kh" ? c.name_km : c.name_en,
-            value: c.name_en,
-          })) || []
-      : [];
+    if (type === "commune") {
+      const p = CAMBODIA_LOCATIONS.find(
+        (loc) => loc.name_en === currentDraft.province,
+      );
+      const d = p?.subdivisions.find(
+        (dist) => dist.name_en === currentDraft.district,
+      );
+      const c = d?.subdivisions.find((com) => com.name_en === value);
+      return currentLang === "kh" ? c?.name_km : c?.name_en;
+    }
+    return value;
+  };
 
-  const [provinceItems, setProvinceItems] = useState(initialProvinces);
-  const [districtItems, setDistrictItems] = useState(initialDistricts);
-  const [communeItems, setCommuneItems] = useState(initialCommunes);
+  const openPicker = (type: "province" | "district" | "commune") => {
+    if (type === "district" && !currentDraft.province) return;
+    if (type === "commune" && !currentDraft.district) return;
 
-  useEffect(() => {
-    // Provinces
-    setProvinceItems(
-      CAMBODIA_LOCATIONS.map((p) => ({
-        label: currentLang === "kh" ? p.name_km : p.name_en,
-        value: p.name_en,
-      })),
+    setModalType(type);
+    setSearchQuery("");
+    setModalVisible(true);
+  };
+
+  const handleSelect = (value: string) => {
+    if (modalType === "province") {
+      onUpdateDraft("province", value);
+      onUpdateDraft("district", "");
+      onUpdateDraft("commune", "");
+    } else if (modalType === "district") {
+      onUpdateDraft("district", value);
+      onUpdateDraft("commune", "");
+    } else if (modalType === "commune") {
+      onUpdateDraft("commune", value);
+    }
+    setModalVisible(false);
+  };
+
+  const getItems = () => {
+    let items: any[] = [];
+    if (modalType === "province") {
+      items = CAMBODIA_LOCATIONS;
+    } else if (modalType === "district") {
+      items =
+        CAMBODIA_LOCATIONS.find((p) => p.name_en === currentDraft.province)
+          ?.subdivisions || [];
+    } else if (modalType === "commune") {
+      const d = CAMBODIA_LOCATIONS.find(
+        (p) => p.name_en === currentDraft.province,
+      )?.subdivisions.find((d) => d.name_en === currentDraft.district);
+      items = d?.subdivisions || [];
+    }
+
+    if (searchQuery) {
+      items = items.filter(
+        (item) =>
+          item.name_en.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.name_km.includes(searchQuery),
+      );
+    }
+    return items;
+  };
+
+  const renderPickerTrigger = (
+    type: "province" | "district" | "commune",
+    labelKey: string,
+  ) => {
+    const value = currentDraft[type];
+    const displayLabel = getLabel(type, value as string);
+    const isDisabled =
+      (type === "district" && !currentDraft.province) ||
+      (type === "commune" && !currentDraft.district);
+
+    return (
+      <View style={styles.inputGroup}>
+        <ThemedText style={styles.inputLabel}>
+          {t(`sellSection.${labelKey}`)}
+        </ThemedText>
+        <TouchableOpacity
+          style={[
+            styles.trigger,
+            {
+              borderColor: themeColors.text + "15",
+              backgroundColor: isDisabled ? "#F5F5F5" : "#FFF",
+            },
+          ]}
+          onPress={() => openPicker(type)}
+          disabled={isDisabled}
+        >
+          <ThemedText style={[styles.triggerText, !value && { opacity: 0.3 }]}>
+            {displayLabel || `Select ${t(`sellSection.${labelKey}`)}`}
+          </ThemedText>
+          <CaretDownIcon size={20} color={themeColors.text} />
+        </TouchableOpacity>
+      </View>
     );
-
-    // Districts
-    if (selectedProvince) {
-      const districts =
-        CAMBODIA_LOCATIONS.find(
-          (p) => p.name_en === selectedProvince,
-        )?.subdivisions.map((d) => ({
-          label: currentLang === "kh" ? d.name_km : d.name_en,
-          value: d.name_en,
-        })) || [];
-      setDistrictItems(districts);
-    } else {
-      setDistrictItems([]);
-    }
-
-    // Communes
-    if (selectedProvince && selectedDistrict) {
-      const communes =
-        CAMBODIA_LOCATIONS.find((p) => p.name_en === selectedProvince)
-          ?.subdivisions.find((d) => d.name_en === selectedDistrict)
-          ?.subdivisions.map((c) => ({
-            label: currentLang === "kh" ? c.name_km : c.name_en,
-            value: c.name_en,
-          })) || [];
-      setCommuneItems(communes);
-    } else {
-      setCommuneItems([]);
-    }
-  }, [currentLang, selectedProvince, selectedDistrict]);
+  };
 
   return (
     <>
-      {/* Province/Capital Dropdown */}
-      <View style={[styles.inputGroup, { zIndex: 3000 }]}>
-        <ThemedText style={[styles.inputLabel, { marginBottom: 10 }]}>
-          {t("sellSection.ProvinceCapital")}
-        </ThemedText>
-        <DropDownPicker
-          open={provinceOpen}
-          value={selectedProvince}
-          items={provinceItems}
-          setOpen={setProvinceOpen}
-          setValue={setSelectedProvince}
-          setItems={setProvinceItems}
-          placeholder={`Select ${t("sellSection.ProvinceCapital")}`}
-          listMode="SCROLLVIEW"
-          scrollViewProps={{
-            nestedScrollEnabled: true,
-          }}
-          dropDownDirection="BOTTOM"
-          zIndex={3000}
-          zIndexInverse={1000}
-          maxHeight={300}
-          style={{
-            backgroundColor: themeColors.card,
-            borderColor: themeColors.border,
-          }}
-          textStyle={{
-            color: themeColors.text,
-            fontSize: 16,
-          }}
-          placeholderStyle={{
-            color: themeColors.text,
-            fontSize: 16,
-          }}
-          listItemLabelStyle={{
-            color: themeColors.text,
-            fontSize: 16,
-          }}
-          selectedItemLabelStyle={{
-            color: themeColors.text,
-            fontSize: 16,
-          }}
-          dropDownContainerStyle={{
-            backgroundColor: themeColors.card,
-            borderColor: themeColors.border,
-          }}
-          ArrowUpIconComponent={({ style }) => (
-            <DynamicPhosphorIcon
-              name="CaretUp"
-              size={20}
-              color={themeColors.text}
-              style={style}
-            />
-          )}
-          ArrowDownIconComponent={({ style }) => (
-            <DynamicPhosphorIcon
-              name="CaretDown"
-              size={20}
-              color={themeColors.text}
-              style={style}
-            />
-          )}
-          TickIconComponent={({ style }) => (
-            <DynamicPhosphorIcon
-              name="Check"
-              size={20}
-              color={themeColors.text}
-              style={style}
-            />
-          )}
-          onOpen={() => {
-            setDistrictOpen(false);
-            setCommuneOpen(false);
-          }}
-          onSelectItem={(item) => {
-            if (item && item.value) {
-              onUpdateDraft("province", item.value);
-              setSelectedDistrict(null);
-              onUpdateDraft("district", "");
-              setSelectedCommune(null);
-              onUpdateDraft("commune", "");
+      {renderPickerTrigger("province", "ProvinceCapital")}
+      {renderPickerTrigger("district", "KhanDistrict")}
+      {renderPickerTrigger("commune", "SangkatCommune")}
 
-              // Update district items based on selected province
-              const newDistricts =
-                CAMBODIA_LOCATIONS.find(
-                  (p) => p.name_en === item.value,
-                )?.subdivisions.map((d) => ({
-                  label: currentLang === "km" ? d.name_km : d.name_en,
-                  value: d.name_en,
-                })) || [];
-              setDistrictItems(newDistricts);
-              setCommuneItems([]);
-            }
-          }}
-        />
-      </View>
+      <Modal 
+        visible={modalVisible} 
+        animationType="slide" 
+        transparent={false}
+        presentationStyle="fullScreen"
+      >
+        <View style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}>
+          <View style={styles.modalHeader}>
+            <ThemedText style={styles.modalTitle}>
+              Select {modalType}
+            </ThemedText>
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.closeBtn}
+            >
+              <XIcon size={24} color="#000" />
+            </TouchableOpacity>
+          </View>
 
-      {/* Khan/District Dropdown */}
-      {selectedProvince && (
-        <View
-          style={[
-            styles.inputGroup,
-            { zIndex: 2000, marginTop: provinceOpen ? 250 : 0 },
-          ]}
-        >
-          <ThemedText style={[styles.inputLabel, { marginBottom: 10 }]}>
-            {t("sellSection.KhanDistrict")}
-          </ThemedText>
-          <DropDownPicker
-            open={districtOpen}
-            value={selectedDistrict}
-            items={districtItems}
-            setOpen={setDistrictOpen}
-            setValue={setSelectedDistrict}
-            setItems={setDistrictItems}
-            placeholder={`Select ${t("sellSection.KhanDistrict")}`}
-            listMode="SCROLLVIEW"
-            scrollViewProps={{
-              nestedScrollEnabled: true,
-            }}
-            dropDownDirection="BOTTOM"
-            zIndex={2000}
-            zIndexInverse={2000}
-            maxHeight={300}
-            style={{
-              backgroundColor: themeColors.card,
-              borderColor: themeColors.border,
-            }}
-            textStyle={{
-              color: themeColors.text,
-              fontSize: 16,
-            }}
-            placeholderStyle={{
-              color: themeColors.text,
-              fontSize: 16,
-            }}
-            listItemLabelStyle={{
-              color: themeColors.text,
-              fontSize: 16,
-            }}
-            selectedItemLabelStyle={{
-              color: themeColors.text,
-              fontSize: 16,
-            }}
-            dropDownContainerStyle={{
-              backgroundColor: themeColors.card,
-              borderColor: themeColors.border,
-            }}
-            ArrowUpIconComponent={({ style }) => (
-              <DynamicPhosphorIcon
-                name="CaretUp"
-                size={20}
-                color={themeColors.text}
-                style={style}
-              />
-            )}
-            ArrowDownIconComponent={({ style }) => (
-              <DynamicPhosphorIcon
-                name="CaretDown"
-                size={20}
-                color={themeColors.text}
-                style={style}
-              />
-            )}
-            TickIconComponent={({ style }) => (
-              <DynamicPhosphorIcon
-                name="Check"
-                size={20}
-                color={themeColors.text}
-                style={style}
-              />
-            )}
-            onOpen={() => {
-              setProvinceOpen(false);
-              setCommuneOpen(false);
-            }}
-            onSelectItem={(item) => {
-              if (item && item.value) {
-                onUpdateDraft("district", item.value);
-                setSelectedCommune(null);
-                onUpdateDraft("commune", "");
+          <View style={styles.searchContainer}>
+            <MagnifyingGlassIcon
+              size={20}
+              color="#999"
+              style={styles.searchIcon}
+            />
+            <ThemedTextInput
+              style={styles.modalSearchInput}
+              placeholder="Search..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              autoFocus
+            />
+          </View>
 
-                // Update commune items based on selected district
-                const newCommunes =
-                  CAMBODIA_LOCATIONS.find((p) => p.name_en === selectedProvince)
-                    ?.subdivisions.find((d) => d.name_en === item.value)
-                    ?.subdivisions.map((c) => ({
-                      label: currentLang === "km" ? c.name_km : c.name_en,
-                      value: c.name_en,
-                    })) || [];
-                setCommuneItems(newCommunes);
-              }
-            }}
+          <FlatList
+            data={getItems()}
+            keyExtractor={(item) => item.name_en}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.itemRow}
+                onPress={() => handleSelect(item.name_en)}
+              >
+                <ThemedText style={styles.itemNameEn}>
+                  {item.name_en}
+                </ThemedText>
+                <ThemedText style={styles.itemNameKm}>
+                  {item.name_km}
+                </ThemedText>
+              </TouchableOpacity>
+            )}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
           />
         </View>
-      )}
-
-      {/* Sangkat/Commune Dropdown */}
-      {selectedDistrict && (
-        <View
-          style={[
-            styles.inputGroup,
-            { zIndex: 1000, marginTop: districtOpen ? 250 : 0 },
-          ]}
-        >
-          <ThemedText style={[styles.inputLabel, { marginBottom: 10 }]}>
-            {t("sellSection.SangkatCommune")}
-          </ThemedText>
-          <DropDownPicker
-            open={communeOpen}
-            value={selectedCommune}
-            items={communeItems}
-            setOpen={setCommuneOpen}
-            setValue={setSelectedCommune}
-            setItems={setCommuneItems}
-            placeholder={`Select ${t("sellSection.SangkatCommune")}`}
-            listMode="SCROLLVIEW"
-            scrollViewProps={{
-              nestedScrollEnabled: true,
-            }}
-            dropDownDirection="BOTTOM"
-            zIndex={1000}
-            zIndexInverse={3000}
-            maxHeight={300}
-            style={{
-              backgroundColor: themeColors.card,
-              borderColor: themeColors.border,
-            }}
-            textStyle={{
-              color: themeColors.text,
-              fontSize: 16,
-            }}
-            placeholderStyle={{
-              color: themeColors.text,
-              fontSize: 16,
-            }}
-            listItemLabelStyle={{
-              color: themeColors.text,
-              fontSize: 16,
-            }}
-            selectedItemLabelStyle={{
-              color: themeColors.text,
-              fontSize: 16,
-            }}
-            dropDownContainerStyle={{
-              backgroundColor: themeColors.card,
-              borderColor: themeColors.border,
-            }}
-            ArrowUpIconComponent={({ style }) => (
-              <DynamicPhosphorIcon
-                name="CaretUp"
-                size={20}
-                color={themeColors.text}
-                style={style}
-              />
-            )}
-            ArrowDownIconComponent={({ style }) => (
-              <DynamicPhosphorIcon
-                name="CaretDown"
-                size={20}
-                color={themeColors.text}
-                style={style}
-              />
-            )}
-            TickIconComponent={({ style }) => (
-              <DynamicPhosphorIcon
-                name="Check"
-                size={20}
-                color={themeColors.text}
-                style={style}
-              />
-            )}
-            onOpen={() => {
-              setProvinceOpen(false);
-              setDistrictOpen(false);
-            }}
-            onSelectItem={(item) => {
-              if (item && item.value) {
-                onUpdateDraft("commune", item.value);
-              }
-            }}
-          />
-        </View>
-      )}
+      </Modal>
     </>
   );
 }
 
 const styles = StyleSheet.create({
   inputGroup: {
-    marginBottom: 15,
+    marginBottom: 2,
   },
   inputLabel: {
     fontSize: 16,
-    marginBottom: 5,
+    fontWeight: "600",
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  trigger: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderRadius: 12,
+    height: 44,
+    paddingHorizontal: 16,
+  },
+  triggerText: {
+    fontSize: 16,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEE",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    textTransform: "capitalize",
+  },
+  closeBtn: {
+    padding: 4,
+  },
+  searchContainer: {
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchIcon: {
+    position: "absolute",
+    left: 28,
+    zIndex: 1,
+  },
+  modalSearchInput: {
+    flex: 1,
+    height: 44,
+    backgroundColor: "#F3F4F6",
+    borderRadius: 24,
+    paddingLeft: 44,
+    borderWidth: 0,
+  },
+  itemRow: {
+    padding: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  itemNameEn: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  itemNameKm: {
+    fontSize: 16,
+    opacity: 0.5,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "#F3F4F6",
+    marginHorizontal: 16,
   },
 });
