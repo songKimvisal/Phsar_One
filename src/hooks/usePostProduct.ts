@@ -1,8 +1,8 @@
 import { useAuth } from "@clerk/clerk-expo";
-import { createClerkSupabaseClient } from "../lib/supabase";
-import * as FileSystem from "expo-file-system/legacy";
 import { decode } from "base64-arraybuffer";
+import * as FileSystem from "expo-file-system/legacy";
 import { useState } from "react";
+import { createClerkSupabaseClient } from "../lib/supabase";
 
 // Mapping frontend category keys ("1", "2"...) to the fixed database UUIDs
 const CATEGORY_UUID_MAP: Record<string, string> = {
@@ -55,6 +55,8 @@ export function usePostProduct() {
   };
 
   const postProduct = async (draft: any) => {
+    if (!userId) throw new Error("User ID is missing. Please sign in again.");
+    
     setIsPosting(true);
     try {
       const token = await getToken();
@@ -72,7 +74,7 @@ export function usePostProduct() {
 
       // 3. Prepare the data
       const productData = {
-        seller_id: userId,
+        seller_id: userId as string,
         category_id: dbCategoryId,
         title: draft.title || `${draft.subCategory} Listing`,
         description: draft.description,

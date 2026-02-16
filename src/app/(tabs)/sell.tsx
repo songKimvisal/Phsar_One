@@ -1,18 +1,24 @@
-import DynamicPhosphorIcon from "@src/components/shared_components/DynamicPhosphorIcon"; // Import DynamicPhosphorIcon
+import DynamicPhosphorIcon from "@src/components/shared_components/DynamicPhosphorIcon";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CATEGORY_MAP } from "@src/constants/CategoryData";
 import { useSellDraft } from "@src/context/SellDraftContext";
-import { useTheme } from "@src/context/ThemeContext";
-import { useRouter } from "expo-router";
+import useThemeColor from "@src/hooks/useThemeColor";
+import { useRouter, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const { width } = Dimensions.get("window");
+const COLUMN_COUNT = 3;
+const GAP = 12;
+const CARD_WIDTH = (width - 32 - (GAP * (COLUMN_COUNT - 1))) / COLUMN_COUNT;
+
 export default function SellScreen() {
-  const { colors } = useTheme();
+  const themeColors = useThemeColor();
   const { t } = useTranslation();
   const router = useRouter();
-  const { updateDraft, resetDraft } = useSellDraft();
+  const { updateDraft } = useSellDraft();
+
   const handleCategoryPress = (id: string) => {
     updateDraft("categoryId", id);
     router.push({ pathname: "/sell/subcategory", params: { categoryId: id } });
@@ -24,55 +30,103 @@ export default function SellScreen() {
   }));
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={styles.container}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+      <Stack.Screen options={{ headerShown: false }} />
+      
+      {/* Custom Header Section */}
+      <View style={styles.header}>
         <ThemedText style={styles.title}>
           {t("sellSection.What_are_you_selling?")}
         </ThemedText>
+        <ThemedText style={styles.subtitle}>
+          {t("sellSection.category_subtitle")}
+        </ThemedText>
+      </View>
 
-        <FlatList
-          data={categories}
-          numColumns={2}
-          keyExtractor={(item) => item.id}
-          columnWrapperStyle={{ gap: 12 }}
-          contentContainerStyle={{ gap: 12 }}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[
-                styles.card,
-                { backgroundColor: colors.card, borderColor: colors.border },
-              ]}
-              onPress={() => handleCategoryPress(item.id)}
-            >
+      <FlatList
+        data={categories}
+        numColumns={COLUMN_COUNT}
+        keyExtractor={(item) => item.id}
+        columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle={styles.listContent}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[
+              styles.card,
+              { backgroundColor: themeColors.card, borderColor: themeColors.border },
+            ]}
+            onPress={() => handleCategoryPress(item.id)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.iconCircle}>
               <DynamicPhosphorIcon
                 name={item.icon}
-                size={28}
-                color={colors.text}
+                size={32}
+                color={themeColors.text}
               />
-              <ThemedText style={styles.cardText}>
-                {t(`categories.${item.nameKey}`)}
-              </ThemedText>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
+            </View>
+            <ThemedText style={styles.cardText} numberOfLines={2}>
+              {t(`categories.${item.nameKey}`)}
+            </ThemedText>
+          </TouchableOpacity>
+        )}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { paddingHorizontal: 16, paddingVertical: 10, flex: 1 },
-  title: { fontSize: 22, fontWeight: "600", marginBottom: 20 },
+  header: {
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+    alignItems: "center",
+  },
+  title: { 
+    fontSize: 28, 
+    fontWeight: "800", 
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    opacity: 0.6,
+    textAlign: "center",
+  },
+  listContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 40,
+  },
+  columnWrapper: {
+    justifyContent: "flex-start",
+    gap: GAP,
+    marginBottom: GAP,
+  },
   card: {
-    flex: 1,
-    padding: 20,
-    height: 100,
-    borderRadius: 12,
+    width: CARD_WIDTH,
+    height: CARD_WIDTH * 1.2,
+    borderRadius: 16,
     borderWidth: 1,
+    padding: 8,
     justifyContent: "center",
     alignItems: "center",
-    flexDirection: "column",
-    gap: 8,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
   },
-  cardText: { fontSize: 14, fontWeight: "500", textAlign: "center" },
+  iconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  cardText: { 
+    fontSize: 13, 
+    fontWeight: "700", 
+    textAlign: "center",
+    lineHeight: 16,
+  },
 });

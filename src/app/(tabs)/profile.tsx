@@ -265,13 +265,13 @@ function ProfileSection({
 }
 
 // Reusable Grid Item
-function GridItem({ 
-  icon, 
-  label, 
-  onPress 
-}: { 
-  icon: React.ReactNode; 
-  label: string; 
+function GridItem({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: React.ReactNode;
+  label: string;
   onPress?: () => void;
 }) {
   return (
@@ -298,11 +298,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 12,
   },
   upgradeBtn: {
     paddingHorizontal: 16,
-    paddingVertical: 6,
+    paddingVertical: 8,
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",

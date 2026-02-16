@@ -1,3 +1,9 @@
+import useThemeColor from "@/src/hooks/useThemeColor";
+import {
+    Product,
+    calculateDiscountPrice,
+    formatTimeAgo,
+} from "@/src/types/productTypes";
 import BuyerSafetyGuidelines from "@src/components/productDetails_components/BuyerSafetyGuidelines";
 import ProductActionButtons from "@src/components/productDetails_components/ProductActionButtons";
 import ProductDescription from "@src/components/productDetails_components/ProductDescription";
@@ -9,23 +15,17 @@ import ProductLocation from "@src/components/productDetails_components/ProductLo
 import SellerInfoSection from "@src/components/productDetails_components/SellerInfoSection";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
-import useThemeColor from "@/src/hooks/useThemeColor";
-import {
-  Product,
-  calculateDiscountPrice,
-  formatTimeAgo,
-} from "@/src/types/productTypes";
 import { formatProductDetails } from "@src/utils/productUtils";
 import { Stack, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Linking,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-  ActivityIndicator,
+    ActivityIndicator,
+    Linking,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    View,
 } from "react-native";
 
 import { useProductDetails } from "@src/hooks/useProductDetails";
@@ -41,16 +41,26 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.center, { backgroundColor: themeColors.background }]}>
-        <ActivityIndicator size="large" color="#E44336" />
+      <View
+        style={[
+          styles.container,
+          styles.center,
+          { backgroundColor: themeColors.background },
+        ]}
+      >
+        <ActivityIndicator size="small" color="#E44336" />
       </View>
     );
   }
 
   if (!rawProduct) {
     return (
-      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-        <Stack.Screen options={{ title: "Product Not Found", headerShown: false }} />
+      <View
+        style={[styles.container, { backgroundColor: themeColors.background }]}
+      >
+        <Stack.Screen
+          options={{ title: "Product Not Found", headerShown: false }}
+        />
         <ThemedText style={styles.notFoundText}>Product not found.</ThemedText>
       </View>
     );
@@ -65,7 +75,7 @@ export default function ProductDetail() {
     negotiable: rawProduct.is_negotiable,
     currency: rawProduct.metadata?.currency || "USD",
     mainCategory: rawProduct.metadata?.mainCategory || "", // Extracted from metadata
-    subCategory: rawProduct.metadata?.subCategory || "",   // Extracted from metadata
+    subCategory: rawProduct.metadata?.subCategory || "", // Extracted from metadata
     address: {
       province: rawProduct.location_name || "",
       district: rawProduct.metadata?.district || "",
@@ -86,7 +96,7 @@ export default function ProductDetail() {
       trusted: true,
       rating: 5.0,
       totalListings: 1,
-    }
+    },
   };
 
   const handleShare = () => {
@@ -161,8 +171,14 @@ export default function ProductDetail() {
   );
 
   console.log("Detail Debug - SubCategory:", product.subCategory);
-  console.log("Detail Debug - Raw Metadata:", JSON.stringify(product.details, null, 2));
-  console.log("Detail Debug - Formatted Details:", JSON.stringify(productDetails, null, 2));
+  console.log(
+    "Detail Debug - Raw Metadata:",
+    JSON.stringify(product.details, null, 2),
+  );
+  console.log(
+    "Detail Debug - Formatted Details:",
+    JSON.stringify(productDetails, null, 2),
+  );
 
   const discountedPrice = calculateDiscountPrice(product);
   const formattedDiscountedPrice =

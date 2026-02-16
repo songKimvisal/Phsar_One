@@ -1,6 +1,5 @@
 import ProductCard from "@src/components/category_components/ProductCard";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
-import { useProducts } from "@src/hooks/useProducts";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -12,7 +11,10 @@ interface RecentListingsProps {
   loading: boolean;
 }
 
-export default function RecentListings({ products, loading }: RecentListingsProps) {
+export default function RecentListings({
+  products,
+  loading,
+}: RecentListingsProps) {
   const themeColors = useThemeColor();
   const { t } = useTranslation();
   const router = useRouter();
@@ -20,7 +22,7 @@ export default function RecentListings({ products, loading }: RecentListingsProp
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#E44336" />
+        <ActivityIndicator size="small" color="#E44336" />
       </View>
     );
   }
@@ -40,8 +42,11 @@ export default function RecentListings({ products, loading }: RecentListingsProp
       key={item.id}
       product={{
         ...item,
-        photos: item.images && item.images.length > 0 ? item.images : ["https://via.placeholder.com/300"], 
-        createdAt: item.created_at, 
+        photos:
+          item.images && item.images.length > 0
+            ? item.images
+            : ["https://via.placeholder.com/300"],
+        createdAt: item.created_at,
         negotiable: item.is_negotiable,
         currency: item.metadata?.currency || "USD",
         mainCategory: item.metadata?.mainCategory || "",
@@ -51,7 +56,7 @@ export default function RecentListings({ products, loading }: RecentListingsProp
           district: item.metadata?.district || "",
           commune: item.metadata?.commune || "",
         },
-        details: item.metadata || {}
+        details: item.metadata || {},
       }}
       onPress={() => {
         router.push(`/product/${item.id}`);

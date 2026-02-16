@@ -1,7 +1,7 @@
-import PricingCard, {
-  PricingPlan,
-} from "@src/components/subscription/PricingCard";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
+import PricingCard, {
+    PricingPlan,
+} from "@src/components/subscription/PricingCard";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { useRouter } from "expo-router";
 import { CaretLeftIcon } from "phosphor-react-native";
@@ -59,11 +59,16 @@ export default function SubscriptionPage() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: themeColors.background }]}
+    >
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <CaretLeftIcon size={24} color={themeColors.text} weight="regular" />
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backButton}
+        >
+          <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
         <ThemedText style={styles.headerTitle}>Subscriptions</ThemedText>
         <View style={styles.placeholder} />

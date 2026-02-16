@@ -3,11 +3,12 @@ import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CATEGORY_MAP } from "@src/constants/CategoryData";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { CaretLeft, CaretRight } from "phosphor-react-native";
 
 export default function SubcategoryScreen() {
   const { draft, updateDraft } = useSellDraft();
@@ -15,89 +16,84 @@ export default function SubcategoryScreen() {
   const router = useRouter();
   const themeColors = useThemeColor();
   const { categoryId: paramCategoryId } = useLocalSearchParams();
-  const handleBack = () => {
-    router.replace("/(tabs)/sell");
-  };
-
-  console.log("SubcategoryScreen - paramCategoryId:", paramCategoryId);
-  console.log(
-    "SubcategoryScreen - draft.categoryId (before update):",
-    draft.categoryId,
-  );
 
   useEffect(() => {
     if (paramCategoryId && draft.categoryId !== paramCategoryId) {
-      updateDraft("categoryId", paramCategoryId);
+      updateDraft("categoryId", paramCategoryId as string);
     }
-  }, [paramCategoryId, draft.categoryId, updateDraft]);
+  }, [paramCategoryId]);
 
-  const currentCategoryId = draft.categoryId || paramCategoryId;
+  const currentCategoryId = (paramCategoryId || draft.categoryId) as string;
+  const categoryData = CATEGORY_MAP[currentCategoryId];
 
-  console.log("SubcategoryScreen - currentCategoryId:", currentCategoryId);
-
-  const subCategoryData = Object.entries(
-    CATEGORY_MAP[currentCategoryId as string]?.sub || {},
-  ).map(([name, icon]) => ({
+  const subCategoryData = Object.entries(categoryData?.sub || {}).map(([name, icon]) => ({
     name,
     icon,
   }));
 
-  console.log("SubcategoryScreen - subCategoryData:", subCategoryData);
-
-  if (!currentCategoryId) {
-    return (
-      <SafeAreaView
-        style={[
-          styles.container,
-          { backgroundColor: themeColors.background, justifyContent: "center" },
-        ]}
-      >
-        <ThemedText style={{ textAlign: "center" }}>
-          {t("common.loading")}...
-        </ThemedText>
-        <TouchableOpacity onPress={handleBack} style={{ marginTop: 10 }}>
-          <ThemedText style={{ color: "red", textAlign: "center" }}>
-            Go Back
-          </ThemedText>
-        </TouchableOpacity>
-      </SafeAreaView>
-    );
-  }
+  const handleBack = () => {
+    router.back();
+  };
 
   return (
-    <SafeAreaView
-      style={[
-        styles.container,
-        { backgroundColor: themeColors.background, flex: 1 },
-      ]}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
+      <Stack.Screen options={{ headerShown: false }} />
+      
+      {/* Custom Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <CaretLeft size={28} color={themeColors.text} weight="bold" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Category Info */}
+      <View style={styles.categoryInfo}>
+        <View style={styles.categoryIconContainer}>
+          <DynamicPhosphorIcon 
+            name={categoryData?.icon || "Shapes"} 
+            size={40} 
+            color={themeColors.text} 
+            weight="fill"
+          />
+        </View>
+        <View>
+          <ThemedText style={styles.categoryTitle}>
+            {t(`categories.${categoryData?.nameKey}`)}
+          </ThemedText>
+          <ThemedText style={styles.categorySubtitle}>
+            {t("sellSection.Choose_Subcategory") || "Pick your subcategory"}
+          </ThemedText>
+        </View>
+      </View>
+
       <FlatList
-        style={{ marginTop: 20, paddingHorizontal: 16 }}
         data={subCategoryData}
         keyExtractor={(item) => item.name}
+        contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={[
               styles.listItem,
-              {
-                backgroundColor: themeColors.card,
-                borderColor: themeColors.border,
-              },
+              { backgroundColor: themeColors.card, borderColor: themeColors.text + "10" },
             ]}
             onPress={() => {
               updateDraft("subCategory", item.name);
               router.push("/sell/details");
             }}
           >
-            <DynamicPhosphorIcon
-              name={item.icon}
-              size={24}
-              color={themeColors.text}
-              weight="regular"
-            />
-            <ThemedText style={{ marginLeft: 10 }}>
-              {t(`subcategories.${item.name}`)}
-            </ThemedText>
+            <View style={styles.listItemLeft}>
+              <View style={styles.subIconContainer}>
+                <DynamicPhosphorIcon
+                  name={item.icon}
+                  size={24}
+                  color={themeColors.text}
+                />
+              </View>
+              <ThemedText style={styles.listItemText}>
+                {t(`subcategories.${item.name}`)}
+              </ThemedText>
+            </View>
+            <CaretRight size={20} color={themeColors.text} opacity={0.3} />
           </TouchableOpacity>
         )}
       />
@@ -106,22 +102,68 @@ export default function SubcategoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+  header: {
+    paddingHorizontal: 8,
+    paddingVertical: 12,
   },
-  listItem: {
-    padding: 20,
-    marginVertical: 4,
-    borderRadius: 10,
-    borderWidth: 1,
+  backButton: {
+    padding: 8,
+  },
+  categoryInfo: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginBottom: 30,
+    gap: 16,
+  },
+  categoryIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    backgroundColor: "#f5f5f5", // Light placeholder bg like Figma
+    justifyContent: "center",
     alignItems: "center",
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 24,
+  categoryTitle: {
+    fontSize: 28,
+    fontWeight: "800",
+  },
+  categorySubtitle: {
+    fontSize: 16,
+    opacity: 0.6,
+  },
+  listContent: {
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+  },
+  listItemLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  subIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    backgroundColor: "#f5f5f5",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  listItemText: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

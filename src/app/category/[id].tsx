@@ -645,7 +645,7 @@ export default function CategoryDetailScreen() {
       {/* Product List */}
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={themeColors.tint} />
+          <ActivityIndicator size="small" color={themeColors.tint} />
         </View>
       ) : filteredProducts.length === 0 ? (
         <EmptyState
