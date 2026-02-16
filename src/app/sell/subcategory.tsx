@@ -6,11 +6,7 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SubcategoryScreen() {
@@ -97,7 +93,7 @@ export default function SubcategoryScreen() {
               name={item.icon}
               size={24}
               color={themeColors.text}
-              weight="duotone"
+              weight="regular"
             />
             <ThemedText style={{ marginLeft: 10 }}>
               {t(`subcategories.${item.name}`)}

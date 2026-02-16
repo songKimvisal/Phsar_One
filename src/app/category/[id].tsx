@@ -11,12 +11,12 @@ import { CaretLeft, Funnel, MapPin } from "phosphor-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  ActivityIndicator,
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    FlatList,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -290,7 +290,7 @@ export default function CategoryDetailScreen() {
                   name={subItem.icon}
                   size={16}
                   color={isSelected ? "#FFFFFF" : themeColors.text}
-                  weight="duotone"
+                  weight="regular"
                 />
                 <ThemedText
                   style={[
