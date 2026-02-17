@@ -32,6 +32,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
         styles.thumbnail,
         selectedImageIndex === index && {
           borderColor: themeColors.tint,
+          borderWidth: 1,
         },
       ]}
     >
@@ -76,19 +77,19 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").width * 0.75,
   },
   thumbnailContainer: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    marginHorizontal: 6,
+    marginVertical: 6,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
   },
   thumbnailList: {
-    gap: 8,
+    gap: 0,
   },
   thumbnail: {
     width: 80,
     height: 80,
-    borderRadius: 8,
     overflow: "hidden",
-    borderWidth: 2,
-    borderColor: "transparent",
+    borderWidth: 0,
   },
   thumbnailImage: {
     width: "100%",

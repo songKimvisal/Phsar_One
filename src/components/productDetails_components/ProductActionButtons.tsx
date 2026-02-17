@@ -1,6 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { ChatCircleIcon, PhoneIcon } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
@@ -22,20 +22,22 @@ const ProductActionButtons: React.FC<ProductActionButtonsProps> = ({
   return (
     <View style={styles.actionButtons}>
       <TouchableOpacity style={styles.callButton} onPress={onCallSeller}>
-        <Ionicons name="call" size={20} color="white" />
+        <PhoneIcon size={20} color={themeColors.background} />
         <ThemedText style={styles.callButtonText}>
           {t("productDetail.callSeller")}
         </ThemedText>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.chatButton, { backgroundColor: themeColors.card }]}
+        style={[
+          styles.chatButton,
+          {
+            backgroundColor: themeColors.card,
+            borderColor: themeColors.text + "20",
+          },
+        ]}
         onPress={onChatSeller}
       >
-        <Ionicons
-          name="chatbubble-outline"
-          size={20}
-          color={themeColors.text}
-        />
+        <ChatCircleIcon size={20} color={themeColors.text} />
         <ThemedText style={styles.chatButtonText}>
           {t("productDetail.chatSeller")}
         </ThemedText>
@@ -48,8 +50,9 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
   StyleSheet.create({
     actionButtons: {
       flexDirection: "row",
-      gap: 12,
+      gap: 6,
       marginBottom: 24,
+      height: 44,
       paddingHorizontal: 16,
     },
     callButton: {
@@ -58,29 +61,27 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      paddingVertical: 14,
-      borderRadius: 8,
+      borderRadius: 99,
       gap: 8,
     },
     callButtonText: {
       color: "white",
-      fontSize: 16,
-      fontWeight: "600",
+      fontSize: 14,
+      fontWeight: "500",
     },
     chatButton: {
       flex: 1,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      paddingVertical: 14,
-      borderRadius: 8,
+      borderRadius: 99,
       gap: 8,
       borderWidth: 1,
       borderColor: themeColors.border,
     },
     chatButtonText: {
-      fontSize: 16,
-      fontWeight: "600",
+      fontSize: 14,
+      fontWeight: "500",
       color: themeColors.text,
     },
   });

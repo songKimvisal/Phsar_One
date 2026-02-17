@@ -10,9 +10,9 @@ import { POST_FIELDS_MAP } from "@src/constants/postFields";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import { usePostProduct } from "@src/hooks/usePostProduct";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { CaretLeftIcon } from "phosphor-react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
     Alert,
@@ -22,18 +22,44 @@ import {
     StyleSheet,
     TouchableOpacity,
     View,
+    ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProductDetailsForm() {
-  const { draft, updateDraft } = useSellDraft();
+  const { draft, updateDraft, setDraft, resetDraft } = useSellDraft();
   const { t, i18n } = useTranslation();
+  const { editId } = useLocalSearchParams<{ editId: string }>();
+  const [isInitialLoading, setIsInitialLoading] = useState(!!editId);
+  
   const fields = POST_FIELDS_MAP[draft.subCategory] || [];
   const themeColors = useThemeColor();
   const activeFont = i18n.language === "kh" ? "khmer-regular" : "undefined";
 
-  const { postProduct, isPosting } = usePostProduct();
+  const { postProduct, updateProduct, fetchProductForEdit, isPosting } = usePostProduct();
   const router = useRouter();
+
+  // Load existing product if editId is provided
+  useEffect(() => {
+    if (editId) {
+      const loadProduct = async () => {
+        try {
+          setIsInitialLoading(true);
+          const data = await fetchProductForEdit(editId);
+          setDraft(data);
+        } catch (error) {
+          Alert.alert("Error", "Failed to load product details.");
+          router.back();
+        } finally {
+          setIsInitialLoading(false);
+        }
+      };
+      loadProduct();
+    } else {
+      // If not editing, ensure we have a clean draft if it was previously used
+      // Note: Be careful with resetDraft here if users navigate back/forth between subcategory and details
+    }
+  }, [editId]);
 
   const [isLocationConfirmed, setIsLocationConfirmed] = useState(false);
 
@@ -52,44 +78,57 @@ export default function ProductDetailsForm() {
     }
 
     try {
-      await postProduct(draft);
-      Alert.alert(t("common.success"), "Your product has been posted!");
+      if (editId) {
+        await updateProduct(editId, draft);
+        Alert.alert(t("common.success"), "Your product has been updated!");
+      } else {
+        await postProduct(draft);
+        Alert.alert(t("common.success"), "Your product has been posted!");
+      }
+      resetDraft();
       router.replace("/(tabs)");
     } catch (error: any) {
       console.error("Post handle error:", error);
       Alert.alert(
         t("common.error"),
-        error.message || "Failed to post product.",
+        error.message || "Failed to save product.",
       );
     }
   };
 
+  if (isInitialLoading) {
+    return (
+      <View style={[styles.center, { backgroundColor: "#F9FAFB" }]}>
+        <ActivityIndicator size="large" color={Colors.reds[500]} />
+        <ThemedText style={{ marginTop: 12 }}>Loading details...</ThemedText>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView
       edges={["top", "left", "right"]}
-      style={{ flex: 1, backgroundColor: "#FFF" }} // Match status bar and header
+      style={{ flex: 1, backgroundColor: "#FFF" }}
     >
       <Stack.Screen options={{ headerShown: false }} />
-
-      {/* Custom Header */}
 
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.back()}
           style={styles.backButton}
         >
-          <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
+          <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
 
         <ThemedText style={styles.headerTitle}>
-          {t(`subcategories.${draft.subCategory}`) || draft.subCategory}
+          {editId ? "Edit Listing" : (t(`subcategories.${draft.subCategory}`) || draft.subCategory)}
         </ThemedText>
 
         <View style={{ width: 44 }} />
       </View>
 
       <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: "#F9FAFB" }} // Content area background
+        style={{ flex: 1, backgroundColor: "#F9FAFB" }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <FlatList
@@ -156,6 +195,9 @@ export default function ProductDetailsForm() {
               <View
                 style={[styles.card, { backgroundColor: themeColors.card }]}
               >
+                <ThemedText style={styles.sectionTitle}>
+                  {t("sellSection.SellerContactDetail")}
+                </ThemedText>
                 <SellerContactForm themeColors={themeColors} t={t} />
               </View>
 
@@ -173,7 +215,7 @@ export default function ProductDetailsForm() {
                   disabled={isPosting}
                 >
                   <ThemedText style={styles.submitBtnText}>
-                    {isPosting ? "..." : "Save"}
+                    {isPosting ? "Saving..." : (editId ? "Update" : "Save")}
                   </ThemedText>
                 </TouchableOpacity>
               </View>
@@ -249,4 +291,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });

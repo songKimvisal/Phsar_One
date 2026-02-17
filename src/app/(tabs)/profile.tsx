@@ -8,34 +8,33 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import {
-    BookmarkSimpleIcon,
-    CardholderIcon,
-    CaretRightIcon,
-    ChartBarIcon,
-    ChartPieSliceIcon,
-    CheckFatIcon,
-    ClockCountdownIcon,
-    ClockCounterClockwiseIcon,
-    GearSixIcon,
-    HeadsetIcon,
-    MoonIcon,
-    PencilSimpleLineIcon,
-    PresentationChartIcon,
-    SparkleIcon,
-    StorefrontIcon,
-    SunIcon,
-    TagIcon,
-    TagSimpleIcon,
-    UserCircleIcon,
+  BookmarkSimpleIcon,
+  CardholderIcon,
+  ChartBarIcon,
+  ChartPieSliceIcon,
+  CheckFatIcon,
+  ClockCountdownIcon,
+  ClockCounterClockwiseIcon,
+  GearSixIcon,
+  HeadsetIcon,
+  MoonIcon,
+  PencilSimpleLineIcon,
+  PresentationChartIcon,
+  SparkleIcon,
+  StorefrontIcon,
+  SunIcon,
+  TagIcon,
+  TagSimpleIcon,
+  UserCircleIcon,
 } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -156,10 +155,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* 3. My Listings */}
-        <ProfileSection
-          title={t("user_actions.myLists")}
-          viewAllLabel={t("user_actions.viewAll")}
-        >
+        <ProfileSection title={t("user_actions.myLists")}>
           <GridItem
             icon={<TagIcon color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.active")}
@@ -185,10 +181,7 @@ export default function ProfileScreen() {
         </ProfileSection>
 
         {/* 4. Dashboard */}
-        <ProfileSection
-          title={t("user_actions.dashboard")}
-          viewAllLabel={t("user_actions.viewAll")}
-        >
+        <ProfileSection title={t("user_actions.dashboard")}>
           <GridItem
             icon={<ChartPieSliceIcon size={24} color={themeColors.text} />}
             label={t("user_actions.overview")}
@@ -243,21 +236,15 @@ export default function ProfileScreen() {
 function ProfileSection({
   title,
   children,
-  viewAllLabel,
 }: {
   title: string;
   children: React.ReactNode;
-  viewAllLabel: string;
 }) {
   const themeColors = useThemeColor();
   return (
     <View style={[styles.section, { backgroundColor: themeColors.card }]}>
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>{title}</ThemedText>
-        <TouchableOpacity style={styles.viewAll}>
-          <ThemedText style={styles.viewAllText}>{viewAllLabel}</ThemedText>
-          <CaretRightIcon size={14} color="#888" />
-        </TouchableOpacity>
       </View>
       <View style={styles.gridRow}>{children}</View>
     </View>

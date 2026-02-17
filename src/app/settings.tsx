@@ -3,16 +3,16 @@ import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Stack, useRouter } from "expo-router";
 import {
-    BellIcon,
-    CaretLeftIcon,
-    CaretRightIcon,
-    CreditCardIcon,
-    GearSixIcon,
-    HeadphonesIcon,
-    InfoIcon,
-    LockIcon,
-    MapPinIcon,
-    UserCircleIcon,
+  BellIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+  CreditCardIcon,
+  GearSixIcon,
+  HeadphonesIcon,
+  InfoIcon,
+  LockIcon,
+  MapPinIcon,
+  UserCircleIcon,
 } from "phosphor-react-native";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";

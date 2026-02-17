@@ -5,18 +5,18 @@ import { TradeDraft } from "@src/context/TradeDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { TFunction } from "i18next";
 import {
-    CaretDownIcon,
-    MagnifyingGlassIcon,
-    XIcon,
+  CaretDownIcon,
+  MagnifyingGlassIcon,
+  XIcon,
 } from "phosphor-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    FlatList,
-    Modal,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedTextInput } from "./ThemedTextInput";
@@ -165,13 +165,15 @@ export default function AddressDropdowns({
       {renderPickerTrigger("district", "KhanDistrict")}
       {renderPickerTrigger("commune", "SangkatCommune")}
 
-      <Modal 
-        visible={modalVisible} 
-        animationType="slide" 
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
         transparent={false}
         presentationStyle="fullScreen"
       >
-        <View style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}>
+        <View
+          style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}
+        >
           <View style={styles.modalHeader}>
             <ThemedText style={styles.modalTitle}>
               Select {modalType}

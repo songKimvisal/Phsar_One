@@ -15,13 +15,13 @@ const BuyerSafetyGuidelines: React.FC<BuyerSafetyGuidelinesProps> = () => {
       style={[
         styles.safetySection,
         {
-          backgroundColor: themeColors.error + "05",
-          borderLeftColor: themeColors.error,
+          backgroundColor: themeColors.warning + "05",
+          borderColor: themeColors.warning + "50",
         },
       ]}
     >
-      <ThemedText style={[styles.safetyTitle, { color: themeColors.error }]}>
-        {t("productDetail.buyerSafetyGuidelines")}
+      <ThemedText style={[styles.safetyTitle, { color: themeColors.warning }]}>
+        ⚠️ {t("productDetail.buyerSafetyGuidelines")}
       </ThemedText>
       <View style={styles.safetyList}>
         <ThemedText style={styles.safetyItem}>
@@ -47,23 +47,22 @@ const BuyerSafetyGuidelines: React.FC<BuyerSafetyGuidelinesProps> = () => {
 const styles = StyleSheet.create({
   safetySection: {
     marginHorizontal: 16,
-
     padding: 16,
-    borderRadius: 8,
-    borderLeftWidth: 4,
+    borderRadius: 16,
+    borderCurve: "continuous",
+    borderWidth: 1,
   },
   safetyTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-
+    fontSize: 14,
+    fontWeight: "600",
     marginBottom: 12,
   },
   safetyList: {
     gap: 8,
   },
   safetyItem: {
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 12,
+    lineHeight: 15,
     opacity: 0.8,
   },
 });

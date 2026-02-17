@@ -5,28 +5,28 @@ import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { formatPrice, formatTimeAgo } from "@src/utils/productUtils";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
-    ArrowsClockwiseIcon,
-    ArrowsCounterClockwiseIcon,
-    CaretLeftIcon,
-    ChatTeardropTextIcon,
-    CheckCircleIcon,
-    EyeIcon,
-    PencilSimpleIcon,
-    RocketLaunchIcon,
-    TrashIcon,
-    WarningCircleIcon,
+  ArrowsClockwiseIcon,
+  ArrowsCounterClockwiseIcon,
+  CaretLeftIcon,
+  ChatTeardropTextIcon,
+  CheckCircleIcon,
+  EyeIcon,
+  PencilSimpleIcon,
+  RocketLaunchIcon,
+  TrashIcon,
+  WarningCircleIcon,
 } from "phosphor-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    Image,
-    RefreshControl,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Image,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -291,7 +291,7 @@ export default function MyListingsScreen() {
 
       {loading && !refreshing ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color="#E44336" />
+          <ActivityIndicator size="small" color="#E44336" />
         </View>
       ) : (
         <FlatList

@@ -1,8 +1,8 @@
 import useThemeColor from "@/src/hooks/useThemeColor";
 import {
-    Product,
-    calculateDiscountPrice,
-    formatTimeAgo,
+  Product,
+  calculateDiscountPrice,
+  formatTimeAgo,
 } from "@/src/types/productTypes";
 import BuyerSafetyGuidelines from "@src/components/productDetails_components/BuyerSafetyGuidelines";
 import ProductActionButtons from "@src/components/productDetails_components/ProductActionButtons";
@@ -20,11 +20,11 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    ActivityIndicator,
-    Linking,
-    ScrollView,
-    StyleSheet,
-    View,
+  ActivityIndicator,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -221,6 +221,7 @@ export default function ProductDetail() {
 
   return (
     <SafeAreaView
+      edges={["top"]}
       style={[styles.container, { backgroundColor: themeColors.background }]}
     >
       <Stack.Screen options={{ headerShown: false }} />
@@ -234,6 +235,7 @@ export default function ProductDetail() {
 
       <ScrollView
         style={styles.scrollView}
+        contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Image Gallery */}

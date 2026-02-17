@@ -26,6 +26,7 @@ type SellDraftContextType = {
   updateDraft: (key: string, value: any) => void;
   updateDetail: (key: string, value: any) => void;
   resetDraft: () => void;
+  setDraft: React.Dispatch<React.SetStateAction<typeof initialDraft>>;
 };
 
 export const SellDraftContext = createContext<SellDraftContextType | undefined>(
@@ -43,7 +44,7 @@ export default function SellDraftProvider({ children }: any) {
 
   return (
     <SellDraftContext.Provider
-      value={{ draft, updateDraft, updateDetail, resetDraft }}
+      value={{ draft, updateDraft, updateDetail, resetDraft, setDraft }}
     >
       {children}
     </SellDraftContext.Provider>
