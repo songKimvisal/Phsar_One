@@ -3,7 +3,7 @@ import ProductCard from "@src/components/category_components/ProductCard";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { supabase } from "@src/lib/supabase";
+import { createClerkSupabaseClient, supabase } from "@src/lib/supabase";
 import {
   Href,
   Stack,
@@ -17,11 +17,14 @@ import {
   PencilSimpleIcon,
   RowsIcon,
   SquaresFourIcon,
+  UserMinusIcon,
+  UserPlusIcon,
 } from "phosphor-react-native";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -35,7 +38,7 @@ const { width } = Dimensions.get("window");
 
 export default function PublicProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { userId: currentUserId } = useAuth();
+  const { userId: currentUserId, getToken } = useAuth();
   const router = useRouter();
   const themeColors = useThemeColor();
   const { t } = useTranslation();
@@ -47,9 +50,17 @@ export default function PublicProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
+  // Follow State
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [togglingFollow, setTogglingFollow] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       fetchProfileData();
+      checkFollowStatus();
+      fetchFollowCounts();
     }, [id]),
   );
 
@@ -77,6 +88,78 @@ export default function PublicProfileScreen() {
       console.error("Error fetching public profile:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkFollowStatus = async () => {
+    if (!currentUserId || isOwnProfile) return;
+    try {
+      const { data } = await supabase
+        .from("follows")
+        .select("*")
+        .eq("follower_id", currentUserId)
+        .eq("following_id", id)
+        .single();
+
+      setIsFollowing(!!data);
+    } catch (error) {
+      setIsFollowing(false);
+    }
+  };
+
+  const fetchFollowCounts = async () => {
+    try {
+      const { count: followers } = await supabase
+        .from("follows")
+        .select("*", { count: "exact", head: true })
+        .eq("following_id", id);
+
+      const { count: following } = await supabase
+        .from("follows")
+        .select("*", { count: "exact", head: true })
+        .eq("follower_id", id);
+
+      setFollowerCount(followers || 0);
+      setFollowingCount(following || 0);
+    } catch (error) {
+      console.error("Error fetching follow counts:", error);
+    }
+  };
+
+  const toggleFollow = async () => {
+    if (!currentUserId) {
+      Alert.alert("Sign In", "Please sign in to follow users.");
+      return;
+    }
+    if (togglingFollow) return;
+
+    try {
+      setTogglingFollow(true);
+      const token = await getToken();
+      const authSupabase = createClerkSupabaseClient(token);
+
+      if (isFollowing) {
+        const { error } = await authSupabase
+          .from("follows")
+          .delete()
+          .eq("follower_id", currentUserId)
+          .eq("following_id", id);
+        if (error) throw error;
+        setIsFollowing(false);
+        setFollowerCount((prev) => prev - 1);
+      } else {
+        const { error } = await authSupabase
+          .from("follows")
+          .insert({ follower_id: currentUserId, following_id: id });
+        if (error) throw error;
+        setIsFollowing(true);
+        setFollowerCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error("Error toggling follow:", error);
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    } finally {
+      setTogglingFollow(false);
     }
   };
 
@@ -134,29 +217,49 @@ export default function PublicProfileScreen() {
       <View style={styles.statsActionRow}>
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
-            <ThemedText style={styles.statNumber}>0</ThemedText>
+            <ThemedText style={styles.statNumber}>{followerCount}</ThemedText>
             <ThemedText style={styles.statLabel}>Followers</ThemedText>
           </View>
           <View style={styles.statItem}>
-            <ThemedText style={styles.statNumber}>0</ThemedText>
+            <ThemedText style={styles.statNumber}>{followingCount}</ThemedText>
             <ThemedText style={styles.statLabel}>Followings</ThemedText>
           </View>
         </View>
 
         {isOwnProfile ? (
           <TouchableOpacity
-            style={[styles.actionBtn, { borderColor: Colors.reds[500] }]}
+            style={[styles.actionBtn, { borderColor: themeColors.text + "20" }]}
             onPress={() => router.push("/user/edit" as Href)}
           >
-            <ThemedText style={styles.actionBtnText}>Edit profile</ThemedText>
+            <ThemedText
+              style={[styles.actionBtnText, { color: themeColors.text }]}
+            >
+              Edit profile
+            </ThemedText>
           </TouchableOpacity>
         ) : (
           <View style={styles.otherUserActions}>
             <TouchableOpacity
-              style={[styles.followBtn, { backgroundColor: Colors.reds[500] }]}
-              onPress={() => console.log("Follow user")}
+              style={[
+                styles.followBtn,
+                { backgroundColor: isFollowing ? "#F3F4F6" : Colors.reds[500] },
+              ]}
+              onPress={toggleFollow}
+              disabled={togglingFollow}
             >
-              <ThemedText style={styles.followBtnText}>Follow</ThemedText>
+              {isFollowing ? (
+                <UserMinusIcon size={18} color="#374151" />
+              ) : (
+                <UserPlusIcon size={18} color="#FFF" />
+              )}
+              <ThemedText
+                style={[
+                  styles.followBtnText,
+                  isFollowing && { color: "#374151" },
+                ]}
+              >
+                {isFollowing ? "Unfollow" : "Follow"}
+              </ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -164,7 +267,7 @@ export default function PublicProfileScreen() {
               onPress={() => console.log("Message user")}
             >
               <ThemedText
-                style={[styles.messageBtnText, { color: themeColors.primary }]}
+                style={[styles.messageBtnText, { color: Colors.reds[500] }]}
               >
                 Message
               </ThemedText>
@@ -257,7 +360,7 @@ export default function PublicProfileScreen() {
       <View
         style={[styles.center, { backgroundColor: themeColors.background }]}
       >
-        <ActivityIndicator size="large" color={Colors.reds[500]} />
+        <ActivityIndicator size="small" color={Colors.reds[500]} />
       </View>
     );
   }

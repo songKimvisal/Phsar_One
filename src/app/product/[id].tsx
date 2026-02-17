@@ -275,9 +275,11 @@ export default function ProductDetail() {
             activeFont={activeFont}
           />
 
-          <SellerInfoSection 
-            product={product} 
-            onViewProfile={() => router.push(`/user/${product.seller?.id}` as Href)}
+          <SellerInfoSection
+            product={product}
+            onViewProfile={() =>
+              router.push(`/user/${product.seller?.id}` as Href)
+            }
           />
 
           <BuyerSafetyGuidelines />
