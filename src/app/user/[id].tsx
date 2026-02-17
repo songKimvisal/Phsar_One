@@ -14,6 +14,7 @@ import {
 import {
   CaretLeftIcon,
   DotsThreeIcon,
+  PencilSimpleIcon,
   RowsIcon,
   SquaresFourIcon,
 } from "phosphor-react-native";
@@ -46,7 +47,6 @@ export default function PublicProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Automatically refresh when user navigates back to this page
   useFocusEffect(
     useCallback(() => {
       fetchProfileData();
@@ -121,6 +121,14 @@ export default function PublicProfileScreen() {
         <ThemedText style={styles.bioText}>
           {userData?.bio || "No bio yet."}
         </ThemedText>
+        {isOwnProfile && (
+          <TouchableOpacity
+            style={styles.editBioBtn}
+            onPress={() => router.push("/user/edit" as Href)}
+          >
+            <PencilSimpleIcon size={16} color={themeColors.text} />
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.statsActionRow}>
@@ -171,12 +179,70 @@ export default function PublicProfileScreen() {
     </View>
   );
 
+  const renderProductItem = ({ item }: { item: any }) => {
+    const mappedProduct = {
+      ...item,
+      photos: item.images || [],
+      createdAt: item.created_at,
+      negotiable: item.is_negotiable,
+      currency: item.metadata?.currency || "USD",
+      address: {
+        province: item.location_name,
+        district: item.metadata?.district,
+        commune: item.metadata?.commune,
+      },
+    };
+
+    if (viewMode === "grid") {
+      return (
+        <View style={styles.gridItemWrapper}>
+          <ProductCard
+            product={mappedProduct as any}
+            onPress={() => router.push(`/product/${item.id}` as Href)}
+          />
+        </View>
+      );
+    }
+
+    // Horizontal List Item
+    return (
+      <TouchableOpacity
+        style={[styles.listItem, { backgroundColor: themeColors.card }]}
+        onPress={() => router.push(`/product/${item.id}` as Href)}
+        activeOpacity={0.7}
+      >
+        <Image
+          source={{
+            uri: mappedProduct.photos[0] || "https://via.placeholder.com/150",
+          }}
+          style={styles.listImage}
+        />
+        <View style={styles.listInfo}>
+          <View>
+            <ThemedText style={styles.listTitle} numberOfLines={2}>
+              {mappedProduct.title}
+            </ThemedText>
+            <ThemedText style={styles.listMetaText}>
+              {mappedProduct.address.province} •{" "}
+              {new Date(mappedProduct.createdAt).toLocaleDateString()}
+            </ThemedText>
+          </View>
+
+          <ThemedText style={[styles.listPrice, { color: Colors.reds[500] }]}>
+            {mappedProduct.currency === "USD" ? "$" : ""}
+            {mappedProduct.price}
+          </ThemedText>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   if (loading && !userData) {
     return (
       <View
         style={[styles.center, { backgroundColor: themeColors.background }]}
       >
-        <ActivityIndicator size="small" color={Colors.reds[500]} />
+        <ActivityIndicator size="large" color={Colors.reds[500]} />
       </View>
     );
   }
@@ -206,34 +272,7 @@ export default function PublicProfileScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         columnWrapperStyle={viewMode === "grid" ? styles.gridRow : undefined}
-        renderItem={({ item }) => {
-          const mappedProduct = {
-            ...item,
-            photos: item.images || [],
-            createdAt: item.created_at,
-            negotiable: item.is_negotiable,
-            currency: item.metadata?.currency || "USD",
-            address: {
-              province: item.location_name,
-              district: item.metadata?.district,
-              commune: item.metadata?.commune,
-            },
-          };
-          return (
-            <View
-              style={
-                viewMode === "grid"
-                  ? styles.gridItemWrapper
-                  : styles.listItemWrapper
-              }
-            >
-              <ProductCard
-                product={mappedProduct as any}
-                onPress={() => router.push(`/product/${item.id}` as Href)}
-              />
-            </View>
-          );
-        }}
+        renderItem={renderProductItem}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <ThemedText>No recent posts found.</ThemedText>
@@ -386,9 +425,42 @@ const styles = StyleSheet.create({
     width: (width - 44) / 2,
     marginBottom: 12,
   },
-  listItemWrapper: {
-    paddingHorizontal: 16,
+  listItem: {
+    flexDirection: "row",
+    marginHorizontal: 16,
     marginBottom: 12,
+    borderRadius: 12,
+    overflow: "hidden",
+    padding: 8,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+  },
+  listImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+  },
+  listInfo: {
+    flex: 1,
+    paddingLeft: 12,
+    justifyContent: "space-between",
+    paddingVertical: 4,
+  },
+  listTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  listPrice: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  listMetaText: {
+    fontSize: 13,
+    opacity: 0.5,
   },
   emptyState: {
     padding: 40,
