@@ -6,7 +6,7 @@ import { getLocalizedLocationName } from "@/src/utils/locationUtils";
 import { formatPrice, formatTimeAgo } from "@/src/utils/productUtils";
 import { toCamelCase } from "@/src/utils/stringUtils";
 import { Ionicons } from "@expo/vector-icons";
-import { MapPin } from "phosphor-react-native";
+import { MapPinIcon } from "phosphor-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -122,7 +122,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 
         {/* Location Row */}
         <View style={styles.metaRow}>
-          <MapPin size={12} color={themeColors.text} style={styles.icon} />
+          <MapPinIcon size={12} color={themeColors.text} style={styles.icon} />
           <ThemedText style={styles.metaText} numberOfLines={1}>
             {fullAddress}
           </ThemedText>

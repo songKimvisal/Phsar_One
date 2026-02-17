@@ -3,7 +3,6 @@ import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import { SellDraft } from "@src/context/SellDraftContext";
 import { TradeDraft } from "@src/context/TradeDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { TFunction } from "i18next";
 import {
   CaretDownIcon,
   MagnifyingGlassIcon,
@@ -24,9 +23,6 @@ import { ThemedTextInput } from "./ThemedTextInput";
 interface AddressDropdownsProps {
   currentDraft: SellDraft | TradeDraft;
   onUpdateDraft: (key: string, value: any) => void;
-  themeColors: ReturnType<typeof useThemeColor>;
-  t: TFunction<"translation", undefined>;
-  activeFont: string;
 }
 
 export default function AddressDropdowns({
@@ -172,7 +168,12 @@ export default function AddressDropdowns({
         presentationStyle="fullScreen"
       >
         <View
-          style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}
+          style={{
+            flex: 1,
+            backgroundColor: "#FFF",
+            paddingTop: insets.top,
+            paddingBottom: 32,
+          }}
         >
           <View style={styles.modalHeader}>
             <ThemedText style={styles.modalTitle}>

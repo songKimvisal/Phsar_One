@@ -12,7 +12,6 @@ interface DynamicPostFieldsProps {
   fields: any[];
   themeColors: ReturnType<typeof useThemeColor>;
   t: TFunction<"translation", undefined>;
-  activeFont: string;
 }
 
 export default function DynamicPostFields({ fields }: DynamicPostFieldsProps) {
@@ -134,10 +133,10 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   labelRow: {
-    marginTop: 8,
-    marginBottom: 8,
     flexDirection: "row",
     gap: 2,
+    marginBottom: 8,
+    marginTop: 8,
   },
   inputLabel: {
     fontSize: 16,
@@ -147,8 +146,8 @@ const styles = StyleSheet.create({
   groupHeader: {
     fontSize: 20,
     fontWeight: "700",
-    marginTop: 16,
-    marginBottom: 16,
+    marginTop: 20,
+    marginBottom: 20,
   },
   inputWrapper: {
     flexDirection: "row",
@@ -158,7 +157,6 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     borderRadius: 10,
-    borderCurve: "continuous",
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
@@ -182,7 +180,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
     lineHeight: 18,
   },
-  chipScroll: {},
+  chipScroll: {
+    marginTop: 4,
+  },
   chipContent: {
     gap: 8,
     paddingRight: 16,
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   chipSelected: {
     borderColor: Colors.reds[500],
     backgroundColor: "#FFF",
-    borderWidth: 1,
+    borderWidth: 2,
   },
   chipText: {
     fontSize: 14,
@@ -209,6 +209,6 @@ const styles = StyleSheet.create({
   },
   chipTextSelected: {
     color: Colors.reds[500],
-    fontWeight: "600",
+    fontWeight: "700",
   },
 });

@@ -6,7 +6,7 @@ import DynamicPhosphorIcon from "../shared_components/DynamicPhosphorIcon";
 
 export default function Header() {
   const themeColors = useThemeColor();
-  const { t, i18n } = useTranslation();
+  useTranslation();
 
   return (
     <View

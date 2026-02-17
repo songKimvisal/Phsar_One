@@ -11,17 +11,17 @@ import { useTradeDraft } from "@src/context/TradeDraftContext";
 import { useTradeProducts } from "@src/context/TradeProductsContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { useRouter } from "expo-router";
-import { X } from "phosphor-react-native";
+import { XIcon } from "phosphor-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -233,7 +233,7 @@ export default function AddTradeProductScreen() {
             onPress={() => router.back()}
             style={styles.backButton}
           >
-            <X size={24} color={themeColors.text} weight="bold" />
+            <XIcon size={24} color={themeColors.text} weight="bold" />
           </TouchableOpacity>
           <ThemedText style={styles.headerTitle} numberOfLines={1}>
             {t("trade.add_new_product")}

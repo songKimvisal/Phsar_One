@@ -1,16 +1,16 @@
 import { CAMBODIA_LOCATIONS } from "@/src/constants/CambodiaLocations";
 import useThemeColor from "@/src/hooks/useThemeColor";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
-import { CaretLeft } from "phosphor-react-native";
+import { CaretLeftIcon } from "phosphor-react-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -150,7 +150,7 @@ export default function LocationFilterModal({
           ]}
         >
           <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-            <CaretLeft size={24} color={themeColors.text} />
+            <CaretLeftIcon size={24} color={themeColors.text} />
           </TouchableOpacity>
           <ThemedText
             style={[

@@ -44,7 +44,7 @@ export default function SubcategoryScreen() {
       {/* Custom Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
+          <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
       </View>
 
@@ -54,7 +54,7 @@ export default function SubcategoryScreen() {
           <View style={styles.categoryIconContainer}>
             <DynamicPhosphorIcon
               name={categoryData?.icon || "Shapes"}
-              size={28}
+              size={40}
               color={themeColors.text}
               weight="fill"
             />
@@ -72,7 +72,7 @@ export default function SubcategoryScreen() {
         <FlatList
           data={subCategoryData}
           keyExtractor={(item) => item.name}
-          contentContainerStyle={[styles.listContent]}
+          contentContainerStyle={[styles.listContent, { paddingBottom: 40 }]}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={[
@@ -120,15 +120,13 @@ const styles = StyleSheet.create({
   categoryInfo: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    marginBottom: 16,
+    paddingHorizontal: 20,
+    marginBottom: 30,
     gap: 16,
   },
   categoryIconContainer: {
-    width: 64,
-    height: 64,
+    width: 80,
+    height: 80,
     borderRadius: 12,
     backgroundColor: "#f5f5f5", // Light placeholder bg like Figma
     justifyContent: "center",
@@ -144,14 +142,13 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 16,
-    paddingBottom: 32,
     gap: 8,
   },
   listItem: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 8,
+    padding: 16,
     borderRadius: 10,
     borderCurve: "continuous",
     borderWidth: 1,
@@ -165,13 +162,13 @@ const styles = StyleSheet.create({
   subIconContainer: {
     width: 44,
     height: 44,
-    borderRadius: 4,
-    // backgroundColor: "#f5f5f5",
+    borderRadius: 8,
+    backgroundColor: "#f5f5f5",
     justifyContent: "center",
     alignItems: "center",
   },
   listItemText: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: "600",
   },
 });

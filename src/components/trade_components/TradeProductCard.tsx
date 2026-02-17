@@ -1,6 +1,11 @@
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { Clock, MagnifyingGlass, MapPin, User } from "phosphor-react-native";
+import {
+  ClockIcon,
+  MagnifyingGlassIcon,
+  MapPinIcon,
+  UserIcon,
+} from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import {
   Dimensions,
@@ -70,13 +75,13 @@ export default function TradeProductCard({
         </ThemedText>
         {/* Seller Info */}
         <View style={styles.metaRow}>
-          <User size={14} color={themeColors.text} weight="fill" />
+          <UserIcon size={14} color={themeColors.text} weight="fill" />
           <ThemedText style={styles.metaText}>{product.seller}</ThemedText>
         </View>
         <View style={styles.metaRow}>
-          <Clock size={14} color={themeColors.text} weight="fill" />
+          <ClockIcon size={14} color={themeColors.text} weight="fill" />
           <ThemedText style={styles.metaText}>{product.timeAgo}</ThemedText>
-          <MapPin
+          <MapPinIcon
             size={14}
             color={themeColors.text}
             weight="fill"
@@ -92,7 +97,11 @@ export default function TradeProductCard({
           ]}
         >
           <View style={styles.lookingForHeader}>
-            <MagnifyingGlass size={14} color={themeColors.text} weight="fill" />
+            <MagnifyingGlassIcon
+              size={14}
+              color={themeColors.text}
+              weight="fill"
+            />
             <ThemedText style={styles.lookingForLabel}>
               {t("trade_screen.looking_for")}
             </ThemedText>

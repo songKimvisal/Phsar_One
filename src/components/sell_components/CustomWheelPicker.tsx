@@ -1,16 +1,13 @@
-import React, { useRef, useEffect } from 'react';
+import { Colors } from "@src/constants/Colors";
+import React, { useEffect, useRef } from "react";
 import {
-  View,
-  StyleSheet,
   FlatList,
-  TouchableOpacity,
-  Dimensions,
-  NativeSyntheticEvent,
   NativeScrollEvent,
-  Platform,
-} from 'react-native';
-import { ThemedText } from '../shared_components/ThemedText';
-import { Colors } from '@src/constants/Colors';
+  NativeSyntheticEvent,
+  StyleSheet,
+  View,
+} from "react-native";
+import { ThemedText } from "../shared_components/ThemedText";
 
 const ITEM_HEIGHT = 50; // Increased for better touch target
 
@@ -21,13 +18,20 @@ interface WheelPickerProps {
   label: string;
 }
 
-export default function CustomWheelPicker({ options, selectedValue, onValueChange, label }: WheelPickerProps) {
+export default function CustomWheelPicker({
+  options,
+  selectedValue,
+  onValueChange,
+  label,
+}: WheelPickerProps) {
   const flatListRef = useRef<FlatList>(null);
-  
-  // For a 3-item visible area, we need 1 empty item at start/end to center the real items
-  const paddedOptions = ['', ...options, ''];
 
-  const onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+  // For a 3-item visible area, we need 1 empty item at start/end to center the real items
+  const paddedOptions = ["", ...options, ""];
+
+  const onMomentumScrollEnd = (
+    event: NativeSyntheticEvent<NativeScrollEvent>,
+  ) => {
     const y = event.nativeEvent.contentOffset.y;
     const index = Math.round(y / ITEM_HEIGHT);
     const value = options[index];
@@ -56,11 +60,11 @@ export default function CustomWheelPicker({ options, selectedValue, onValueChang
         <ThemedText style={styles.label}>{label}</ThemedText>
         <ThemedText style={{ color: Colors.reds[500] }}>*</ThemedText>
       </View>
-      
+
       <View style={styles.pickerWrapper}>
         {/* Selection Highlight - pointerEvents none ensures it doesn't block scrolling */}
         <View style={styles.highlight} pointerEvents="none" />
-        
+
         <FlatList
           ref={flatListRef}
           data={paddedOptions}
@@ -81,10 +85,12 @@ export default function CustomWheelPicker({ options, selectedValue, onValueChang
             const isSelected = item === selectedValue;
             return (
               <View style={[styles.item, { height: ITEM_HEIGHT }]}>
-                <ThemedText style={[
-                  styles.itemText,
-                  isSelected && styles.selectedItemText
-                ]}>
+                <ThemedText
+                  style={[
+                    styles.itemText,
+                    isSelected && styles.selectedItemText,
+                  ]}
+                >
                   {item}
                 </ThemedText>
               </View>
@@ -101,48 +107,48 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   labelRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 2,
     marginBottom: 8,
   },
   label: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
   pickerWrapper: {
     height: ITEM_HEIGHT * 3, // Exactly 3 items tall
-    backgroundColor: '#FAFAFA',
+    backgroundColor: "#FAFAFA",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    overflow: 'hidden',
+    borderColor: "#E5E7EB",
+    overflow: "hidden",
   },
   highlight: {
-    position: 'absolute',
+    position: "absolute",
     top: ITEM_HEIGHT, // The middle item
     left: 8,
     right: 8,
     height: ITEM_HEIGHT,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.reds[500] + '30',
+    borderColor: Colors.reds[500] + "30",
     zIndex: 1, // Visual only, pointerEvents="none" handles touch
   },
   item: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   itemText: {
     fontSize: 16,
-    color: '#9CA3AF',
-    fontWeight: '500',
+    color: "#9CA3AF",
+    fontWeight: "500",
   },
   selectedItemText: {
     color: Colors.reds[500],
-    fontWeight: '700',
+    fontWeight: "700",
     fontSize: 18,
   },
 });

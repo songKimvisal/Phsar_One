@@ -2,16 +2,14 @@ import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { ThemedTextInput } from "@src/components/shared_components/ThemedTextInput";
 import { Colors } from "@src/constants/Colors";
 import { useSellDraft } from "@src/context/SellDraftContext";
-import useThemeColor from "@src/hooks/useThemeColor";
-import { Check } from "phosphor-react-native";
+import { CheckIcon } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function PriceAndDiscountForm() {
   const { draft, updateDraft } = useSellDraft();
-  const themeColors = useThemeColor();
-  const { t } = useTranslation();
+  useTranslation();
 
   return (
     <>
@@ -49,7 +47,9 @@ export default function PriceAndDiscountForm() {
             },
           ]}
         >
-          {draft.negotiable && <Check size={16} color="#FFF" weight="bold" />}
+          {draft.negotiable && (
+            <CheckIcon size={16} color="#FFF" weight="bold" />
+          )}
         </View>
         <ThemedText style={styles.checkboxLabel}>Negotiable</ThemedText>
       </TouchableOpacity>
