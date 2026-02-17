@@ -236,7 +236,7 @@ export default function ProfileScreen() {
           <GridItem
             icon={<StorefrontIcon size={24} color={themeColors.text} />}
             label={t("user_actions.following")}
-            onPress={() => router.push("/user/following" as Href)}
+            onPress={() => userId && router.push({ pathname: "/user/following", params: { id: userId, type: 'following' } } as any)}
           />
           <GridItem
             icon={

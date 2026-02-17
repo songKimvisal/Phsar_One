@@ -1,38 +1,117 @@
 import { ThemedText } from "@src/components/shared_components/ThemedText";
+import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { Stack, useRouter } from "expo-router";
+import { supabase } from "@src/lib/supabase";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { CaretLeftIcon, UsersIcon } from "phosphor-react-native";
-import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function FollowingScreen() {
+  const { id, type } = useLocalSearchParams<{ id: string; type: string }>();
   const router = useRouter();
   const themeColors = useThemeColor();
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [id, type]);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+
+      const { data, error } = await (type === "followers"
+        ? supabase
+            .from("follows")
+            .select("follower:users!follows_follower_id_fkey(*)")
+            .eq("following_id", id)
+        : supabase
+            .from("follows")
+            .select("following:users!follows_following_id_fkey(*)")
+            .eq("follower_id", id));
+
+      if (error) throw error;
+
+      // Extract the nested user data
+      const extractedUsers = data.map((item: any) =>
+        type === "followers" ? item.follower : item.following,
+      );
+
+      setUsers(extractedUsers || []);
+    } catch (error) {
+      console.error("Error fetching follows list:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderUser = ({ item }: { item: any }) => (
+    <TouchableOpacity
+      style={[styles.userCard, { backgroundColor: themeColors.card }]}
+      onPress={() => router.push(`/user/${item.id}`)}
+    >
+      <View style={styles.userInfo}>
+        <Image
+          source={{ uri: item.avatar_url || "https://via.placeholder.com/150" }}
+          style={styles.avatar}
+        />
+        <ThemedText style={styles.userName}>
+          {item.first_name} {item.last_name}
+        </ThemedText>
+      </View>
+
+      {/* Visual Badge from your UI reference */}
+      <View style={[styles.badge, { backgroundColor: Colors.reds[500] }]}>
+        <ThemedText style={styles.badgeText}>Following</ThemedText>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFF" }} edges={["top"]}>
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Custom Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
-        <ThemedText style={styles.headerTitle}>Followings</ThemedText>
+        <ThemedText style={styles.headerTitle}>
+          {type === "followers" ? "Followers" : "Followings"}
+        </ThemedText>
         <View style={{ width: 44 }} />
       </View>
 
       <View style={[styles.content, { backgroundColor: "#F9FAFB" }]}>
-        <View style={styles.emptyState}>
-          <View style={styles.iconCircle}>
-            <UsersIcon size={40} color={themeColors.text} />
-          </View>
-          <ThemedText style={styles.emptyTitle}>No followings yet</ThemedText>
-          <ThemedText style={styles.emptySubtitle}>
-            When you follow other users, they'll show up here.
-          </ThemedText>
-        </View>
+        {loading ? (
+          <ActivityIndicator
+            size="small"
+            color={Colors.reds[500]}
+            style={{ marginTop: 40 }}
+          />
+        ) : (
+          <FlatList
+            data={users}
+            keyExtractor={(item) => item.id}
+            renderItem={renderUser}
+            contentContainerStyle={styles.list}
+            ListEmptyComponent={
+              <View style={styles.emptyState}>
+                <UsersIcon size={60} color={themeColors.text} />
+                <ThemedText style={styles.emptyTitle}>No {type} yet</ThemedText>
+              </View>
+            }
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -56,32 +135,52 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: "center",
+  },
+  list: {
+    padding: 8,
+    gap: 12,
+  },
+  userCard: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    padding: 12,
+    borderRadius: 16,
+    borderCurve: "continuous",
+  },
+  userInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#EEE",
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  badge: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 99,
+  },
+  badgeText: {
+    color: "#FFF",
+    fontSize: 13,
+    fontWeight: "700",
   },
   emptyState: {
+    paddingTop: 100,
     alignItems: "center",
-    paddingHorizontal: 40,
-  },
-  iconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "rgba(0,0,0,0.03)",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
   },
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 8,
-    opacity: 0.8,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    opacity: 0.5,
-    textAlign: "center",
-    lineHeight: 20,
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 16,
+    opacity: 0.3,
   },
 });

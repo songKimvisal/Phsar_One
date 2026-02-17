@@ -196,7 +196,11 @@ export default function PublicProfileScreen() {
         <TouchableOpacity
           style={[styles.roundBtn, { backgroundColor: themeColors.card }]}
         >
-          <SquaresFourIcon size={24} color={themeColors.text} weight="bold" />
+          <SquaresFourIcon
+            size={24}
+            color={themeColors.text}
+            weight="regular"
+          />
         </TouchableOpacity>
       </View>
 
@@ -216,14 +220,30 @@ export default function PublicProfileScreen() {
 
       <View style={styles.statsActionRow}>
         <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
+          <TouchableOpacity
+            style={styles.statItem}
+            onPress={() =>
+              router.push({
+                pathname: "/user/following",
+                params: { id, type: "followers" },
+              } as any)
+            }
+          >
             <ThemedText style={styles.statNumber}>{followerCount}</ThemedText>
             <ThemedText style={styles.statLabel}>Followers</ThemedText>
-          </View>
-          <View style={styles.statItem}>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.statItem}
+            onPress={() =>
+              router.push({
+                pathname: "/user/following",
+                params: { id, type: "following" },
+              } as any)
+            }
+          >
             <ThemedText style={styles.statNumber}>{followingCount}</ThemedText>
             <ThemedText style={styles.statLabel}>Followings</ThemedText>
-          </View>
+          </TouchableOpacity>
         </View>
 
         {isOwnProfile ? (
