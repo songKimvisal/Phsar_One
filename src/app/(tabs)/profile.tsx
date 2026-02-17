@@ -236,16 +236,19 @@ export default function ProfileScreen() {
           <GridItem
             icon={<StorefrontIcon size={24} color={themeColors.text} />}
             label={t("user_actions.following")}
+            onPress={() => router.push("/user/following" as Href)}
           />
           <GridItem
             icon={
               <ClockCounterClockwiseIcon size={24} color={themeColors.text} />
             }
             label={t("user_actions.history")}
+            onPress={() => router.push("/user/history" as Href)}
           />
           <GridItem
             icon={<BookmarkSimpleIcon size={24} color={themeColors.text} />}
             label={t("user_actions.bookMark")}
+            onPress={() => router.push("/user/bookmarks" as Href)}
           />
           <GridItem
             icon={<CardholderIcon size={24} color={themeColors.text} />}
@@ -254,6 +257,7 @@ export default function ProfileScreen() {
           <GridItem
             icon={<HeadsetIcon size={24} color={themeColors.text} />}
             label={t("user_actions.helpCenter")}
+            onPress={() => router.push("/user/support" as Href)}
           />
         </View>
       </ScrollView>

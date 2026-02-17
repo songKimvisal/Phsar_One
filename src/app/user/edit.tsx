@@ -169,7 +169,7 @@ export default function EditProfileScreen() {
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
+          <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
         <ThemedText style={styles.headerTitle}>Edit Profile</ThemedText>
         <TouchableOpacity
@@ -337,10 +337,6 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 20,
     elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
   },
   inputGroup: {
     gap: 8,
@@ -354,7 +350,7 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 10,
     paddingHorizontal: 12,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: "#E5E7EB",
     backgroundColor: "#FAFAFA",
   },

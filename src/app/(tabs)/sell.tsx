@@ -6,11 +6,11 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
-    Dimensions,
-    FlatList,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 

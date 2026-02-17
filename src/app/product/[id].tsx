@@ -4,6 +4,7 @@ import {
   calculateDiscountPrice,
   formatTimeAgo,
 } from "@/src/types/productTypes";
+import { useAuth } from "@clerk/clerk-expo";
 import BuyerSafetyGuidelines from "@src/components/productDetails_components/BuyerSafetyGuidelines";
 import ProductActionButtons from "@src/components/productDetails_components/ProductActionButtons";
 import ProductDescription from "@src/components/productDetails_components/ProductDescription";
@@ -15,26 +16,31 @@ import ProductLocation from "@src/components/productDetails_components/ProductLo
 import SellerInfoSection from "@src/components/productDetails_components/SellerInfoSection";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
-import { formatProductDetails } from "@src/utils/productUtils";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { useProductDetails } from "@src/hooks/useProductDetails";
+import {
+  createClerkSupabaseClient,
+  formatProductDetails,
+} from "@src/utils/productUtils";
+import { Href, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Alert,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useProductDetails } from "@src/hooks/useProductDetails";
-// ... existing imports ...
-
 export default function ProductDetail() {
   const { id } = useLocalSearchParams();
   const themeColors = useThemeColor();
   const { t, i18n } = useTranslation();
+  const { userId, getToken } = useAuth();
+  const router = useRouter();
 
   const [isFavorite, setIsFavorite] = useState(false);
   const { product: rawProduct, loading } = useProductDetails(id as string);
@@ -66,7 +72,8 @@ export default function ProductDetail() {
     );
   }
 
-  // Map database data to the Product interface expected by UI components
+  const isOwner = userId === rawProduct.seller_id;
+
   const product: Product = {
     ...rawProduct,
     id: rawProduct.id,
@@ -74,8 +81,8 @@ export default function ProductDetail() {
     createdAt: rawProduct.created_at,
     negotiable: rawProduct.is_negotiable,
     currency: rawProduct.metadata?.currency || "USD",
-    mainCategory: rawProduct.metadata?.mainCategory || "", // Extracted from metadata
-    subCategory: rawProduct.metadata?.subCategory || "", // Extracted from metadata
+    mainCategory: rawProduct.metadata?.mainCategory || "",
+    subCategory: rawProduct.metadata?.subCategory || "",
     address: {
       province: rawProduct.location_name || "",
       district: rawProduct.metadata?.district || "",
@@ -105,7 +112,49 @@ export default function ProductDetail() {
 
   const handleFavorite = () => {
     setIsFavorite((prev) => !prev);
-    console.log("Toggling favorite:", !isFavorite);
+  };
+
+  const handleCall = () => {
+    if (product.contact.phones.length > 0) {
+      const phoneNumber = String(product.contact.phones[0]).replace(/\s/g, "");
+      Linking.openURL(`tel:${phoneNumber}`);
+    }
+  };
+
+  const handleChat = () => {
+    console.log("Open chat with seller");
+  };
+
+  const handleEdit = () => {
+    router.push(`/sell/details?editId=${product.id}` as Href);
+  };
+
+  const handleDelete = async () => {
+    Alert.alert(
+      "Delete Listing",
+      "Are you sure you want to delete this listing permanently?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const token = await getToken();
+              const authSupabase = createClerkSupabaseClient(token);
+              const { error } = await authSupabase
+                .from("products")
+                .delete()
+                .eq("id", product.id);
+              if (error) throw error;
+              router.replace("/(tabs)");
+            } catch (err) {
+              Alert.alert("Error", "Failed to delete listing.");
+            }
+          },
+        },
+      ],
+    );
   };
 
   const getLocalizedLocationName = (
@@ -116,13 +165,11 @@ export default function ProductDetail() {
     districtNameEn?: string | null,
   ): string | null => {
     if (!englishName) return null;
-
     const findLocalizedName = (
       locationArray: any[] | undefined,
       targetEnName: string,
     ) => {
       if (!locationArray) return null;
-
       const found = locationArray.find((item) => item.name_en === targetEnName);
       return found
         ? currentLanguage === "kh"
@@ -130,15 +177,15 @@ export default function ProductDetail() {
           : found.name_en
         : null;
     };
-
-    if (level === "province") {
+    if (level === "province")
       return findLocalizedName(CAMBODIA_LOCATIONS, englishName);
-    } else if (level === "district" && provinceNameEn) {
+    if (level === "district" && provinceNameEn) {
       const province = CAMBODIA_LOCATIONS.find(
         (p) => p.name_en === provinceNameEn,
       );
       return findLocalizedName(province?.subdivisions, englishName);
-    } else if (level === "commune" && provinceNameEn && districtNameEn) {
+    }
+    if (level === "commune" && provinceNameEn && districtNameEn) {
       const province = CAMBODIA_LOCATIONS.find(
         (p) => p.name_en === provinceNameEn,
       );
@@ -150,39 +197,15 @@ export default function ProductDetail() {
     return null;
   };
 
-  if (!product) {
-    return (
-      <View
-        style={[styles.container, { backgroundColor: themeColors.background }]}
-      >
-        <Stack.Screen
-          options={{ title: "Product Not Found", headerShown: false }}
-        />
-        <ThemedText style={styles.notFoundText}>Product not found.</ThemedText>
-      </View>
-    );
-  }
-
   const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen";
-
   const productDetails = formatProductDetails(
     product.subCategory,
     product.details,
   );
-
-  console.log("Detail Debug - SubCategory:", product.subCategory);
-  console.log(
-    "Detail Debug - Raw Metadata:",
-    JSON.stringify(product.details, null, 2),
-  );
-  console.log(
-    "Detail Debug - Formatted Details:",
-    JSON.stringify(productDetails, null, 2),
-  );
-
   const discountedPrice = calculateDiscountPrice(product);
   const formattedDiscountedPrice =
     discountedPrice !== null ? String(discountedPrice) : undefined;
+
   const localizedCommune = getLocalizedLocationName(
     product.address.commune,
     i18n.language,
@@ -208,17 +231,6 @@ export default function ProductDetail() {
       .join(", ") || "N/A";
   const timeAgo = formatTimeAgo(product.createdAt, t);
 
-  const handleCall = () => {
-    if (product.contact.phones.length > 0) {
-      const phoneNumber = String(product.contact.phones[0]).replace(/\s/g, "");
-      Linking.openURL(`tel:${phoneNumber}`);
-    }
-  };
-
-  const handleChat = () => {
-    console.log("Open chat with seller");
-  };
-
   return (
     <SafeAreaView
       edges={["top"]}
@@ -226,61 +238,66 @@ export default function ProductDetail() {
     >
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Custom Header */}
       <ProductHeader
         onShare={handleShare}
         onFavorite={handleFavorite}
         isFavorite={isFavorite}
       />
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={{ paddingBottom: 32 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Image Gallery */}
-        <ProductImageGallery photos={product.photos} />
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={{ paddingBottom: 100 }} // Space for sticky footer
+          showsVerticalScrollIndicator={false}
+        >
+          <ProductImageGallery photos={product.photos} />
 
-        <ProductInfoSection
-          product={product}
-          discountedPrice={formattedDiscountedPrice}
-          timeAgo={timeAgo}
-          activeFont={activeFont}
-          t={t}
-        />
+          <ProductInfoSection
+            product={product}
+            discountedPrice={formattedDiscountedPrice}
+            timeAgo={timeAgo}
+            activeFont={activeFont}
+            t={t}
+          />
 
-        {/* Location */}
-        <ProductLocation
-          fullAddress={fullAddress}
-          location={product.location}
-        />
+          <ProductLocation
+            fullAddress={fullAddress}
+            location={product.location}
+          />
 
-        {/* Description */}
-        <ProductDescription
-          description={product.description}
-          activeFont={activeFont}
-        />
+          <ProductDescription
+            description={product.description}
+            activeFont={activeFont}
+          />
 
-        {/* Product Details */}
-        <ProductDetailsTable
-          mainCategory={product.mainCategory}
-          subCategory={product.subCategory}
-          productDetails={productDetails}
-          activeFont={activeFont}
-        />
+          <ProductDetailsTable
+            mainCategory={product.mainCategory}
+            subCategory={product.subCategory}
+            productDetails={productDetails}
+            activeFont={activeFont}
+          />
 
-        {/* Seller Info */}
-        <SellerInfoSection product={product} />
+          <SellerInfoSection product={product} />
 
-        {/* Action Buttons */}
-        <ProductActionButtons
-          onCallSeller={handleCall}
-          onChatSeller={handleChat}
-        />
+          <BuyerSafetyGuidelines />
+        </ScrollView>
 
-        {/* Safety Guidelines */}
-        <BuyerSafetyGuidelines />
-      </ScrollView>
+        {/* Sticky Footer */}
+        <View
+          style={[
+            styles.stickyFooter,
+            { backgroundColor: themeColors.background },
+          ]}
+        >
+          <ProductActionButtons
+            isOwner={isOwner}
+            onCallSeller={handleCall}
+            onChatSeller={handleChat}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -299,5 +316,16 @@ const styles = StyleSheet.create({
   notFoundText: {
     textAlign: "center",
     marginTop: 50,
+  },
+  stickyFooter: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingTop: 8,
+    paddingBottom: Platform.OS === "ios" ? 24 : 12,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(0,0,0,0.05)",
+    elevation: 10,
   },
 });

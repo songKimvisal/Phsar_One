@@ -281,7 +281,7 @@ export default function MyListingsScreen() {
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
+          <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
         <ThemedText style={styles.headerTitle}>
           {t(`user_actions.${status}`) || String(status).toUpperCase()}

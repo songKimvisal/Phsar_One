@@ -115,7 +115,7 @@ export default function ProductDetailsForm() {
           onPress={() => router.back()}
           style={styles.backButton}
         >
-          <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
+          <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
 
         <ThemedText style={styles.headerTitle}>

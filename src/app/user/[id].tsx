@@ -256,11 +256,11 @@ export default function PublicProfileScreen() {
 
       <View style={styles.navHeader}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
+          <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
         <ThemedText style={styles.navTitle}>Profile</ThemedText>
         <TouchableOpacity style={styles.backBtn}>
-          <DotsThreeIcon size={28} color={themeColors.text} weight="bold" />
+          <DotsThreeIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
       </View>
 

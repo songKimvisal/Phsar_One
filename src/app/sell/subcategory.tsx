@@ -44,7 +44,7 @@ export default function SubcategoryScreen() {
       {/* Custom Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
+          <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
       </View>
 
@@ -54,7 +54,7 @@ export default function SubcategoryScreen() {
           <View style={styles.categoryIconContainer}>
             <DynamicPhosphorIcon
               name={categoryData?.icon || "Shapes"}
-              size={40}
+              size={32}
               color={themeColors.text}
               weight="fill"
             />
@@ -118,16 +118,18 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   categoryInfo: {
+    backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
-    marginBottom: 30,
+    paddingBottom: 16,
     gap: 16,
   },
   categoryIconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
+    width: 64,
+    height: 64,
+    borderRadius: 8,
+    borderCurve: "continuous",
     backgroundColor: "#f5f5f5", // Light placeholder bg like Figma
     justifyContent: "center",
     alignItems: "center",
@@ -141,6 +143,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   listContent: {
+    marginTop: 16,
     paddingHorizontal: 16,
     gap: 8,
   },
@@ -148,7 +151,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 16,
+    padding: 10,
     borderRadius: 10,
     borderCurve: "continuous",
     borderWidth: 1,
@@ -163,7 +166,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 8,
-    backgroundColor: "#f5f5f5",
     justifyContent: "center",
     alignItems: "center",
   },
