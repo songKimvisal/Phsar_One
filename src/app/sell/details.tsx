@@ -97,7 +97,7 @@ export default function ProductDetailsForm() {
   if (isInitialLoading) {
     return (
       <View style={[styles.center, { backgroundColor: "#F9FAFB" }]}>
-        <ActivityIndicator size="large" color={Colors.reds[500]} />
+        <ActivityIndicator size="small" color={Colors.reds[500]} />
         <ThemedText style={{ marginTop: 12 }}>Loading details...</ThemedText>
       </View>
     );

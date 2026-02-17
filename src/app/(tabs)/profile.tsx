@@ -1,15 +1,17 @@
 import DynamicPhosphorIcon from "@/src/components/shared_components/DynamicPhosphorIcon";
-import { useUser } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import { useTheme } from "@src/context/ThemeContext";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { supabase } from "@src/lib/supabase";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { Href, useFocusEffect, useRouter } from "expo-router";
 import {
   BookmarkSimpleIcon,
   CardholderIcon,
+  CaretRightIcon,
   ChartBarIcon,
   ChartPieSliceIcon,
   CheckFatIcon,
@@ -27,7 +29,7 @@ import {
   TagSimpleIcon,
   UserCircleIcon,
 } from "phosphor-react-native";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Image,
@@ -39,15 +41,46 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
-  const { user } = useUser();
+  const { user: clerkUser } = useUser();
+  const { userId } = useAuth();
   const { i18n, t } = useTranslation();
   const { theme, setMode } = useTheme();
   const themeColors = useThemeColor();
-
-  const fullName = user?.fullName || user?.firstName || "User";
-  const userImageUrl = user?.imageUrl;
-
   const router = useRouter();
+
+  const [dbUser, setDbUser] = useState<any>(null);
+
+  // Fetch/Refresh user data from Supabase whenever this tab is focused
+  useFocusEffect(
+    useCallback(() => {
+      if (userId) {
+        fetchSupabaseUser();
+      }
+    }, [userId]),
+  );
+
+  const fetchSupabaseUser = async () => {
+    if (!userId) return;
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId as string)
+        .single();
+      if (error) throw error;
+      setDbUser(data);
+    } catch (error) {
+      console.error("Error fetching user for profile:", error);
+    }
+  };
+
+  // Use DB data first, fallback to Clerk data
+  const displayName = dbUser
+    ? `${dbUser.first_name} ${dbUser.last_name || ""}`.trim()
+    : clerkUser?.fullName || "User";
+
+  const avatarUrl = dbUser?.avatar_url || clerkUser?.imageUrl;
+
   const toggleTheme = () => {
     setMode(theme === "light" ? "dark" : "light");
   };
@@ -62,9 +95,8 @@ export default function ProfileScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.topActions}>
-          {/* Subscription button */}
           <TouchableOpacity
-            onPress={() => router.push("/subscription")}
+            onPress={() => router.push("/subscription" as Href)}
             activeOpacity={0.85}
           >
             <LinearGradient
@@ -73,13 +105,7 @@ export default function ProfileScreen() {
               end={{ x: 0, y: 1 }}
               style={styles.upgradeBtn}
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.upgradeContent}>
                 <ThemedText style={styles.upgradeText}>
                   {t("user_actions.upgrade")}
                 </ThemedText>
@@ -101,7 +127,6 @@ export default function ProfileScreen() {
               <DynamicPhosphorIcon
                 name="GlobeSimple"
                 size={24}
-                weight="regular"
                 color={themeColors.text}
               />
               <ThemedText style={styles.languageTitle}>
@@ -109,23 +134,20 @@ export default function ProfileScreen() {
               </ThemedText>
             </TouchableOpacity>
 
-            {/* Light/Dark mode */}
             <TouchableOpacity onPress={toggleTheme}>
-              {theme == "light" ? (
-                <MoonIcon size={24} weight="regular" color={themeColors.text} />
+              {theme === "light" ? (
+                <MoonIcon size={24} color={themeColors.text} />
               ) : (
-                <SunIcon size={24} weight="regular" color={themeColors.text} />
+                <SunIcon size={24} color={themeColors.text} />
               )}
             </TouchableOpacity>
 
-            {/* Settings */}
-            <TouchableOpacity onPress={() => router.push("/settings")}>
+            <TouchableOpacity onPress={() => router.push("/settings" as Href)}>
               <GearSixIcon size={28} color={themeColors.text} />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* 2. User Info */}
         <View style={styles.userInfo}>
           <View
             style={[
@@ -133,11 +155,8 @@ export default function ProfileScreen() {
               { backgroundColor: themeColors.card },
             ]}
           >
-            {userImageUrl ? (
-              <Image
-                source={{ uri: userImageUrl }}
-                style={styles.avatarImage}
-              />
+            {avatarUrl ? (
+              <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
             ) : (
               <UserCircleIcon
                 size={60}
@@ -147,40 +166,51 @@ export default function ProfileScreen() {
             )}
           </View>
           <View style={styles.userTextContainer}>
-            <ThemedText style={styles.userName}>{fullName}</ThemedText>
+            <ThemedText style={styles.userName}>{displayName}</ThemedText>
             <ThemedText style={styles.userType}>
               {t("user_actions.regular_account")}
             </ThemedText>
+            <TouchableOpacity
+              style={styles.viewProfileBtn}
+              onPress={() => userId && router.push(`/user/${userId}` as Href)}
+            >
+              <ThemedText style={styles.viewProfileText}>
+                View Profile
+              </ThemedText>
+              <CaretRightIcon
+                size={14}
+                color={Colors.reds[500]}
+                weight="bold"
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
-        {/* 3. My Listings */}
         <ProfileSection title={t("user_actions.myLists")}>
           <GridItem
             icon={<TagIcon color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.active")}
-            onPress={() => router.push("/user/listings?status=active")}
+            onPress={() => router.push("/user/listings?status=active" as Href)}
           />
           <GridItem
             icon={<CheckFatIcon color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.sold")}
-            onPress={() => router.push("/user/listings?status=sold")}
+            onPress={() => router.push("/user/listings?status=sold" as Href)}
           />
           <GridItem
             icon={
               <PencilSimpleLineIcon color={Colors.reds[500]} weight="fill" />
             }
             label={t("user_actions.drafts")}
-            onPress={() => router.push("/user/listings?status=draft")}
+            onPress={() => router.push("/user/listings?status=draft" as Href)}
           />
           <GridItem
             icon={<ClockCountdownIcon color={Colors.reds[500]} weight="fill" />}
             label={t("user_actions.expired")}
-            onPress={() => router.push("/user/listings?status=expired")}
+            onPress={() => router.push("/user/listings?status=expired" as Href)}
           />
         </ProfileSection>
 
-        {/* 4. Dashboard */}
         <ProfileSection title={t("user_actions.dashboard")}>
           <GridItem
             icon={<ChartPieSliceIcon size={24} color={themeColors.text} />}
@@ -200,7 +230,6 @@ export default function ProfileScreen() {
           />
         </ProfileSection>
 
-        {/* 5. Footer Grid */}
         <View
           style={[styles.footerGrid, { backgroundColor: themeColors.card }]}
         >
@@ -232,7 +261,6 @@ export default function ProfileScreen() {
   );
 }
 
-// Reusable Section Component
 function ProfileSection({
   title,
   children,
@@ -251,7 +279,6 @@ function ProfileSection({
   );
 }
 
-// Reusable Grid Item
 function GridItem({
   icon,
   label,
@@ -268,6 +295,7 @@ function GridItem({
     </TouchableOpacity>
   );
 }
+
 const styles = StyleSheet.create({
   languageIcon: {
     flexDirection: "row",
@@ -277,7 +305,6 @@ const styles = StyleSheet.create({
   },
   languageTitle: {
     marginLeft: 5,
-    fontWeight: "regular",
     fontSize: 12,
   },
   topActions: {
@@ -291,7 +318,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    justifyContent: "center",
+  },
+  upgradeContent: {
+    flexDirection: "row",
     alignItems: "center",
   },
   upgradeText: {
@@ -313,9 +342,9 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
+    overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
-    overflow: "hidden",
   },
   avatarImage: {
     width: "100%",
@@ -332,31 +361,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     opacity: 0.6,
   },
+  viewProfileBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+    gap: 4,
+  },
+  viewProfileText: {
+    fontSize: 14,
+    color: Colors.reds[500],
+    fontWeight: "600",
+  },
   section: {
     marginHorizontal: 16,
     borderRadius: 16,
     marginBottom: 8,
-    borderCurve: "continuous",
     paddingVertical: 15,
   },
   sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     paddingHorizontal: 16,
     marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-  },
-  viewAll: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  viewAllText: {
-    fontSize: 12,
-    color: "#888",
-    marginRight: 4,
   },
   gridRow: {
     flexDirection: "row",
@@ -373,9 +401,7 @@ const styles = StyleSheet.create({
   footerGrid: {
     marginHorizontal: 16,
     borderRadius: 16,
-    borderCurve: "continuous",
     flexDirection: "row",
-    alignItems: "flex-start",
     justifyContent: "space-around",
     paddingVertical: 16,
     paddingHorizontal: 8,

@@ -9,10 +9,10 @@ import { MagnifyingGlassIcon } from "phosphor-react-native";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 

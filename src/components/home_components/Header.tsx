@@ -3,9 +3,11 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import DynamicPhosphorIcon from "../shared_components/DynamicPhosphorIcon";
+import { useRouter, Href } from "expo-router";
 
 export default function Header() {
   const themeColors = useThemeColor();
+  const router = useRouter();
   useTranslation();
 
   return (
@@ -20,7 +22,7 @@ export default function Header() {
         />
       </View>
       <View style={styles.iconsRight}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/notifications" as Href)}>
           {/* Notification */}
           <DynamicPhosphorIcon name="Bell" size={24} color={themeColors.text} />
         </TouchableOpacity>

@@ -99,18 +99,6 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
             </ThemedText>
           </View>
         )}
-
-        {/* Favorite Button */}
-        <TouchableOpacity
-          style={styles.favoriteButton}
-          onPress={handleFavoritePress}
-        >
-          <Ionicons
-            name={isFavorite ? "heart" : "heart-outline"}
-            size={20}
-            color={isFavorite ? Colors.reds[500] : "#FFFFFF"}
-          />
-        </TouchableOpacity>
       </View>
 
       {/* Product Info */}
