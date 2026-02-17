@@ -89,7 +89,7 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      borderRadius: 12,
+      borderRadius: 99,
       gap: 8,
     },
     callButtonText: {
@@ -102,7 +102,7 @@ const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      borderRadius: 12,
+      borderRadius: 99,
       gap: 8,
       borderWidth: 1,
     },

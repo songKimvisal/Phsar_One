@@ -17,10 +17,8 @@ import SellerInfoSection from "@src/components/productDetails_components/SellerI
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import { useProductDetails } from "@src/hooks/useProductDetails";
-import {
-  createClerkSupabaseClient,
-  formatProductDetails,
-} from "@src/utils/productUtils";
+import { createClerkSupabaseClient } from "@src/lib/supabase";
+import { formatProductDetails } from "@src/utils/productUtils";
 import { Href, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -277,7 +275,10 @@ export default function ProductDetail() {
             activeFont={activeFont}
           />
 
-          <SellerInfoSection product={product} />
+          <SellerInfoSection 
+            product={product} 
+            onViewProfile={() => router.push(`/user/${product.seller?.id}` as Href)}
+          />
 
           <BuyerSafetyGuidelines />
         </ScrollView>

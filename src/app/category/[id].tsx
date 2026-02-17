@@ -7,16 +7,16 @@ import ProductCard from "@src/components/category_components/ProductCard";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Product } from "@src/types/productTypes";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { CaretLeft, Funnel, MapPin } from "phosphor-react-native";
+import { CaretLeftIcon, FunnelIcon, MapPinIcon } from "phosphor-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    ActivityIndicator,
-    FlatList,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -247,7 +247,7 @@ export default function CategoryDetailScreen() {
           onPress={() => router.back()}
           style={styles.headerButton}
         >
-          <CaretLeft size={24} color={themeColors.text} />
+          <CaretLeftIcon size={24} color={themeColors.text} />
         </TouchableOpacity>
         <ThemedText
           style={[
@@ -320,7 +320,7 @@ export default function CategoryDetailScreen() {
           ]}
           onPress={handleLocationPress}
         >
-          <MapPin
+          <MapPinIcon
             size={18}
             color={
               selectedProvince || selectedDistrict || selectedCommune
@@ -351,7 +351,7 @@ export default function CategoryDetailScreen() {
           </ThemedText>
         </TouchableOpacity>
         <TouchableOpacity style={styles.filterBtn} onPress={handleFilterPress}>
-          <Funnel
+          <FunnelIcon
             size={18}
             color={
               sortByPrice || selectedCondition

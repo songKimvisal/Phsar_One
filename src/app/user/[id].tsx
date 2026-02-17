@@ -143,18 +143,34 @@ export default function PublicProfileScreen() {
           </View>
         </View>
 
-        <TouchableOpacity
-          style={[styles.actionBtn, { borderColor: Colors.reds[500] }]}
-          onPress={() =>
-            isOwnProfile
-              ? router.push("/user/edit" as Href)
-              : console.log("Message user")
-          }
-        >
-          <ThemedText style={styles.actionBtnText}>
-            {isOwnProfile ? "Edit profile" : "Message"}
-          </ThemedText>
-        </TouchableOpacity>
+        {isOwnProfile ? (
+          <TouchableOpacity
+            style={[styles.actionBtn, { borderColor: Colors.reds[500] }]}
+            onPress={() => router.push("/user/edit" as Href)}
+          >
+            <ThemedText style={styles.actionBtnText}>Edit profile</ThemedText>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.otherUserActions}>
+            <TouchableOpacity
+              style={[styles.followBtn, { backgroundColor: Colors.reds[500] }]}
+              onPress={() => console.log("Follow user")}
+            >
+              <ThemedText style={styles.followBtnText}>Follow</ThemedText>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.messageBtn, { borderColor: Colors.reds[500] }]}
+              onPress={() => console.log("Message user")}
+            >
+              <ThemedText
+                style={[styles.messageBtnText, { color: themeColors.primary }]}
+              >
+                Message
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <View style={styles.sectionHeader}>
@@ -204,7 +220,6 @@ export default function PublicProfileScreen() {
       );
     }
 
-    // Horizontal List Item
     return (
       <TouchableOpacity
         style={[styles.listItem, { backgroundColor: themeColors.card }]}
@@ -374,7 +389,7 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: "row",
-    gap: 20,
+    gap: 16,
   },
   statItem: {
     alignItems: "center",
@@ -400,11 +415,38 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
   },
+  otherUserActions: {
+    flexDirection: "row",
+    gap: 6,
+  },
+  followBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 99,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 6,
+  },
+  followBtnText: {
+    color: "#FFF",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  messageBtn: {
+    borderWidth: 1,
+    borderRadius: 99,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  messageBtnText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 18,
