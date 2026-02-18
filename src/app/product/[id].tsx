@@ -17,10 +17,13 @@ import SellerInfoSection from "@src/components/productDetails_components/SellerI
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import { useProductDetails } from "@src/hooks/useProductDetails";
-import { createClerkSupabaseClient } from "@src/lib/supabase";
+import {
+  supabase,
+  createClerkSupabaseClient,
+} from "@src/lib/supabase";
 import { formatProductDetails } from "@src/utils/productUtils";
-import { Href, Stack, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import { Href, Stack, useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -42,6 +45,33 @@ export default function ProductDetail() {
 
   const [isFavorite, setIsFavorite] = useState(false);
   const { product: rawProduct, loading } = useProductDetails(id as string);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userId && id) {
+        checkIsFavorite();
+      }
+    }, [userId, id])
+  );
+
+  const checkIsFavorite = async () => {
+    if (!userId) return;
+    try {
+      const token = await getToken();
+      const authSupabase = createClerkSupabaseClient(token);
+      const { data, error } = await authSupabase
+        .from("favorites")
+        .select("id")
+        .eq("user_id", userId as string)
+        .eq("product_id", id as string)
+        .maybeSingle();
+      
+      if (error) throw error;
+      setIsFavorite(!!data);
+    } catch (error) {
+      console.error("Error checking favorite status:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -108,8 +138,43 @@ export default function ProductDetail() {
     console.log("Sharing product...");
   };
 
-  const handleFavorite = () => {
-    setIsFavorite((prev) => !prev);
+  const handleFavorite = async () => {
+    if (!userId) {
+      Alert.alert("Sign In", "Please sign in to bookmark items.");
+      return;
+    }
+
+    try {
+      const token = await getToken();
+      const authSupabase = createClerkSupabaseClient(token);
+
+      if (isFavorite) {
+        // Remove bookmark
+        const { error } = await authSupabase
+          .from("favorites")
+          .delete()
+          .eq("user_id", userId as string)
+          .eq("product_id", id as string);
+        
+        if (error) throw error;
+        setIsFavorite(false);
+      } else {
+        // Add bookmark (using upsert to gracefully handle potential duplicates)
+        const { error } = await authSupabase
+          .from("favorites")
+          .upsert(
+            { user_id: userId as string, product_id: id as string },
+            { onConflict: 'user_id, product_id' }
+          );
+        
+        if (error) throw error;
+        setIsFavorite(true);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      // Even if it fails, refresh the status to be sure
+      checkIsFavorite();
+    }
   };
 
   const handleCall = () => {
@@ -258,16 +323,19 @@ export default function ProductDetail() {
             t={t}
           />
 
+          {/* Location */}
           <ProductLocation
             fullAddress={fullAddress}
             location={product.location}
           />
 
+          {/* Description */}
           <ProductDescription
             description={product.description}
             activeFont={activeFont}
           />
 
+          {/* Product Details */}
           <ProductDetailsTable
             mainCategory={product.mainCategory}
             subCategory={product.subCategory}
@@ -275,11 +343,9 @@ export default function ProductDetail() {
             activeFont={activeFont}
           />
 
-          <SellerInfoSection
-            product={product}
-            onViewProfile={() =>
-              router.push(`/user/${product.seller?.id}` as Href)
-            }
+          <SellerInfoSection 
+            product={product} 
+            onViewProfile={() => router.push(`/user/${product.seller?.id}` as Href)}
           />
 
           <BuyerSafetyGuidelines />

@@ -88,6 +88,7 @@ export default function PricingCard({
 const styles = StyleSheet.create({
   card: {
     borderRadius: 24,
+    borderCurve: "continuous",
     padding: 24,
     marginHorizontal: 16,
     marginTop: 20,
