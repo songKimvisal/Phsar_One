@@ -129,8 +129,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cardText: {
-    fontSize: 13,
-    padding: 5,
+    fontSize: 12,
     fontWeight: "500",
     textAlign: "center",
     lineHeight: 16,
