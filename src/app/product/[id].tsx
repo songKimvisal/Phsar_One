@@ -48,11 +48,36 @@ export default function ProductDetail() {
 
   useFocusEffect(
     useCallback(() => {
-      if (userId && id) {
-        checkIsFavorite();
+      if (id) {
+        if (userId) checkIsFavorite();
+        logView();
       }
     }, [userId, id])
   );
+
+  const logView = async () => {
+    try {
+      // 1. Log for public analytics (always)
+      await supabase.from("analytics_views").insert({
+        product_id: id as string,
+        viewer_id: userId || null
+      });
+
+      // 2. Log for private history (if user logged in)
+      if (userId) {
+        const token = await getToken();
+        const authSupabase = createClerkSupabaseClient(token);
+        
+        await authSupabase.from("view_history").upsert({
+          user_id: userId as string,
+          product_id: id as string,
+          viewed_at: new Date().toISOString()
+        }, { onConflict: 'user_id, product_id' });
+      }
+    } catch (error) {
+      console.error("Error logging view:", error);
+    }
+  };
 
   const checkIsFavorite = async () => {
     if (!userId) return;

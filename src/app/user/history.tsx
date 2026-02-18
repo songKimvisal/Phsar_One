@@ -1,41 +1,192 @@
+import { useAuth } from "@clerk/clerk-expo";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
+import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
-import { Stack, useRouter } from "expo-router";
+import { createClerkSupabaseClient } from "@src/lib/supabase";
+import { Href, Stack, useFocusEffect, useRouter } from "expo-router";
 import {
   CaretLeftIcon,
   ClockCounterClockwiseIcon,
 } from "phosphor-react-native";
-import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HistoryScreen() {
+  const { userId, getToken } = useAuth();
   const router = useRouter();
   const themeColors = useThemeColor();
+  const [history, setHistory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userId) {
+        fetchHistory();
+      }
+    }, [userId]),
+  );
+
+  const fetchHistory = async () => {
+    if (!userId) return;
+    try {
+      setLoading(true);
+      const token = await getToken();
+      const authSupabase = createClerkSupabaseClient(token);
+
+      const { data, error } = await authSupabase
+        .from("view_history")
+        .select(
+          `
+          id,
+          viewed_at,
+          product:products (
+            *,
+            seller:users (*)
+          )
+        `,
+        )
+        .eq("user_id", userId as string)
+        .not("product_id", "is", null)
+        .order("viewed_at", { ascending: false });
+
+      if (error) throw error;
+
+      console.log(`DEBUG: Found ${data?.length || 0} history records`);
+      if (data && data.length > 0) {
+        console.log(`DEBUG: Sample record:`, JSON.stringify(data[0], null, 2));
+      }
+
+      const extractedHistory = data
+        ?.map((item: any) => ({
+          ...item.product,
+          viewed_at: item.viewed_at,
+        }))
+        .filter((p: any) => p !== null);
+
+      setHistory(extractedHistory || []);
+    } catch (error) {
+      console.error("Error fetching history:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearHistory = async () => {
+    Alert.alert(
+      "Clear History",
+      "Are you sure you want to clear your entire viewing history?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Clear All",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const token = await getToken();
+              const authSupabase = createClerkSupabaseClient(token);
+              const { error } = await authSupabase
+                .from("view_history")
+                .delete()
+                .eq("user_id", userId as string);
+
+              if (error) throw error;
+              setHistory([]);
+            } catch (err) {
+              Alert.alert("Error", "Failed to clear history.");
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const renderHistoryItem = ({ item }: { item: any }) => {
+    const mainImage = item.images?.[0] || "https://via.placeholder.com/150";
+    const sellerName =
+      `${item.seller?.first_name || ""} ${item.seller?.last_name || ""}`.trim() ||
+      "Unknown Seller";
+
+    return (
+      <TouchableOpacity
+        style={[styles.listItem, { backgroundColor: themeColors.card }]}
+        onPress={() => router.push(`/product/${item.id}` as Href)}
+        activeOpacity={0.7}
+      >
+        <Image source={{ uri: mainImage }} style={styles.listImage} />
+        <View style={styles.listInfo}>
+          <View style={styles.infoTop}>
+            <ThemedText style={styles.listTitle} numberOfLines={1}>
+              {item.title}
+            </ThemedText>
+            <ThemedText style={styles.listPrice}>
+              {item.metadata?.currency === "KHR" ? "៛" : "$"}
+              {item.price}
+            </ThemedText>
+          </View>
+
+          <ThemedText style={styles.listMetaText}>
+            {sellerName} • {item.views || 0} •{" "}
+            {new Date(item.viewed_at).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
+          </ThemedText>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFF" }} edges={["top"]}>
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Custom Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
+          <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
         <ThemedText style={styles.headerTitle}>History</ThemedText>
-        <View style={{ width: 44 }} />
+        <TouchableOpacity onPress={handleClearHistory} style={styles.clearBtn}>
+          <ThemedText style={styles.clearBtnText}>Clear all</ThemedText>
+        </TouchableOpacity>
       </View>
 
       <View style={[styles.content, { backgroundColor: "#F9FAFB" }]}>
-        <View style={styles.emptyState}>
-          <View style={styles.iconCircle}>
-            <ClockCounterClockwiseIcon size={40} color={themeColors.text} />
-          </View>
-          <ThemedText style={styles.emptyTitle}>No history yet</ThemedText>
-          <ThemedText style={styles.emptySubtitle}>
-            Your activity history will appear here.
-          </ThemedText>
-        </View>
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color={Colors.reds[500]}
+            style={{ marginTop: 40 }}
+          />
+        ) : (
+          <FlatList
+            data={history}
+            keyExtractor={(item, index) => item.id + index}
+            renderItem={renderHistoryItem}
+            contentContainerStyle={styles.list}
+            ListEmptyComponent={
+              <View style={styles.emptyState}>
+                <ClockCounterClockwiseIcon
+                  size={60}
+                  color={themeColors.text}
+                  weight="light"
+                />
+                <ThemedText style={styles.emptyTitle}>
+                  No history yet
+                </ThemedText>
+              </View>
+            }
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -57,34 +208,73 @@ const styles = StyleSheet.create({
   backBtn: {
     padding: 8,
   },
+  clearBtn: {
+    paddingHorizontal: 12,
+  },
+  clearBtnText: {
+    color: Colors.reds[500],
+    fontWeight: "600",
+    fontSize: 14,
+  },
   content: {
     flex: 1,
+  },
+  list: {
+    paddingVertical: 16,
+    paddingBottom: 40,
+  },
+  listItem: {
+    flexDirection: "row",
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 12,
+    overflow: "hidden",
+    padding: 12,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+  },
+  listImage: {
+    width: 60, // Smaller as seen in history.png
+    height: 60,
+    borderRadius: 8,
+    backgroundColor: "#F3F4F6",
+  },
+  listInfo: {
+    flex: 1,
+    paddingLeft: 12,
     justifyContent: "center",
+  },
+  infoTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 4,
+  },
+  listTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    flex: 1,
+    marginRight: 8,
+  },
+  listPrice: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  listMetaText: {
+    fontSize: 12,
+    opacity: 0.5,
   },
   emptyState: {
+    paddingTop: 100,
     alignItems: "center",
-    paddingHorizontal: 40,
-  },
-  iconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "rgba(0,0,0,0.03)",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
   },
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 8,
-    opacity: 0.8,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    opacity: 0.5,
-    textAlign: "center",
-    lineHeight: 20,
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 16,
+    opacity: 0.3,
   },
 });
