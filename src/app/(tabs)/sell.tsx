@@ -26,7 +26,9 @@ export default function SellScreen() {
   const { updateDraft } = useSellDraft();
 
   const handleCategoryPress = (id: string) => {
+    const category = CATEGORY_MAP[id];
     updateDraft("categoryId", id);
+    updateDraft("mainCategory", category?.nameKey || "");
     router.push({ pathname: "/sell/subcategory", params: { categoryId: id } });
   };
 

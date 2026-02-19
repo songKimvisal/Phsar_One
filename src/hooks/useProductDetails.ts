@@ -16,7 +16,8 @@ export function useProductDetails(id: string) {
           .from('products')
           .select(`
             *,
-            seller:users(*)
+            seller:users(*),
+            category:categories(id, name_key, parent:categories(id, name_key))
           `)
           .eq('id', id)
           .single();

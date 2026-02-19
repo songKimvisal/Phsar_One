@@ -48,7 +48,9 @@ const ProductDetailsTable: React.FC<ProductDetailsTableProps> = ({
         <ThemedText style={styles.descriptionLabel}>
           {t("productDetail.mainCategory")}
         </ThemedText>
-        <ThemedText style={styles.descriptionValue}>{mainCategory}</ThemedText>
+        <ThemedText style={styles.descriptionValue}>
+          {mainCategory ? t(`categories.${mainCategory}`, { defaultValue: mainCategory }) : ""}
+        </ThemedText>
       </View>
 
       <View
@@ -60,7 +62,9 @@ const ProductDetailsTable: React.FC<ProductDetailsTableProps> = ({
         <ThemedText style={styles.descriptionLabel}>
           {t("productDetail.subCategory")}
         </ThemedText>
-        <ThemedText style={styles.descriptionValue}>{subCategory}</ThemedText>
+        <ThemedText style={styles.descriptionValue}>
+          {subCategory ? t(`subcategories.${subCategory}`, { defaultValue: subCategory }) : ""}
+        </ThemedText>
       </View>
 
       {/* Dynamic Product Details from POST_FIELDS_MAP */}

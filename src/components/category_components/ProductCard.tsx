@@ -111,12 +111,10 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
         {/* Location Row */}
         <View style={styles.metaRow}>
           <MapPinIcon size={12} color={themeColors.text} style={styles.icon} />
-          <ThemedText style={styles.metaText} numberOfLines={1}>
-            {fullAddress}
-          </ThemedText>
+          <ThemedText style={styles.metaText}>{fullAddress}</ThemedText>
         </View>
 
-        {/* Time and Condition Row */}
+        {/* Time Row */}
         <View style={styles.metaRow}>
           <Ionicons
             name="time-outline"
@@ -162,15 +160,13 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 
 const styles = StyleSheet.create({
   productCard: {
-    flex: 1,
     borderRadius: 8,
     borderCurve: "continuous",
     overflow: "hidden",
-    // Remove marginBottom: 6 if it exists
   },
   imageWrapper: {
     width: "100%",
-    height: 120,
+    height: 140,
     position: "relative",
     backgroundColor: "#f0f0f0",
   },
@@ -205,8 +201,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   productInfo: {
-    flex: 1, // Add this
-    padding: 10,
+    padding: 12,
+    paddingBottom: 16,
   },
   productName: {
     fontSize: 14,
@@ -216,17 +212,19 @@ const styles = StyleSheet.create({
   },
   metaRow: {
     flexDirection: "row",
-    alignItems: "center",
-    marginTop: 2,
+    alignItems: "flex-start",
+    marginTop: 4,
   },
   metaText: {
     fontSize: 11,
     opacity: 0.6,
     marginLeft: 4,
     flex: 1,
+    lineHeight: 14,
   },
   icon: {
     opacity: 0.6,
+    marginTop: 1,
   },
   priceRow: {
     flexDirection: "row",

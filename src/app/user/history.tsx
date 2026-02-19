@@ -163,7 +163,7 @@ export default function HistoryScreen() {
       <View style={[styles.content, { backgroundColor: "#F9FAFB" }]}>
         {loading ? (
           <ActivityIndicator
-            size="large"
+            size="small"
             color={Colors.reds[500]}
             style={{ marginTop: 40 }}
           />

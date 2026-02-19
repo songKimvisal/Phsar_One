@@ -16,6 +16,7 @@ import ProductLocation from "@src/components/productDetails_components/ProductLo
 import SellerInfoSection from "@src/components/productDetails_components/SellerInfoSection";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
+import { CATEGORY_MAP } from "@src/constants/CategoryData";
 import { useProductDetails } from "@src/hooks/useProductDetails";
 import {
   supabase,
@@ -35,6 +36,18 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+// Mapping fixed database UUIDs back to CATEGORY_MAP keys
+const UUID_TO_CAT_KEY: Record<string, string> = {
+  "10000000-0000-0000-0000-000000000001": "1",
+  "20000000-0000-0000-0000-000000000001": "2",
+  "30000000-0000-0000-0000-000000000001": "3",
+  "40000000-0000-0000-0000-000000000001": "4",
+  "50000000-0000-0000-0000-000000000001": "5",
+  "60000000-0000-0000-0000-000000000001": "6",
+  "70000000-0000-0000-0000-000000000001": "7",
+  "80000000-0000-0000-0000-000000000001": "8",
+};
 
 export default function ProductDetail() {
   const { id } = useLocalSearchParams();
@@ -127,6 +140,22 @@ export default function ProductDetail() {
 
   const isOwner = userId === rawProduct.seller_id;
 
+  // Robust category resolution
+  const dbCategory = Array.isArray(rawProduct.category) ? rawProduct.category[0] : rawProduct.category;
+  
+  // Try to find the main category key from our constants using the UUID
+  const catKey = UUID_TO_CAT_KEY[rawProduct.category_id];
+  const mainCatKeyFromId = catKey ? CATEGORY_MAP[catKey]?.nameKey : "";
+
+  const mainCategory = rawProduct.metadata?.mainCategory || 
+                      (dbCategory?.parent ? dbCategory.parent.name_key : dbCategory?.name_key) || 
+                      mainCatKeyFromId || 
+                      "";
+  
+  const subCategory = rawProduct.metadata?.subCategory || 
+                     (dbCategory?.parent ? dbCategory.name_key : "") || 
+                     "";
+
   const product: Product = {
     ...rawProduct,
     id: rawProduct.id,
@@ -134,8 +163,8 @@ export default function ProductDetail() {
     createdAt: rawProduct.created_at,
     negotiable: rawProduct.is_negotiable,
     currency: rawProduct.metadata?.currency || "USD",
-    mainCategory: rawProduct.metadata?.mainCategory || "",
-    subCategory: rawProduct.metadata?.subCategory || "",
+    mainCategory,
+    subCategory,
     address: {
       province: rawProduct.location_name || "",
       district: rawProduct.metadata?.district || "",

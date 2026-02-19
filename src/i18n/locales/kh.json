@@ -382,7 +382,11 @@
     "clear": "សម្អាត",
     "apply": "អនុវត្ត",
     "price_low_to_high": "តម្លៃ៖ ពីទាបទៅខ្ពស់",
-    "price_high_to_low": "តម្លៃ៖ ពីខ្ពស់ទៅទាប"
+    "price_high_to_low": "តម្លៃ៖ ពីខ្ពស់ទៅទាប",
+    "search": "ស្វែងរក",
+    "location": "ទីតាំង",
+    "filter": "ចម្រាញ់",
+    "noProductsFound": "រកមិនឃើញផលិតផលទេ"
   },
   "time_ago": {
     "minutes": "{{count}} នាទីមុន",

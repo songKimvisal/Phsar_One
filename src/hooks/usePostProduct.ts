@@ -84,8 +84,8 @@ export function usePostProduct() {
         district: draft.district,
         commune: draft.commune,
         location: draft.location,
-        mainCategory: draft.mainCategory,
-        subCategory: draft.subCategory,
+        mainCategory: draft.mainCategory || "",
+        subCategory: draft.subCategory || "",
         discountType: draft.discountType,
         discountValue: draft.discountValue
       },
