@@ -1,25 +1,3 @@
-import useThemeColor from "@/src/hooks/useThemeColor";
-import {
-  Product,
-  calculateDiscountPrice,
-  formatTimeAgo,
-} from "@/src/types/productTypes";
-import { useAuth } from "@clerk/clerk-expo";
-import BuyerSafetyGuidelines from "@src/components/productDetails_components/BuyerSafetyGuidelines";
-import ProductActionButtons from "@src/components/productDetails_components/ProductActionButtons";
-import ProductDescription from "@src/components/productDetails_components/ProductDescription";
-import ProductDetailsTable from "@src/components/productDetails_components/ProductDetailsTable";
-import ProductHeader from "@src/components/productDetails_components/ProductHeader";
-import ProductImageGallery from "@src/components/productDetails_components/ProductImageGallery";
-import ProductInfoSection from "@src/components/productDetails_components/ProductInfoSection";
-import ProductLocation from "@src/components/productDetails_components/ProductLocation";
-import SellerInfoSection from "@src/components/productDetails_components/SellerInfoSection";
-import { ThemedText } from "@src/components/shared_components/ThemedText";
-import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
-import { useProductDetails } from "@src/hooks/useProductDetails";
-import { createClerkSupabaseClient } from "@src/lib/supabase";
-import { formatProductDetails } from "@src/utils/productUtils";
-import { Href, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -30,8 +8,98 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Href, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
+
+import useThemeColor from "@/src/hooks/useThemeColor";
+import {
+  Product,
+  calculateDiscountPrice,
+  formatTimeAgo,
+} from "@/src/types/productTypes";
+import { createClerkSupabaseClient } from "@src/lib/supabase";
+import { formatProductDetails } from "@src/utils/productUtils";
+import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
+import { useProductDetails } from "@src/hooks/useProductDetails";
+
+import BuyerSafetyGuidelines from "@src/components/productDetails_components/BuyerSafetyGuidelines";
+import ProductActionButtons from "@src/components/productDetails_components/ProductActionButtons";
+import ProductDescription from "@src/components/productDetails_components/ProductDescription";
+import ProductDetailsTable from "@src/components/productDetails_components/ProductDetailsTable";
+import ProductHeader from "@src/components/productDetails_components/ProductHeader";
+import ProductImageGallery from "@src/components/productDetails_components/ProductImageGallery";
+import ProductInfoSection from "@src/components/productDetails_components/ProductInfoSection";
+import ProductLocation from "@src/components/productDetails_components/ProductLocation";
+import SellerInfoSection from "@src/components/productDetails_components/SellerInfoSection";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
+import { Colors } from "@src/constants/Colors";
+import { ChatCircleIcon, ArrowsClockwiseIcon } from "phosphor-react-native";
+
+type ProductChatType = 'normal' | 'trade';
+
+// New component for the chat type toggle
+const ProductTypeToggle: React.FC<{
+  currentType: ProductChatType;
+  onToggle: (type: ProductChatType) => void;
+  themeColors: ReturnType<typeof useThemeColor>;
+  t: (key: string) => string;
+}> = ({ currentType, onToggle, themeColors, t }) => {
+  const isNormalChat = currentType === 'normal';
+  return (
+    <View style={[toggleStyles.container, { borderColor: themeColors.border }]}>
+      <TouchableOpacity
+        style={[
+          toggleStyles.button,
+          isNormalChat && { backgroundColor: themeColors.tint },
+        ]}
+        onPress={() => onToggle('normal')}
+      >
+        <ChatCircleIcon size={18} color={isNormalChat ? 'white' : themeColors.text} weight={isNormalChat ? "fill" : "regular"} />
+        <ThemedText style={[toggleStyles.buttonText, { color: isNormalChat ? 'white' : themeColors.text }]}>
+          {t("chat.normal_product_chat")}
+        </ThemedText>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[
+          toggleStyles.button,
+          !isNormalChat && { backgroundColor: themeColors.tint },
+        ]}
+        onPress={() => onToggle('trade')}
+      >
+        <ArrowsClockwiseIcon size={18} color={!isNormalChat ? 'white' : themeColors.text} weight={!isNormalChat ? "fill" : "regular"} />
+        <ThemedText style={[toggleStyles.buttonText, { color: !isNormalChat ? 'white' : themeColors.text }]}>
+          {t("chat.trade_product_chat")}
+        </ThemedText>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+const toggleStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    borderRadius: 99,
+    borderWidth: 1,
+    overflow: 'hidden',
+    marginBottom: 16,
+    marginHorizontal: 16,
+  },
+  button: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    gap: 8,
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+});
 
 export default function ProductDetail() {
   const { id } = useLocalSearchParams();
@@ -42,6 +110,7 @@ export default function ProductDetail() {
 
   const [isFavorite, setIsFavorite] = useState(false);
   const { product: rawProduct, loading } = useProductDetails(id as string);
+  const [productChatType, setProductChatType] = useState<ProductChatType>('normal'); // New state
 
   if (loading) {
     return (
@@ -63,9 +132,9 @@ export default function ProductDetail() {
         style={[styles.container, { backgroundColor: themeColors.background }]}
       >
         <Stack.Screen
-          options={{ title: "Product Not Found", headerShown: false }}
+          options={{ title: t("common.product_not_found"), headerShown: false }}
         />
-        <ThemedText style={styles.notFoundText}>Product not found.</ThemedText>
+        <ThemedText style={styles.notFoundText}>{t("common.product_not_found")}</ThemedText>
       </View>
     );
   }
@@ -119,8 +188,37 @@ export default function ProductDetail() {
     }
   };
 
-  const handleChat = () => {
-    console.log("Open chat with seller");
+  // Modified handleChat to use productChatType
+  const handleChat = (type: ProductChatType) => {
+    if (type === 'normal') {
+      router.push({
+        pathname: "/chat/normal/[id]",
+        params: {
+          id: product.id,
+          sellerId: product.seller?.id,
+          sellerName: product.seller?.name,
+          sellerAvatar: product.seller?.avatar,
+          productTitle: product.title,
+          productThumbnail: product.photos[0],
+          productPrice: product.price,
+          productCurrency: product.currency,
+        },
+      } as Href);
+    } else if (type === 'trade') {
+      router.push({
+        pathname: "/chat/trade/[id]",
+        params: {
+          id: product.id,
+          sellerId: product.seller?.id,
+          sellerName: product.seller?.name,
+          sellerAvatar: product.seller?.avatar,
+          productTitle: product.title,
+          productThumbnail: product.photos[0],
+          productPrice: product.price,
+          productCurrency: product.currency,
+        },
+      } as Href);
+    }
   };
 
   const handleEdit = () => {
@@ -129,12 +227,12 @@ export default function ProductDetail() {
 
   const handleDelete = async () => {
     Alert.alert(
-      "Delete Listing",
-      "Are you sure you want to delete this listing permanently?",
+      t("common.delete"),
+      t("common.confirm_delete"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("common.delete"),
           style: "destructive",
           onPress: async () => {
             try {
@@ -147,7 +245,7 @@ export default function ProductDetail() {
               if (error) throw error;
               router.replace("/(tabs)");
             } catch (err) {
-              Alert.alert("Error", "Failed to delete listing.");
+              Alert.alert(t("common.error"), t("common.failed_to_delete_listing"));
             }
           },
         },
@@ -292,10 +390,18 @@ export default function ProductDetail() {
             { backgroundColor: themeColors.background },
           ]}
         >
+          {!isOwner && (
+            <ProductTypeToggle
+              currentType={productChatType}
+              onToggle={setProductChatType}
+              themeColors={themeColors}
+              t={t}
+            />
+          )}
           <ProductActionButtons
             isOwner={isOwner}
             onCallSeller={handleCall}
-            onChatSeller={handleChat}
+            onChatSeller={() => handleChat(productChatType)} // Pass productChatType to handleChat
             onEdit={handleEdit}
             onDelete={handleDelete}
           />

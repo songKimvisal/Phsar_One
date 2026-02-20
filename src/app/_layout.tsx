@@ -62,6 +62,7 @@ export default function RootLayout() {
                 <Stack.Screen name="(tabs)" />
                 <Stack.Screen name="sell" />
                 <Stack.Screen name="settings" />
+                <Stack.Screen name="chat" />
               </Stack>
             </SellDraftProvider>
           </I18nextProvider>
