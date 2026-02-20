@@ -1,6 +1,7 @@
 import ProductCard from "@src/components/category_components/ProductCard";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { mapDatabaseProductToProduct } from "@src/utils/productUtils";
 import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -37,32 +38,18 @@ export default function RecentListings({
     );
   }
 
-  const renderProduct = (item: any) => (
-    <ProductCard
-      key={item.id}
-      product={{
-        ...item,
-        photos:
-          item.images && item.images.length > 0
-            ? item.images
-            : ["https://via.placeholder.com/300"],
-        createdAt: item.created_at,
-        negotiable: item.is_negotiable,
-        currency: item.metadata?.currency || "USD",
-        mainCategory: item.metadata?.mainCategory || "",
-        subCategory: item.metadata?.subCategory || "",
-        address: {
-          province: item.location_name || "",
-          district: item.metadata?.district || "",
-          commune: item.metadata?.commune || "",
-        },
-        details: item.metadata || {},
-      }}
-      onPress={() => {
-        router.push(`/product/${item.id}`);
-      }}
-    />
-  );
+  const renderProduct = (item: any) => {
+    const product = mapDatabaseProductToProduct(item);
+    return (
+      <ProductCard
+        key={product.id}
+        product={product}
+        onPress={() => {
+          router.push(`/product/${product.id}`);
+        }}
+      />
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -102,9 +89,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   productItem: {
-    flex: 1,
-    minWidth: "45%",
-    maxWidth: "50%",
-    aspectRatio: 0.85,
+    width: "48%", // Use width to maintain 2 columns
   },
 });

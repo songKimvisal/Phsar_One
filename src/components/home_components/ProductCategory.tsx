@@ -18,14 +18,14 @@ export default function ProductCategory() {
   const themeColors = useThemeColor();
   const router = useRouter();
   const CATEGORIES = [
-    { id: "1", nameKey: "smart_phone", icon: DeviceMobileIcon },
-    { id: "2", nameKey: "vehicles", icon: CarIcon },
-    { id: "3", nameKey: "beauty", icon: SparkleIcon },
-    { id: "4", nameKey: "furniture", icon: ArmchairIcon },
-    { id: "5", nameKey: "clothing", icon: ShirtFoldedIcon },
-    { id: "6", nameKey: "computer", icon: DesktopIcon },
-    { id: "7", nameKey: "real_estates", icon: BuildingsIcon },
-    { id: "8", nameKey: "electronic", icon: LightningIcon },
+    { id: "10000000-0000-0000-0000-000000000001", nameKey: "smart_phone", icon: DeviceMobileIcon },
+    { id: "20000000-0000-0000-0000-000000000001", nameKey: "vehicles", icon: CarIcon },
+    { id: "30000000-0000-0000-0000-000000000001", nameKey: "beauty", icon: SparkleIcon },
+    { id: "40000000-0000-0000-0000-000000000001", nameKey: "furniture", icon: ArmchairIcon },
+    { id: "50000000-0000-0000-0000-000000000001", nameKey: "clothing", icon: ShirtFoldedIcon },
+    { id: "60000000-0000-0000-0000-000000000001", nameKey: "computer", icon: DesktopIcon },
+    { id: "70000000-0000-0000-0000-000000000001", nameKey: "real_estates", icon: BuildingsIcon },
+    { id: "80000000-0000-0000-0000-000000000001", nameKey: "electronic", icon: LightningIcon },
   ];
 
   const handlePress = (id: string, nameKey: string) => {

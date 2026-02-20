@@ -375,6 +375,7 @@
     "safety5": "Avoid sharing card details on unfamiliar websites or suspicious links."
   },
   "common": {
+    "all": "All",
     "product_not_found": "Product not found.",
     "results": "results",
     "noProducts": "No products found",

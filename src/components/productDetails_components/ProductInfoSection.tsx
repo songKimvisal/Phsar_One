@@ -3,9 +3,10 @@ import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { formatPrice, Product } from "@src/types/productTypes";
 import { TFunction } from "i18next";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
+import { supabase } from "@src/lib/supabase";
 
 interface ProductInfoSectionProps {
   product: Product;
@@ -22,6 +23,27 @@ const ProductInfoSection: React.FC<ProductInfoSectionProps> = ({
 }) => {
   const themeColors = useThemeColor();
   const { t } = useTranslation();
+  const [viewCount, setViewCount] = useState(0);
+
+  useEffect(() => {
+    if (product.id) {
+      fetchViewCount();
+    }
+  }, [product.id]);
+
+  const fetchViewCount = async () => {
+    try {
+      const { count, error } = await supabase
+        .from("analytics_views")
+        .select("*", { count: 'exact', head: true })
+        .eq("product_id", product.id);
+      
+      if (error) throw error;
+      setViewCount(count || 0);
+    } catch (error) {
+      console.error("Error fetching view count:", error);
+    }
+  };
 
   const styles = getStyles(themeColors);
 
@@ -33,7 +55,7 @@ const ProductInfoSection: React.FC<ProductInfoSectionProps> = ({
         <View style={styles.viewsContainer}>
           <Ionicons name="eye-outline" size={16} color={themeColors.text} />
           <ThemedText style={styles.viewsText}>
-            {product.views ?? 0} {t("productDetail.views")}
+            {viewCount} {t("productDetail.views")}
           </ThemedText>
         </View>
       </View>

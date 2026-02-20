@@ -26,7 +26,9 @@ export default function SellScreen() {
   const { updateDraft } = useSellDraft();
 
   const handleCategoryPress = (id: string) => {
+    const category = CATEGORY_MAP[id];
     updateDraft("categoryId", id);
+    updateDraft("mainCategory", category?.nameKey || "");
     router.push({ pathname: "/sell/subcategory", params: { categoryId: id } });
   };
 
@@ -129,8 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cardText: {
-    fontSize: 13,
-    padding: 5,
+    fontSize: 12,
     fontWeight: "500",
     textAlign: "center",
     lineHeight: 16,

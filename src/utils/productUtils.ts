@@ -161,6 +161,7 @@ export const formatPrice = (
 };
 
 export const formatTimeAgo = (dateString: string, t: unknown): string => {
+  if (!dateString) return "";
   const now = new Date();
   const past = new Date(dateString);
   const diffMs = now.getTime() - past.getTime();
@@ -179,4 +180,45 @@ export const formatTimeAgo = (dateString: string, t: unknown): string => {
 
   const diffMonths = Math.floor(diffDays / 30);
   return i18n.t("time_ago.months", { count: diffMonths });
+};
+
+export const mapDatabaseProductToProduct = (dbProduct: any): Product => {
+  const metadata = dbProduct.metadata || {};
+  return {
+    id: dbProduct.id,
+    title: dbProduct.title,
+    description: dbProduct.description,
+    mainCategory: metadata.mainCategory || "",
+    subCategory: metadata.subCategory || "",
+    photos: dbProduct.images || [],
+    price: dbProduct.price?.toString() || "0",
+    currency: metadata.currency || "USD",
+    negotiable: dbProduct.is_negotiable || false,
+    discountType: metadata.discountType || "none",
+    discountValue: metadata.discountValue || "0",
+    address: metadata.address || {
+      province: dbProduct.location_name,
+      district: metadata.district || null,
+      commune: metadata.commune || null,
+    },
+    location: metadata.location || { latitude: 0, longitude: 0 },
+    details: metadata.details || {},
+    contact: metadata.contact || {
+      sellerName: "",
+      phones: [],
+      email: "",
+    },
+    views: dbProduct.views || 0,
+    createdAt: dbProduct.created_at,
+    updatedAt: dbProduct.updated_at,
+    status: dbProduct.status,
+    location_name: dbProduct.location_name,
+    seller: dbProduct.seller ? {
+      id: dbProduct.seller_id,
+      name: `${dbProduct.seller.first_name || ""} ${dbProduct.seller.last_name || ""}`.trim() || "Unknown Seller",
+      avatar: dbProduct.seller.avatar_url,
+      verified: dbProduct.seller.verified,
+      trusted: dbProduct.seller.trusted,
+    } : undefined,
+  };
 };
