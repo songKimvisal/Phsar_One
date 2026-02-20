@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -11,7 +11,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Href, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Href,
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 
 import useThemeColor from "@/src/hooks/useThemeColor";
@@ -20,9 +26,10 @@ import {
   calculateDiscountPrice,
   formatTimeAgo,
 } from "@/src/types/productTypes";
-import { createClerkSupabaseClient } from "@src/lib/supabase";
+import { createClerkSupabaseClient, supabase } from "@src/lib/supabase";
 import { formatProductDetails } from "@src/utils/productUtils";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
+import { CATEGORY_MAP } from "@src/constants/CategoryData";
 import { useProductDetails } from "@src/hooks/useProductDetails";
 
 import BuyerSafetyGuidelines from "@src/components/productDetails_components/BuyerSafetyGuidelines";
@@ -305,34 +312,27 @@ export default function ProductDetail() {
 
   // Modified handleChat to use productChatType
   const handleChat = (type: ProductChatType) => {
+    const chatParams = {
+      id: String(product.id ?? ""),
+      sellerId: String(product.seller?.id ?? ""),
+      sellerName: String(product.seller?.name ?? ""),
+      sellerAvatar: String(product.seller?.avatar ?? ""),
+      productTitle: String(product.title ?? ""),
+      productThumbnail: String(product.photos?.[0] ?? ""),
+      productPrice: String(product.price ?? ""),
+      productCurrency: String(product.currency ?? ""),
+    };
+
     if (type === 'normal') {
       router.push({
         pathname: "/chat/normal/[id]",
-        params: {
-          id: product.id,
-          sellerId: product.seller?.id,
-          sellerName: product.seller?.name,
-          sellerAvatar: product.seller?.avatar,
-          productTitle: product.title,
-          productThumbnail: product.photos[0],
-          productPrice: product.price,
-          productCurrency: product.currency,
-        },
-      } as Href);
+        params: chatParams,
+      } as any);
     } else if (type === 'trade') {
       router.push({
         pathname: "/chat/trade/[id]",
-        params: {
-          id: product.id,
-          sellerId: product.seller?.id,
-          sellerName: product.seller?.name,
-          sellerAvatar: product.seller?.avatar,
-          productTitle: product.title,
-          productThumbnail: product.photos[0],
-          productPrice: product.price,
-          productCurrency: product.currency,
-        },
-      } as Href);
+        params: chatParams,
+      } as any);
     }
   };
 

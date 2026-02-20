@@ -28,11 +28,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function AddTradeProductScreen() {
   const router = useRouter();
   const themeColors = useThemeColor();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { draft, updateDraft, resetDraft } = useTradeDraft();
   const { addProduct } = useTradeProducts();
-
-  const activeFont = i18n.language === "kh" ? "khmer-regular" : "Oxygen"; // Define activeFont
 
   // Product Information
   const [title, setTitle] = useState("");
@@ -432,9 +430,6 @@ export default function AddTradeProductScreen() {
             <AddressDropdowns
               currentDraft={draft}
               onUpdateDraft={(key, value) => updateDraft(key as any, value)}
-              themeColors={themeColors}
-              t={t}
-              activeFont={activeFont}
             />
 
             <LocationPickerMap

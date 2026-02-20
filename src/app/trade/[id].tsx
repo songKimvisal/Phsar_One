@@ -7,11 +7,11 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { formatPrice } from "@src/types/productTypes";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
-  CaretLeft,
-  ClipboardText,
-  MapPin,
-  Phone,
-  Tag,
+  CaretLeftIcon,
+  ClipboardTextIcon,
+  MapPinIcon,
+  PhoneIcon,
+  TagIcon,
 } from "phosphor-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -81,7 +81,7 @@ export default function TradeProductDetailScreen() {
             onPress={() => router.back()}
             style={styles.backButton}
           >
-            <CaretLeft size={24} color={themeColors.text} weight="bold" />
+            <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
           </TouchableOpacity>
           <ThemedText style={styles.headerTitle} numberOfLines={1}>
             {product.title}
@@ -132,7 +132,7 @@ export default function TradeProductDetailScreen() {
 
           <View style={styles.specRow}>
             <View style={styles.specLabelContainer}>
-              <ClipboardText
+              <ClipboardTextIcon
                 size={20}
                 color={themeColors.text}
                 weight="regular"
@@ -148,7 +148,7 @@ export default function TradeProductDetailScreen() {
 
           <View style={styles.specRow}>
             <View style={styles.specLabelContainer}>
-              <Tag size={20} color={themeColors.text} weight="regular" />
+              <TagIcon size={20} color={themeColors.text} weight="regular" />
               <ThemedText style={styles.specLabel}>
                 {t("trade.original_price")}
               </ThemedText>
@@ -160,7 +160,7 @@ export default function TradeProductDetailScreen() {
 
           <View style={styles.specRow}>
             <View style={styles.specLabelContainer}>
-              <MapPin size={20} color={themeColors.text} weight="regular" />
+              <MapPinIcon size={20} color={themeColors.text} weight="regular" />
               <ThemedText style={styles.specLabel}>
                 {t("trade.location")}
               </ThemedText>
@@ -196,7 +196,7 @@ export default function TradeProductDetailScreen() {
 
           <View style={[styles.specRow, styles.phoneRow]}>
             <View style={styles.specLabelContainer}>
-              <Phone size={20} color={themeColors.text} weight="regular" />
+              <PhoneIcon size={20} color={themeColors.text} weight="regular" />
               <ThemedText style={styles.specLabel}>
                 {t("trade.phone_number")}
               </ThemedText>

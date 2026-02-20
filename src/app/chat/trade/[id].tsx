@@ -6,10 +6,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function TradeProductChatScreen() {
   const params = useLocalSearchParams();
   const { id, sellerId, sellerName, sellerAvatar, productTitle, productThumbnail, productPrice, productCurrency } = params;
+  const headerTitle =
+    typeof sellerName === "string"
+      ? sellerName
+      : Array.isArray(sellerName) && sellerName.length > 0
+        ? sellerName[0]
+        : "Trade Chat";
 
   return (
     <SafeAreaView style={styles.container}>
-      <Stack.Screen options={{ headerShown: true, title: sellerName || "Trade Chat" }} />
+      <Stack.Screen options={{ headerShown: true, title: headerTitle }} />
       <View style={styles.content}>
         <Text style={styles.title}>Trade Product Chat Screen</Text>
         <Text>Product ID: {id}</Text>

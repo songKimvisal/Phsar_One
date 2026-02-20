@@ -24,7 +24,7 @@ import { mapDatabaseProductToProduct } from "@src/utils/productUtils";
 interface Category {
   id: string;
   name_key: string;
-  icon_name: string;
+  icon_name: string | null;
 }
 
 export default function CategorySearchScreen() {

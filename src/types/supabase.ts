@@ -147,28 +147,34 @@ export type Database = {
       conversations: {
         Row: {
           buyer_id: string
+          buyer_muted: boolean | null
           created_at: string | null
           id: string
           product_id: string | null
           seller_id: string
+          seller_muted: boolean | null
           trade_id: string | null
           updated_at: string | null
         }
         Insert: {
           buyer_id: string
+          buyer_muted?: boolean | null
           created_at?: string | null
           id?: string
           product_id?: string | null
           seller_id: string
+          seller_muted?: boolean | null
           trade_id?: string | null
           updated_at?: string | null
         }
         Update: {
           buyer_id?: string
+          buyer_muted?: boolean | null
           created_at?: string | null
           id?: string
           product_id?: string | null
           seller_id?: string
+          seller_muted?: boolean | null
           trade_id?: string | null
           updated_at?: string | null
         }
@@ -698,6 +704,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          last_online_at: string | null
           phone: string | null
           updated_at: string | null
           user_type: string | null
@@ -709,6 +716,7 @@ export type Database = {
           first_name?: string | null
           id: string
           last_name?: string | null
+          last_online_at?: string | null
           phone?: string | null
           updated_at?: string | null
           user_type?: string | null
@@ -720,6 +728,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          last_online_at?: string | null
           phone?: string | null
           updated_at?: string | null
           user_type?: string | null

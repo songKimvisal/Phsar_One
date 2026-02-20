@@ -413,7 +413,13 @@
     "conversation_not_ready": "Conversation not ready. Please try again.",
     "failed_to_send_message": "Failed to send message.",
     "block_user": "Block User",
-    "delete_conversation": "Delete Conversation"
+    "delete_conversation": "Delete Conversation",
+    "messages": "Messages",
+    "regular": "Regular",
+    "trade": "Trade",
+    "no_conversations": "No conversations yet.",
+    "start_conversation": "Tap to start a conversation",
+    "phone_not_available": "Phone number not available for this user."
   },
   "time_ago": {
     "minutes": "{{count}} minutes ago",

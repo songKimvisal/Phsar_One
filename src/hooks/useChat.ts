@@ -14,6 +14,11 @@ export type Conversation = Database['public']['Tables']['conversations']['Row'] 
   product?: Database['public']['Tables']['products']['Row'] & {
     images: string[];
   };
+  trade?: Database['public']['Tables']['trades']['Row']; // Added for Trade tab support
+  last_message_content?: any;
+  last_message_at?: string;
+  last_message_sender_id?: string;
+  unread_count?: number;
 };
 
 type MessageContent =
@@ -26,9 +31,101 @@ interface UseChatProps {
   productId?: string;
   sellerId?: string;
   conversationId?: string;
+  tradeId?: string;
 }
 
-export function useChat({ productId, sellerId, conversationId: initialConversationId }: UseChatProps) {
+export function useConversations(type: 'regular' | 'trade') {
+  const { userId, getToken } = useAuth();
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchConversations = useCallback(async () => {
+    if (!userId) {
+      setError("User not authenticated.");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      const authSupabase = createClerkSupabaseClient(token);
+
+      let query = authSupabase
+        .from('conversation_summaries' as any) // Use view for summaries
+        .select('*, buyer:users!conversations_buyer_id_fkey(*), seller:users!conversations_seller_id_fkey(*), product:products(id, title, images), trade:trades(*)')
+        .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`);
+
+      if (type === 'regular') {
+        query = query.not('product_id', 'is', null);
+      } else {
+        query = query.not('trade_id', 'is', null);
+      }
+
+      const { data, error: convError } = await query.order('updated_at', { ascending: false });
+
+      if (convError) throw convError;
+      setConversations((data as any) || []);
+    } catch (err: any) {
+      console.error("Error fetching conversations:", err);
+      setError(err.message || "Failed to load conversations.");
+    } finally {
+      setLoading(false);
+    }
+  }, [userId, getToken, type]);
+
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
+
+  // Realtime subscription for conversation updates
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel(`user_conversations:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'conversations',
+          filter: `buyer_id=eq.${userId}`,
+        },
+        () => fetchConversations()
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'conversations',
+          filter: `seller_id=eq.${userId}`,
+        },
+        () => fetchConversations()
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages',
+        },
+        () => fetchConversations() // Update list when new messages arrive (for last message/unread count)
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, fetchConversations]);
+
+  return { conversations, loading, error, refresh: fetchConversations };
+}
+
+export function useChat({ productId, sellerId, tradeId, conversationId: initialConversationId }: UseChatProps) {
   const { userId, getToken } = useAuth();
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -54,17 +151,17 @@ export function useChat({ productId, sellerId, conversationId: initialConversati
         // Fetch existing conversation by ID
         const { data, error: convError } = await authSupabase
           .from('conversations')
-          .select('*, buyer:users(*), seller:users(*), product:products(id, title, images)')
+          .select('*, buyer:users!conversations_buyer_id_fkey(*), seller:users!conversations_seller_id_fkey(*), product:products(id, title, images), trade:trades(*)')
           .eq('id', initialConversationId)
           .single();
 
         if (convError) throw convError;
-        currentConversation = data;
+        currentConversation = data as Conversation;
       } else if (productId && sellerId) {
         // Find or create conversation for a product
         const { data, error: findError } = await authSupabase
           .from('conversations')
-          .select('*, buyer:users(*), seller:users(*), product:products(id, title, images)')
+          .select('*, buyer:users!conversations_buyer_id_fkey(*), seller:users!conversations_seller_id_fkey(*), product:products(id, title, images), trade:trades(*)')
           .eq('product_id', productId)
           .eq('seller_id', sellerId)
           .eq('buyer_id', userId)
@@ -75,7 +172,7 @@ export function useChat({ productId, sellerId, conversationId: initialConversati
         }
 
         if (data) {
-          currentConversation = data;
+          currentConversation = data as Conversation;
         } else {
           // Create new conversation
           const { data: newConvData, error: createError } = await authSupabase
@@ -85,11 +182,42 @@ export function useChat({ productId, sellerId, conversationId: initialConversati
               seller_id: sellerId,
               buyer_id: userId,
             })
-            .select('*, buyer:users(*), seller:users(*), product:products(id, title, images)')
+            .select('*, buyer:users!conversations_buyer_id_fkey(*), seller:users!conversations_seller_id_fkey(*), product:products(id, title, images), trade:trades(*)')
             .single();
 
           if (createError) throw createError;
-          currentConversation = newConvData;
+          currentConversation = newConvData as Conversation;
+        }
+      } else if (tradeId && sellerId) {
+        // Find or create conversation for a trade
+        const { data, error: findError } = await authSupabase
+          .from('conversations')
+          .select('*, buyer:users!conversations_buyer_id_fkey(*), seller:users!conversations_seller_id_fkey(*), product:products(id, title, images), trade:trades(*)')
+          .eq('trade_id', tradeId)
+          .eq('seller_id', sellerId)
+          .eq('buyer_id', userId)
+          .single();
+
+        if (findError && findError.code !== 'PGRST116') {
+          throw findError;
+        }
+
+        if (data) {
+          currentConversation = data as Conversation;
+        } else {
+          // Create new conversation
+          const { data: newConvData, error: createError } = await authSupabase
+            .from('conversations')
+            .insert({
+              trade_id: tradeId,
+              seller_id: sellerId,
+              buyer_id: userId,
+            })
+            .select('*, buyer:users!conversations_buyer_id_fkey(*), seller:users!conversations_seller_id_fkey(*), product:products(id, title, images), trade:trades(*)')
+            .single();
+
+          if (createError) throw createError;
+          currentConversation = newConvData as Conversation;
         }
       }
 
@@ -99,7 +227,7 @@ export function useChat({ productId, sellerId, conversationId: initialConversati
         // Fetch messages for the conversation
         const { data: fetchedMessages, error: msgError } = await authSupabase
           .from('messages')
-          .select('*, sender:users(*)')
+          .select('*, sender:users!messages_sender_id_fkey(*)')
           .eq('conversations_id', currentConversation.id)
           .order('created_at', { ascending: true });
 
@@ -112,7 +240,7 @@ export function useChat({ productId, sellerId, conversationId: initialConversati
     } finally {
       setLoading(false);
     }
-  }, [userId, getToken, productId, sellerId, initialConversationId]);
+  }, [userId, getToken, productId, sellerId, tradeId, initialConversationId]);
 
   useEffect(() => {
     fetchConversationAndMessages();
@@ -158,9 +286,9 @@ export function useChat({ productId, sellerId, conversationId: initialConversati
         .insert({
           conversations_id: conversation.id,
           sender_id: userId,
-          content: content as Json, // Cast to Json as per schema
+          content: content as any, // Cast to any because of Json type mismatch in some cases
         })
-        .select('*, sender:users(*)')
+        .select('*, sender:users!messages_sender_id_fkey(*)')
         .single();
 
       if (sendError) throw sendError;
@@ -198,16 +326,23 @@ export function useChat({ productId, sellerId, conversationId: initialConversati
       const token = await getToken();
       const authSupabase = createClerkSupabaseClient(token);
 
-      const newMuteStatus = !conversation.is_muted;
+      const isBuyer = userId === conversation.buyer_id;
+      const currentMuteStatus = isBuyer ? conversation.buyer_muted : conversation.seller_muted;
+      const newMuteStatus = !currentMuteStatus;
+
+      const updatePayload = isBuyer 
+        ? { buyer_muted: newMuteStatus } 
+        : { seller_muted: newMuteStatus };
+
       const { data, error: updateError } = await authSupabase
         .from('conversations')
-        .update({ is_muted: newMuteStatus })
+        .update(updatePayload)
         .eq('id', conversation.id)
-        .select()
+        .select('*, buyer:users!conversations_buyer_id_fkey(*), seller:users!conversations_seller_id_fkey(*), product:products(id, title, images), trade:trades(*)')
         .single();
 
       if (updateError) throw updateError;
-      setConversation(data); // Update local state
+      setConversation(data as Conversation); // Update local state
     } catch (err: any) {
       console.error("Error toggling mute status:", err);
       setError(err.message || "Failed to toggle mute status.");
@@ -236,7 +371,6 @@ export function useChat({ productId, sellerId, conversationId: initialConversati
       if (blockError) throw blockError;
       // Optionally, delete the conversation as well or just mark it as blocked
       // For now, just insert into blocked_users
-      setError("User blocked successfully.");
     } catch (err: any) {
       console.error("Error blocking user:", err);
       setError(err.message || "Failed to block user.");
@@ -269,7 +403,6 @@ export function useChat({ productId, sellerId, conversationId: initialConversati
 
       setConversation(null);
       setMessages([]);
-      setError("Conversation deleted successfully.");
     } catch (err: any) {
       console.error("Error deleting conversation:", err);
       setError(err.message || "Failed to delete conversation.");

@@ -147,24 +147,27 @@ export function usePostProduct() {
         .single();
 
       if (error) throw error;
+      if (!data) throw new Error("Product not found.");
+
+      const metadata = (data.metadata as Record<string, any> | null) ?? {};
 
       // Map DB data back to Draft structure
       return {
-        categoryId: UUID_TO_CATEGORY_ID[data.category_id] || "",
-        subCategory: data.metadata?.subCategory || "",
+        categoryId: data.category_id ? (UUID_TO_CATEGORY_ID[data.category_id] || "") : "",
+        subCategory: metadata.subCategory || "",
         photos: data.images || [],
         title: data.title || "",
         price: data.price?.toString() || "",
-        currency: data.metadata?.currency || "USD",
-        discountType: data.metadata?.discountType || "none",
-        discountValue: data.metadata?.discountValue || "",
+        currency: metadata.currency || "USD",
+        discountType: metadata.discountType || "none",
+        discountValue: metadata.discountValue || "",
         negotiable: data.is_negotiable || false,
         description: data.description || "",
-        details: data.metadata || {},
+        details: metadata,
         province: data.location_name || "",
-        location: data.metadata?.location || { latitude: 11.5564, longitude: 104.9282 },
-        district: data.metadata?.district || "",
-        commune: data.metadata?.commune || "",
+        location: metadata.location || { latitude: 11.5564, longitude: 104.9282 },
+        district: metadata.district || "",
+        commune: metadata.commune || "",
         contact: { chatOnly: true, sellerName: "", phones: [""] as string[], email: "" }, 
       };
     } catch (error) {
