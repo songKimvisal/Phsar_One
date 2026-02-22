@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Linking,
   Platform,
   ScrollView,
@@ -43,70 +44,7 @@ import ProductLocation from "@src/components/productDetails_components/ProductLo
 import SellerInfoSection from "@src/components/productDetails_components/SellerInfoSection";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
-import { ChatCircleIcon, ArrowsClockwiseIcon } from "phosphor-react-native";
-
-type ProductChatType = 'normal' | 'trade';
-
-// New component for the chat type toggle
-const ProductTypeToggle: React.FC<{
-  currentType: ProductChatType;
-  onToggle: (type: ProductChatType) => void;
-  themeColors: ReturnType<typeof useThemeColor>;
-  t: (key: string) => string;
-}> = ({ currentType, onToggle, themeColors, t }) => {
-  const isNormalChat = currentType === 'normal';
-  return (
-    <View style={[toggleStyles.container, { borderColor: themeColors.border }]}>
-      <TouchableOpacity
-        style={[
-          toggleStyles.button,
-          isNormalChat && { backgroundColor: themeColors.tint },
-        ]}
-        onPress={() => onToggle('normal')}
-      >
-        <ChatCircleIcon size={18} color={isNormalChat ? 'white' : themeColors.text} weight={isNormalChat ? "fill" : "regular"} />
-        <ThemedText style={[toggleStyles.buttonText, { color: isNormalChat ? 'white' : themeColors.text }]}>
-          {t("chat.normal_product_chat")}
-        </ThemedText>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[
-          toggleStyles.button,
-          !isNormalChat && { backgroundColor: themeColors.tint },
-        ]}
-        onPress={() => onToggle('trade')}
-      >
-        <ArrowsClockwiseIcon size={18} color={!isNormalChat ? 'white' : themeColors.text} weight={!isNormalChat ? "fill" : "regular"} />
-        <ThemedText style={[toggleStyles.buttonText, { color: !isNormalChat ? 'white' : themeColors.text }]}>
-          {t("chat.trade_product_chat")}
-        </ThemedText>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const toggleStyles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    borderRadius: 99,
-    borderWidth: 1,
-    overflow: 'hidden',
-    marginBottom: 16,
-    marginHorizontal: 16,
-  },
-  button: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    gap: 8,
-  },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});
+import { useConversations } from "@src/hooks/useChat";
 
 // Mapping fixed database UUIDs back to CATEGORY_MAP keys
 const UUID_TO_CAT_KEY: Record<string, string> = {
@@ -128,8 +66,11 @@ export default function ProductDetail() {
   const router = useRouter();
 
   const [isFavorite, setIsFavorite] = useState(false);
-  const { product: rawProduct, loading } = useProductDetails(id as string);
-  const [productChatType, setProductChatType] = useState<ProductChatType>('normal'); // New state
+  const { product: rawProduct, loading: productLoading } = useProductDetails(id as string);
+  
+  // Fetch conversations for this product if owner
+  const isOwner = userId === rawProduct?.seller_id;
+  const { conversations, loading: conversationsLoading } = useConversations("regular", isOwner ? (id as string) : undefined);
 
   useFocusEffect(
     useCallback(() => {
@@ -183,7 +124,7 @@ export default function ProductDetail() {
     }
   };
 
-  if (loading) {
+  if (productLoading) {
     return (
       <View
         style={[
@@ -209,8 +150,6 @@ export default function ProductDetail() {
       </View>
     );
   }
-
-  const isOwner = userId === rawProduct.seller_id;
 
   // Robust category resolution
   const dbCategory = Array.isArray(rawProduct.category) ? rawProduct.category[0] : rawProduct.category;
@@ -310,30 +249,29 @@ export default function ProductDetail() {
     }
   };
 
-  // Modified handleChat to use productChatType
-  const handleChat = (type: ProductChatType) => {
+  // Simplified handleChat to only support normal chat
+  const handleChat = (
+    conversationId?: string | null,
+    buyerId?: string | null,
+    buyerName?: string | null,
+    buyerAvatar?: string | null,
+  ) => {
     const chatParams = {
-      id: String(product.id ?? ""),
-      sellerId: String(product.seller?.id ?? ""),
-      sellerName: String(product.seller?.name ?? ""),
-      sellerAvatar: String(product.seller?.avatar ?? ""),
-      productTitle: String(product.title ?? ""),
-      productThumbnail: String(product.photos?.[0] ?? ""),
-      productPrice: String(product.price ?? ""),
-      productCurrency: String(product.currency ?? ""),
+      sellerId: String(product.seller?.id || ""),
+      sellerName: String(buyerName || product.seller?.name || ""),
+      sellerAvatar: String(buyerAvatar || product.seller?.avatar || ""),
+      productTitle: String(product.title || ""),
+      productThumbnail: String(product.photos?.[0] || ""),
+      productPrice: String(product.price || ""),
+      productCurrency: String(product.currency || ""),
+      conversationId: conversationId || undefined,
     };
 
-    if (type === 'normal') {
-      router.push({
-        pathname: "/chat/normal/[id]",
-        params: chatParams,
-      } as any);
-    } else if (type === 'trade') {
-      router.push({
-        pathname: "/chat/trade/[id]",
-        params: chatParams,
-      } as any);
-    }
+    const path = `/chat/normal/${product.id}` as any;
+    router.push({
+      pathname: path,
+      params: chatParams,
+    });
   };
 
   const handleEdit = () => {
@@ -496,6 +434,77 @@ export default function ProductDetail() {
             onViewProfile={() => router.push(`/user/${product.seller?.id}` as Href)}
           />
 
+          {/* Conversations Section for Owners */}
+          {isOwner && conversations.length > 0 && (
+            <View style={styles.ownerChatsSection}>
+              <ThemedText style={styles.sectionTitle}>
+                {t("chat.messages")} ({conversations.length})
+              </ThemedText>
+              {conversations.map((conv) => {
+                const buyer = conv.buyer;
+                
+                // Robustly handle message content
+                const lastMsgContent = conv.last_message_content;
+                let lastMessagePreview = t("chat.start_conversation");
+                
+                if (lastMsgContent) {
+                  if (typeof lastMsgContent === 'string') {
+                    lastMessagePreview = lastMsgContent;
+                  } else if (typeof lastMsgContent === 'object') {
+                    lastMessagePreview = lastMsgContent.text || lastMsgContent.message || JSON.stringify(lastMsgContent);
+                  }
+                }
+
+                return (
+                  <TouchableOpacity
+                    key={conv.id}
+                    activeOpacity={0.7}
+                    style={[
+                      styles.ownerChatRow,
+                      { borderBottomColor: themeColors.border + "40" },
+                    ]}
+                    onPress={() =>
+                      handleChat(
+                        conv.id,
+                        buyer?.id,
+                        `${buyer?.first_name || ""} ${buyer?.last_name || ""}`.trim(),
+                        buyer?.avatar_url,
+                      )
+                    }
+                  >
+                    <Image
+                      source={{
+                        uri:
+                          buyer?.avatar_url || "https://via.placeholder.com/150",
+                      }}
+                      style={styles.buyerAvatar}
+                    />
+                    <View style={{ flex: 1 }}>
+                      <ThemedText style={styles.buyerName}>
+                        {buyer?.first_name} {buyer?.last_name}
+                      </ThemedText>
+                      <ThemedText style={styles.lastMsg} numberOfLines={1}>
+                        {lastMessagePreview}
+                      </ThemedText>
+                    </View>
+                    {!!(conv.unread_count && conv.unread_count > 0) && (
+                      <View
+                        style={[
+                          styles.unreadBadge,
+                          { backgroundColor: themeColors.tint },
+                        ]}
+                      >
+                        <ThemedText style={styles.unreadText}>
+                          {conv.unread_count}
+                        </ThemedText>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          )}
+
           <BuyerSafetyGuidelines />
         </ScrollView>
 
@@ -506,18 +515,10 @@ export default function ProductDetail() {
             { backgroundColor: themeColors.background },
           ]}
         >
-          {!isOwner && (
-            <ProductTypeToggle
-              currentType={productChatType}
-              onToggle={setProductChatType}
-              themeColors={themeColors}
-              t={t}
-            />
-          )}
           <ProductActionButtons
             isOwner={isOwner}
             onCallSeller={handleCall}
-            onChatSeller={() => handleChat(productChatType)} // Pass productChatType to handleChat
+            onChatSeller={() => handleChat()}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
@@ -541,6 +542,51 @@ const styles = StyleSheet.create({
   notFoundText: {
     textAlign: "center",
     marginTop: 50,
+  },
+  ownerChatsSection: {
+    padding: 16,
+    borderTopWidth: 8,
+    borderTopColor: "rgba(0,0,0,0.03)",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 12,
+  },
+  ownerChatRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    gap: 12,
+    backgroundColor: "transparent", // Ensure touches are caught
+  },
+  buyerAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "#eee",
+  },
+  buyerName: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  lastMsg: {
+    fontSize: 14,
+    opacity: 0.5,
+    marginTop: 2,
+  },
+  unreadBadge: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  unreadText: {
+    color: "white",
+    fontSize: 11,
+    fontWeight: "bold",
   },
   stickyFooter: {
     position: "absolute",

@@ -1,88 +1,130 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator, RefreshControl } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAuth } from '@clerk/clerk-expo';
-import { useTranslation } from 'react-i18next';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useConversations, Conversation } from '@src/hooks/useChat';
-import useThemeColor from '@src/hooks/useThemeColor';
-import { ThemedText } from '@src/components/shared_components/ThemedText';
-import { Colors } from '@src/constants/Colors';
-import { formatDistanceToNow } from 'date-fns';
+import { Colors } from "@/src/constants/Colors";
+import { ThemedText } from "@src/components/shared_components/ThemedText";
+import { Conversation, useConversations } from "@src/hooks/useChat";
+import useThemeColor from "@src/hooks/useThemeColor";
+import { formatTimeAgo } from "@src/utils/productUtils";
 
 export default function ChatScreen() {
   const router = useRouter();
   const themeColors = useThemeColor();
   const { userId } = useAuth();
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'regular' | 'trade'>('regular');
+  const [activeTab, setActiveTab] = useState<"regular" | "trade">("regular");
 
-  const { conversations, loading, error, refresh } = useConversations(activeTab);
+  const { conversations, loading, error, refresh } =
+    useConversations(activeTab);
+
+  const navigateToChat = (item: Conversation) => {
+    const chatParams = {
+      sellerId: String(item.seller_id || ""),
+      sellerName:
+        `${item.seller?.first_name || ""} ${item.seller?.last_name || ""}`.trim(),
+      sellerAvatar: String(item.seller?.avatar_url || ""),
+      productTitle: String(item.product?.title || ""),
+      productThumbnail: String(item.product?.images?.[0] || ""),
+      conversationId: String(item.id || ""),
+    };
+
+    if (activeTab === "regular") {
+      router.push({
+        pathname: "/chat/normal/[id]",
+        params: {
+          id: String(item.product_id || item.id || ""),
+          ...chatParams,
+        },
+      });
+    } else {
+      router.push({
+        pathname: "/chat/trade/[id]",
+        params: {
+          id: String(item.id || ""),
+          ...chatParams,
+        },
+      });
+    }
+  };
 
   const renderConversationItem = ({ item }: { item: Conversation }) => {
-    // Determine the other participant in the chat
-    const otherParticipant = userId === item.buyer_id ? item.seller : item.buyer;
+    const otherParticipant =
+      userId === item.buyer_id ? item.seller : item.buyer;
     const isUnread = !!(item.unread_count && item.unread_count > 0);
-    const lastMessage = item.last_message_content?.text || t("chat.start_conversation");
-    const timeAgo = item.last_message_at 
-      ? formatDistanceToNow(new Date(item.last_message_at), { addSuffix: true }) 
-      : '';
+
+    const lastMsgContent = item.last_message_content;
+    let lastMessage = t("chat.start_conversation");
+
+    if (lastMsgContent) {
+      if (typeof lastMsgContent === "string") {
+        lastMessage = lastMsgContent;
+      } else if (typeof lastMsgContent === "object") {
+        lastMessage =
+          lastMsgContent.text ||
+          lastMsgContent.message ||
+          JSON.stringify(lastMsgContent);
+      }
+    }
+
+    const timeAgo = item.last_message_at
+      ? formatTimeAgo(item.last_message_at, t)
+      : "";
 
     return (
       <TouchableOpacity
-        style={[styles.conversationItem, { borderBottomColor: themeColors.border }]}
-        onPress={() => {
-          if (activeTab === 'regular') {
-            router.push({
-              pathname: "/chat/normal/[id]" as any,
-              params: {
-                id: item.product_id as string,
-                sellerId: item.seller_id,
-                sellerName: `${item.seller?.first_name || ''} ${item.seller?.last_name || ''}`,
-                sellerAvatar: item.seller?.avatar_url,
-                productTitle: item.product?.title,
-                productThumbnail: item.product?.images?.[0],
-                conversationId: item.id,
-              }
-            });
-          } else {
-            router.push({
-              pathname: "/chat/trade/[id]" as any,
-              params: {
-                id: item.id,
-                sellerId: item.seller_id,
-                sellerName: `${item.seller?.first_name || ''} ${item.seller?.last_name || ''}`,
-                sellerAvatar: item.seller?.avatar_url,
-                conversationId: item.id,
-              }
-            });
-          }
-        }}
+        activeOpacity={0.5}
+        onPress={() => navigateToChat(item)}
+        style={[
+          styles.conversationItem,
+          { backgroundColor: themeColors.background },
+        ]}
       >
         <Image
-          source={{ uri: otherParticipant?.avatar_url || "https://via.placeholder.com/150" }}
+          source={{
+            uri:
+              otherParticipant?.avatar_url || "https://via.placeholder.com/150",
+          }}
           style={styles.avatar}
         />
-        <View style={styles.content}>
+        <View style={styles.content} pointerEvents="none">
           <View style={styles.row}>
             <ThemedText style={styles.name} numberOfLines={1}>
               {otherParticipant?.first_name} {otherParticipant?.last_name}
             </ThemedText>
-            <ThemedText style={styles.time} numberOfLines={1}>
-              {timeAgo}
-            </ThemedText>
+            <ThemedText style={styles.time}>{timeAgo}</ThemedText>
           </View>
           <View style={styles.row}>
-            <ThemedText 
-              style={[styles.lastMessage, isUnread && { fontWeight: '600', color: themeColors.text }]} 
+            <ThemedText
+              style={[
+                styles.lastMessage,
+                isUnread && { fontWeight: "600", color: themeColors.text },
+              ]}
               numberOfLines={1}
             >
               {lastMessage}
             </ThemedText>
             {isUnread && (
-              <View style={[styles.unreadBadge, { backgroundColor: themeColors.tint }]}>
-                <ThemedText style={styles.unreadText}>{item.unread_count}</ThemedText>
+              <View
+                style={[
+                  styles.unreadBadge,
+                  { backgroundColor: themeColors.tint },
+                ]}
+              >
+                <ThemedText style={styles.unreadText}>
+                  {item.unread_count}
+                </ThemedText>
               </View>
             )}
           </View>
@@ -92,35 +134,59 @@ export default function ChatScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: themeColors.background }]}
+    >
       <View style={styles.header}>
         <ThemedText style={styles.headerTitle}>
           {t("chat.messages")} ({conversations.length})
         </ThemedText>
       </View>
 
-      {/* Custom Tabs */}
-      <View style={[styles.tabContainer, { backgroundColor: themeColors.card }]}>
+      {/* Tabs */}
+      <View style={styles.tabContainer}>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'regular' && { backgroundColor: themeColors.tint }]}
-          onPress={() => setActiveTab('regular')}
+          style={[
+            styles.tab,
+            activeTab === "regular"
+              ? { backgroundColor: Colors.reds[500] }
+              : { backgroundColor: "#E5E7EB" },
+          ]}
+          onPress={() => setActiveTab("regular")}
         >
-          <ThemedText style={[styles.tabText, activeTab === 'regular' && { color: 'white' }]}>
+          <ThemedText
+            style={[
+              styles.tabText,
+              activeTab === "regular"
+                ? { color: "white" }
+                : { color: "#4B5563" },
+            ]}
+          >
             {t("chat.regular")}
           </ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'trade' && { backgroundColor: themeColors.tint }]}
-          onPress={() => setActiveTab('trade')}
+          style={[
+            styles.tab,
+            activeTab === "trade"
+              ? { backgroundColor: Colors.reds[500] }
+              : { backgroundColor: "#E5E7EB" },
+          ]}
+          onPress={() => setActiveTab("trade")}
         >
-          <ThemedText style={[styles.tabText, activeTab === 'trade' && { color: 'white' }]}>
+          <ThemedText
+            style={[
+              styles.tabText,
+              activeTab === "trade" ? { color: "white" } : { color: "#4B5563" },
+            ]}
+          >
             {t("chat.trade")}
           </ThemedText>
         </TouchableOpacity>
       </View>
 
       {loading && !conversations.length ? (
-        <View style={styles.centered}>
+        <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={themeColors.tint} />
         </View>
       ) : (
@@ -129,14 +195,27 @@ export default function ChatScreen() {
           renderItem={renderConversationItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
+          ItemSeparatorComponent={() => (
+            <View
+              style={[
+                styles.separator,
+                { backgroundColor: themeColors.border + "40" },
+              ]}
+            />
+          )}
           refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={refresh} colors={[themeColors.tint]} />
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={refresh}
+              colors={[themeColors.tint]}
+            />
           }
           ListEmptyComponent={
-            <View style={styles.centered}>
+            <View style={styles.emptyStateContainer}>
               <ThemedText>{t("chat.no_conversations")}</ThemedText>
             </View>
           }
+          keyboardShouldPersistTaps="handled"
         />
       )}
     </SafeAreaView>
@@ -150,65 +229,71 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingVertical: 15,
+    alignItems: "center",
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: "700",
   },
   tabContainer: {
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 10,
+    flexDirection: "row",
+    marginHorizontal: 16,
+    gap: 12,
+    marginBottom: 20,
   },
   tab: {
     flex: 1,
-    paddingVertical: 10,
-    alignItems: 'center',
-    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: "center",
+    borderRadius: 12,
   },
   tabText: {
-    fontWeight: '600',
+    fontWeight: "600",
+    fontSize: 16,
   },
   listContent: {
-    paddingBottom: 20,
+    flexGrow: 1,
+    paddingBottom: 100,
+  },
+  separator: {
+    height: 1,
+    marginHorizontal: 20,
   },
   conversationItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
+    paddingVertical: 16,
   },
   avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    marginRight: 15,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    marginRight: 16,
+    backgroundColor: "#374151",
   },
   content: {
     flex: 1,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 4,
   },
   name: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: "600",
     flex: 1,
     marginRight: 10,
   },
   time: {
-    fontSize: 12,
-    opacity: 0.5,
+    fontSize: 14,
+    opacity: 0.4,
   },
   lastMessage: {
-    fontSize: 14,
-    opacity: 0.6,
+    fontSize: 15,
+    opacity: 0.5,
     flex: 1,
     marginRight: 10,
   },
@@ -216,19 +301,22 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   unreadText: {
-    color: 'white',
+    color: "white",
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: "700",
   },
-  centered: {
+  loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyStateContainer: {
     padding: 40,
+    alignItems: "center",
+    marginTop: 100,
   },
 });
-

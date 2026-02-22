@@ -177,9 +177,10 @@ export const calculateDiscountPrice = (product: Product): number | null => {
 };
 
 export const formatPrice = (
-  price: string | number,
+  price: string | number | null | undefined,
   currency: "USD" | "KHR",
 ): string => {
+  if (price === null || price === undefined) return "";
   const numPrice = typeof price == "string" ? parseFloat(price) : price;
   if (isNaN(numPrice)) return "";
   if (currency == "USD") {
@@ -188,7 +189,8 @@ export const formatPrice = (
     return `៛${numPrice.toLocaleString()}`;
   }
 };
-export const formatTimeAgo = (dateString: string, t: unknown): string => {
+export const formatTimeAgo = (dateString: string | null | undefined, t: unknown): string => {
+  if (!dateString) return "";
   const now = new Date();
   const past = new Date(dateString);
   const diffMs = now.getTime() - past.getTime();
