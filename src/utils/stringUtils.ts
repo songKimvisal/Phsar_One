@@ -1,4 +1,4 @@
-export const toCamelCase = (str: string): string => {
+export const toCamelCase = (str: string | null | undefined): string => {
   if (!str) return "";
   const parts = str.split(" ");
   return (
