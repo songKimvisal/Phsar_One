@@ -1,5 +1,13 @@
 import { useAuth } from "@clerk/clerk-expo";
-import { Audio } from "expo-av";
+import {
+  RecordingPresets,
+  requestRecordingPermissionsAsync,
+  setAudioModeAsync,
+  useAudioPlayer,
+  useAudioPlayerStatus,
+  useAudioRecorder,
+  useAudioRecorderState,
+} from "expo-audio";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -82,44 +90,19 @@ function VoicePlayer({
   duration?: number;
   isMe: boolean;
 }) {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(
-    () => () => {
-      sound?.unloadAsync();
-    },
-    [sound],
-  );
+  const player = useAudioPlayer({ uri: url }, { updateInterval: 200 });
+  const status = useAudioPlayerStatus(player);
+  const playing = status.playing;
+  const progress = status.duration > 0 ? status.currentTime / status.duration : 0;
 
   const toggle = async () => {
     try {
-      if (playing && sound) {
-        await sound.pauseAsync();
-        setPlaying(false);
+      if (playing) {
+        player.pause();
         return;
       }
-      if (sound) {
-        await sound.playAsync();
-        setPlaying(true);
-        return;
-      }
-      const { sound: s } = await Audio.Sound.createAsync(
-        { uri: url },
-        { shouldPlay: true },
-      );
-      setSound(s);
-      setPlaying(true);
-      s.setOnPlaybackStatusUpdate((st: any) => {
-        if (st.isLoaded) {
-          setProgress(st.positionMillis / (st.durationMillis || 1));
-          if (st.didJustFinish) {
-            setPlaying(false);
-            setProgress(0);
-          }
-        }
-      });
+      if (status.didJustFinish) await player.seekTo(0);
+      player.play();
     } catch (e) {
       console.error("Voice error:", e);
     }
@@ -164,7 +147,7 @@ function VoicePlayer({
       <ThemedText
         style={{ color: isMe ? "#fff" : "#6B7280", fontSize: 12, minWidth: 34 }}
       >
-        {formatDuration(duration || 0)}
+        {formatDuration(duration || Math.round(status.duration || 0))}
       </ThemedText>
     </TouchableOpacity>
   );
@@ -415,10 +398,10 @@ export default function TradeProductChatScreen() {
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [recording, setRecording] = useState<Audio.Recording | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingDuration, setRecordingDuration] = useState(0);
-  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recorderState = useAudioRecorderState(recorder, 250);
+  const isRecording = recorderState.isRecording;
+  const recordingDuration = Math.floor((recorderState.durationMillis || 0) / 1000);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   const isMuted =
@@ -585,43 +568,32 @@ export default function TradeProductChatScreen() {
 
   // ── Voice ──────────────────────────────────────────────────────────────────
   const startRecording = async () => {
-    if (isRecording) return;
-    const { status } = await Audio.requestPermissionsAsync();
+    if (recorderState.isRecording) return;
+    const { status } = await requestRecordingPermissionsAsync();
     if (status !== "granted") {
       Alert.alert("Permission needed", "Please allow microphone access.");
       return;
     }
     try {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
+      await setAudioModeAsync({
+        allowsRecording: true,
+        playsInSilentMode: true,
       });
-      const { recording: rec } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY,
-      );
-      setRecording(rec);
-      setIsRecording(true);
-      setRecordingDuration(0);
-      recordingTimerRef.current = setInterval(
-        () => setRecordingDuration((d) => d + 1),
-        1000,
-      );
+      await recorder.prepareToRecordAsync();
+      recorder.record();
     } catch (e: any) {
       Alert.alert("Error", e.message || "Failed to start recording.");
     }
   };
 
   const stopAndSend = async () => {
-    if (!recording) return;
-    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
-    const dur = recordingDuration;
-    setIsRecording(false);
-    setRecordingDuration(0);
+    if (!recorderState.isRecording) return;
     setIsSending(true);
     try {
-      await recording.stopAndUnloadAsync();
-      const uri = recording.getURI();
-      setRecording(null);
+      await recorder.stop();
+      const status = recorder.getStatus();
+      const uri = recorder.uri || status.url;
+      const dur = Math.floor((status.durationMillis || 0) / 1000);
       if (!uri) throw new Error("No recording URI.");
       const path = `chat/${conversation?.id || "unknown"}/${Date.now()}.m4a`;
       const url = await uploadFile(uri, path, "audio/m4a");
@@ -637,14 +609,10 @@ export default function TradeProductChatScreen() {
   };
 
   const cancelRecording = async () => {
-    if (!recording) return;
-    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+    if (!recorderState.isRecording) return;
     try {
-      await recording.stopAndUnloadAsync();
+      await recorder.stop();
     } catch {}
-    setRecording(null);
-    setIsRecording(false);
-    setRecordingDuration(0);
   };
 
   // ── Options actions ────────────────────────────────────────────────────────
