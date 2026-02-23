@@ -109,14 +109,13 @@ export default function EditProfileScreen() {
 
       if (uploadError) throw uploadError;
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      const { data: publicUrlData } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      const publicUrl = publicUrlData.publicUrl;
 
       setFormData((prev) => ({ ...prev, avatar_url: publicUrl }));
     } catch (error) {
       console.error("Upload error:", error);
-      Alert.alert("Error", "Failed to upload avatar.");
+      Alert.alert(t("error"), t("profile_screen.upload_failed"));
     } finally {
       setSaving(false);
     }
@@ -142,11 +141,11 @@ export default function EditProfileScreen() {
 
       if (error) throw error;
 
-      Alert.alert("Success", "Profile updated successfully!");
+      Alert.alert(t("success"), t("profile_screen.update_success"));
       router.back();
     } catch (error) {
       console.error("Save error:", error);
-      Alert.alert("Error", "Failed to update profile.");
+      Alert.alert(t("error"), t("profile_screen.update_failed"));
     } finally {
       setSaving(false);
     }
@@ -175,7 +174,7 @@ export default function EditProfileScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
-        <ThemedText style={styles.headerTitle}>Edit Profile</ThemedText>
+        <ThemedText style={styles.headerTitle}>{t("profile_screen.edit_profile")}</ThemedText>
         <TouchableOpacity
           onPress={handleSave}
           disabled={saving}
@@ -187,7 +186,7 @@ export default function EditProfileScreen() {
             <ThemedText
               style={[styles.saveText, { color: themeColors.primary }]}
             >
-              Save
+              {t("profile_screen.save")}
             </ThemedText>
           )}
         </TouchableOpacity>
@@ -222,7 +221,7 @@ export default function EditProfileScreen() {
             <ThemedText
               style={[styles.changePhotoText, { color: themeColors.primary }]}
             >
-              Change Profile Photo
+              {t("profile_screen.change_photo")}
             </ThemedText>
           </View>
 
@@ -231,7 +230,7 @@ export default function EditProfileScreen() {
             style={[styles.formCard, { backgroundColor: themeColors.card }]}
           >
             <View style={styles.inputGroup}>
-              <ThemedText style={styles.label}>First Name</ThemedText>
+              <ThemedText style={styles.label}>{t("profile_screen.first_name")}</ThemedText>
               <ThemedTextInput
                 style={[
                   styles.input,
@@ -244,12 +243,12 @@ export default function EditProfileScreen() {
                 onChangeText={(val) =>
                   setFormData((prev) => ({ ...prev, first_name: val }))
                 }
-                placeholder="Enter first name"
+                placeholder={t("profile_screen.first_name_placeholder")}
               />
             </View>
 
             <View style={styles.inputGroup}>
-              <ThemedText style={styles.label}>Last Name</ThemedText>
+              <ThemedText style={styles.label}>{t("profile_screen.last_name")}</ThemedText>
               <ThemedTextInput
                 style={[
                   styles.input,
@@ -262,12 +261,12 @@ export default function EditProfileScreen() {
                 onChangeText={(val) =>
                   setFormData((prev) => ({ ...prev, last_name: val }))
                 }
-                placeholder="Enter last name"
+                placeholder={t("profile_screen.last_name_placeholder")}
               />
             </View>
 
             <View style={styles.inputGroup}>
-              <ThemedText style={styles.label}>Phone Number</ThemedText>
+              <ThemedText style={styles.label}>{t("profile_screen.phone_number")}</ThemedText>
               <ThemedTextInput
                 style={[
                   styles.input,
@@ -280,13 +279,13 @@ export default function EditProfileScreen() {
                 onChangeText={(val) =>
                   setFormData((prev) => ({ ...prev, phone: val }))
                 }
-                placeholder="Enter phone number"
+                placeholder={t("profile_screen.phone_placeholder")}
                 keyboardType="phone-pad"
               />
             </View>
 
             <View style={styles.inputGroup}>
-              <ThemedText style={styles.label}>Bio</ThemedText>
+              <ThemedText style={styles.label}>{t("profile_screen.bio")}</ThemedText>
               <ThemedTextInput
                 style={[
                   styles.input,
@@ -300,7 +299,7 @@ export default function EditProfileScreen() {
                 onChangeText={(val) =>
                   setFormData((prev) => ({ ...prev, bio: val }))
                 }
-                placeholder="Tell us about yourself..."
+                placeholder={t("profile_screen.bio_placeholder")}
                 multiline
                 numberOfLines={4}
               />

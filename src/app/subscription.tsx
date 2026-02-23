@@ -9,49 +9,52 @@ import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const PRICING_PLANS: PricingPlan[] = [
-  {
-    id: "starter",
-    name: "Starter",
-    price: "4.99",
-    features: [
-      { text: "Up to 15 active ads" },
-      { text: "Ads active for 30 days" },
-      { text: "Trade & swap enabled" },
-      { text: "View count & chat count" },
-      { text: "1 free weekly boost" },
-    ],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: "14.99",
-    features: [
-      { text: "Up to 50 active ads" },
-      { text: "Ads active for 60 days" },
-      { text: "Top search priority" },
-      { text: "Seller profile with rating & reviews" },
-      { text: "5 boosts / month" },
-    ],
-  },
-  {
-    id: "business",
-    name: "Business",
-    price: "29.99",
-    features: [
-      { text: "Unlimited ads" },
-      { text: "Ads active for 120 days" },
-      { text: "Verified business badge" },
-      { text: "Advanced analytics" },
-      { text: "Unlimited boosts" },
-    ],
-  },
-];
+import { useTranslation } from "react-i18next";
 
 export default function SubscriptionPage() {
   const router = useRouter();
   const themeColors = useThemeColor();
+  const { t } = useTranslation();
   const [selectedPlanId, setSelectedPlanId] = useState("starter");
+
+  const PRICING_PLANS: PricingPlan[] = [
+    {
+      id: "starter",
+      name: t("subscription_screen.starter"),
+      price: "4.99",
+      features: [
+        { text: t("subscription_screen.features.up_to_15_ads") },
+        { text: t("subscription_screen.features.ads_active_30_days") },
+        { text: t("subscription_screen.features.trade_swap_enabled") },
+        { text: t("subscription_screen.features.view_chat_count") },
+        { text: t("subscription_screen.features.free_weekly_boost") },
+      ],
+    },
+    {
+      id: "pro",
+      name: t("subscription_screen.pro"),
+      price: "14.99",
+      features: [
+        { text: t("subscription_screen.features.up_to_50_ads") },
+        { text: t("subscription_screen.features.ads_active_60_days") },
+        { text: t("subscription_screen.features.top_priority") },
+        { text: t("subscription_screen.features.seller_profile") },
+        { text: t("subscription_screen.features.5_boosts") },
+      ],
+    },
+    {
+      id: "business",
+      name: t("subscription_screen.business"),
+      price: "29.99",
+      features: [
+        { text: t("subscription_screen.features.unlimited_ads") },
+        { text: t("subscription_screen.features.ads_active_120_days") },
+        { text: t("subscription_screen.features.verified_badge") },
+        { text: t("subscription_screen.features.advanced_analytics") },
+        { text: t("subscription_screen.features.unlimited_boosts") },
+      ],
+    },
+  ];
 
   const handleContinue = () => {
     // TODO: Implement Clerk checkout flow
@@ -70,7 +73,7 @@ export default function SubscriptionPage() {
         >
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
-        <ThemedText style={styles.headerTitle}>Subscriptions</ThemedText>
+        <ThemedText style={styles.headerTitle}>{t("subscription_screen.subscriptions")}</ThemedText>
         <View style={styles.placeholder} />
       </View>
 

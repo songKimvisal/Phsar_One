@@ -4,6 +4,7 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { Stack, useRouter } from "expo-router";
 import { CaretLeftIcon, PlusCircleIcon } from "phosphor-react-native";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -17,6 +18,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function NewTicketScreen() {
   const router = useRouter();
   const themeColors = useThemeColor();
+  const { t } = useTranslation();
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
 
@@ -33,7 +35,7 @@ export default function NewTicketScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
-        <ThemedText style={styles.headerTitle}>New ticket</ThemedText>
+        <ThemedText style={styles.headerTitle}>{t("support_screen.new_ticket")}</ThemedText>
         <View style={{ width: 44 }} />
       </View>
 
@@ -46,7 +48,7 @@ export default function NewTicketScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.inputGroup}>
-            <ThemedText style={styles.label}>Subject</ThemedText>
+            <ThemedText style={styles.label}>{t("support_screen.subject")}</ThemedText>
             <ThemedTextInput
               style={[
                 styles.input,
@@ -63,7 +65,7 @@ export default function NewTicketScreen() {
           </View>
 
           <View style={styles.inputGroup}>
-            <ThemedText style={styles.label}>Description</ThemedText>
+            <ThemedText style={styles.label}>{t("support_screen.description")}</ThemedText>
             <ThemedTextInput
               style={[
                 styles.input,
@@ -99,7 +101,7 @@ export default function NewTicketScreen() {
               weight="regular"
             />
             <ThemedText style={styles.filePickerText}>
-              Choose file(s)
+              {t("support_screen.choose_files")}
             </ThemedText>
           </TouchableOpacity>
 
@@ -113,7 +115,7 @@ export default function NewTicketScreen() {
                 { color: themeColors.primaryButtonText },
               ]}
             >
-              Send
+              {t("support_screen.send")}
             </ThemedText>
           </TouchableOpacity>
         </ScrollView>

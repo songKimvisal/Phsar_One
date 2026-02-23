@@ -71,7 +71,7 @@ export default function AddTradeProductScreen() {
     if (phoneNumbers.length < 3) {
       setPhoneNumbers([...phoneNumbers, ""]);
     } else {
-      Alert.alert(t("error"), "You can add up to 3 phone numbers.");
+      Alert.alert(t("error"), t("trade.alerts.max_phones_reached"));
     }
   };
 
@@ -89,55 +89,55 @@ export default function AddTradeProductScreen() {
 
   const validateForm = () => {
     if (!title.trim()) {
-      Alert.alert(t("error"), "Please enter a product title");
+      Alert.alert(t("error"), t("trade.alerts.title_required"));
       return false;
     }
     if (!description.trim()) {
-      Alert.alert(t("error"), "Please enter a product description");
+      Alert.alert(t("error"), t("trade.alerts.description_required"));
       return false;
     }
     if (!condition) {
-      Alert.alert(t("error"), "Please select a condition");
+      Alert.alert(t("error"), t("trade.alerts.condition_required"));
       return false;
     }
     if (draft.photos.length === 0) {
-      Alert.alert(t("error"), "Please add at least one photo");
+      Alert.alert(t("error"), t("trade.alerts.photo_required"));
       return false;
     }
     if (!lookingForName.trim()) {
       Alert.alert(
         t("error"),
-        "Please enter the name of the item you're looking for",
+        t("trade.alerts.looking_for_required"),
       );
       return false;
     }
     if (!estimatedMinValue.trim() || !estimatedMaxValue.trim()) {
-      Alert.alert(t("error"), "Please enter estimated trade value range");
+      Alert.alert(t("error"), t("trade.alerts.value_range_required"));
       return false;
     }
     const minVal = parseFloat(estimatedMinValue);
     const maxVal = parseFloat(estimatedMaxValue);
     if (isNaN(minVal) || isNaN(maxVal)) {
-      Alert.alert(t("error"), "Please enter valid numbers for trade value");
+      Alert.alert(t("error"), t("trade.alerts.invalid_value"));
       return false;
     }
     if (minVal > maxVal) {
       Alert.alert(
         t("error"),
-        "Minimum value cannot be greater than maximum value",
+        t("trade.alerts.min_greater_than_max"),
       );
       return false;
     }
     if (!draft.province || !draft.district) {
-      Alert.alert(t("error"), "Please select your location");
+      Alert.alert(t("error"), t("trade.alerts.location_required"));
       return false;
     }
     if (!isLocationConfirmed) {
-      Alert.alert(t("error"), "Please confirm your location on the map");
+      Alert.alert(t("error"), t("trade.alerts.map_confirm_required"));
       return false;
     }
     if (phoneNumbers.length === 0) {
-      Alert.alert(t("error"), "Please add at least one phone number");
+      Alert.alert(t("error"), t("trade.alerts.phone_required"));
       return false;
     }
     return true;
@@ -192,7 +192,7 @@ export default function AddTradeProductScreen() {
 
       Alert.alert(
         t("success"),
-        "Your trade product has been posted successfully!",
+        t("trade.alerts.post_success"),
         [
           {
             text: "OK",
@@ -205,7 +205,7 @@ export default function AddTradeProductScreen() {
       );
     } catch (error) {
       console.error("Error posting product:", error);
-      Alert.alert(t("error"), "Failed to post product. Please try again.");
+      Alert.alert(t("error"), t("trade.alerts.post_failed"));
     }
   };
 

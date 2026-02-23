@@ -84,6 +84,7 @@ function VoicePlayer({
   duration?: number;
   isMe: boolean;
 }) {
+  const { t } = useTranslation();
   const themeColors = useThemeColor();
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -206,6 +207,7 @@ function Bubble({
   isRead: boolean;
   onLongPress: () => void;
 }) {
+  const { t } = useTranslation();
   const content = parseContent(item.content);
   // ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary
   const bubbleBg = isMe ? themeColors.primary : themeColors.card;
@@ -300,7 +302,7 @@ function Bubble({
           style={[styles.msgTime, { color: themeColors.text + "55" }]}
         >
           {isOptimistic
-            ? "Sending…"
+            ? t("chat.sending")
             : new Date(item.created_at || "").toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -342,6 +344,7 @@ function ProductCard({
   themeColors: any;
   onPress?: () => void;
 }) {
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
   if (!title) return null;
   const hasPrice = price && price !== "0" && price !== "";
@@ -430,7 +433,7 @@ function ProductCard({
         )}
         <View style={styles.cardBadge}>
           <ShoppingBagIcon size={11} color="#fff" weight="fill" />
-          <ThemedText style={styles.cardBadgeText}>Listing</ThemedText>
+          <ThemedText style={styles.cardBadgeText}>{t("chat.listing")}</ThemedText>
         </View>
         <TouchableOpacity
           onPress={() => setCollapsed(true)}
@@ -475,7 +478,7 @@ function ProductCard({
           style={[styles.cardViewBtn, { backgroundColor: themeColors.primary }]}
           activeOpacity={0.85}
         >
-          <ThemedText style={styles.cardViewBtnText}>View Listing</ThemedText>
+          <ThemedText style={styles.cardViewBtnText}>{t("chat.view_listing")}</ThemedText>
         </TouchableOpacity>
       </View>
     </View>
@@ -586,7 +589,7 @@ export default function NormalProductChatScreen() {
     if (Platform.OS === "ios") {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ["Cancel", "Delete Message"],
+          options: [t("common.cancel"), t("chat.delete_conversation")],
           destructiveButtonIndex: 1,
           cancelButtonIndex: 0,
         },
@@ -595,22 +598,22 @@ export default function NormalProductChatScreen() {
             try {
               await deleteMessage(msg.id);
             } catch (e: any) {
-              Alert.alert("Error", e.message);
+              Alert.alert(t("error"), e.message);
             }
           }
         },
       );
     } else {
-      Alert.alert("Delete Message", "Remove this message?", [
-        { text: "Cancel", style: "cancel" },
+      Alert.alert(t("chat.delete_conversation_title"), t("chat.delete_conversation_confirmation"), [
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("common.delete"),
           style: "destructive",
           onPress: async () => {
             try {
               await deleteMessage(msg.id);
             } catch (e: any) {
-              Alert.alert("Error", e.message);
+              Alert.alert(t("error"), e.message);
             }
           },
         },
@@ -626,7 +629,7 @@ export default function NormalProductChatScreen() {
     try {
       await sendMessage({ type: "text", text });
     } catch (e: any) {
-      Alert.alert("Error", e.message || "Failed to send.");
+      Alert.alert(t("error"), e.message || t("chat.failed_to_send_message"));
     } finally {
       setIsSending(false);
     }
@@ -636,7 +639,7 @@ export default function NormalProductChatScreen() {
     setShowAttachMenu(false);
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission needed", "Please allow photo library access.");
+      Alert.alert(t("error"), "Please allow photo library access.");
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -652,7 +655,7 @@ export default function NormalProductChatScreen() {
       const url = await uploadFile(asset.uri, path, `image/${ext}`);
       await sendMessage({ type: "image", url });
     } catch (e: any) {
-      Alert.alert("Upload failed", e.message || "Could not upload image.");
+      Alert.alert(t("error"), e.message || "Could not upload image.");
     } finally {
       setIsSending(false);
     }
@@ -662,7 +665,7 @@ export default function NormalProductChatScreen() {
     setShowAttachMenu(false);
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission needed", "Please allow location access.");
+      Alert.alert(t("error"), "Please allow location access.");
       return;
     }
     setIsSending(true);
@@ -684,7 +687,7 @@ export default function NormalProductChatScreen() {
         label,
       });
     } catch (e: any) {
-      Alert.alert("Error", e.message || "Failed to get location.");
+      Alert.alert(t("error"), e.message || "Failed to get location.");
     } finally {
       setIsSending(false);
     }
@@ -694,7 +697,7 @@ export default function NormalProductChatScreen() {
     if (isRecording) return;
     const { status } = await Audio.requestPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission needed", "Please allow microphone access.");
+      Alert.alert(t("error"), "Please allow microphone access.");
       return;
     }
     try {
@@ -713,7 +716,7 @@ export default function NormalProductChatScreen() {
         1000,
       );
     } catch (e: any) {
-      Alert.alert("Error", e.message || "Failed to start recording.");
+      Alert.alert(t("error"), e.message || "Failed to start recording.");
     }
   };
 
@@ -734,7 +737,7 @@ export default function NormalProductChatScreen() {
       await sendMessage({ type: "voice", url, duration: dur });
     } catch (e: any) {
       Alert.alert(
-        "Upload failed",
+        t("error"),
         e.message || "Could not send voice message.",
       );
     } finally {
@@ -761,23 +764,23 @@ export default function NormalProductChatScreen() {
   const handleBlock = () => {
     setShowOptionsMenu(false);
     Alert.alert(
-      "Block User",
-      `Block ${otherUser?.first_name || "this user"}? They won't be able to send you messages.`,
+      t("chat.block_user_title"),
+      t("chat.block_user_confirmation", { userName: otherUser?.first_name || "this user" }),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Block",
+          text: t("chat.block"),
           style: "destructive",
           onPress: async () => {
             try {
               await blockUser(otherUser?.id || "");
               Alert.alert(
-                "Blocked",
-                `${otherUser?.first_name || "User"} has been blocked.`,
+                t("chat.block"),
+                t("chat.user_blocked_successfully"),
               );
               router.back();
             } catch (e: any) {
-              Alert.alert("Error", e.message);
+              Alert.alert(t("error"), e.message);
             }
           },
         },
@@ -787,7 +790,7 @@ export default function NormalProductChatScreen() {
 
   const handleCall = () => {
     if (otherUser?.phone) Linking.openURL(`tel:${otherUser.phone}`);
-    else Alert.alert("Unavailable", "Phone number not available.");
+    else Alert.alert(t("error"), t("chat.phone_not_available"));
   };
 
   if (loading && !conversation) {
@@ -860,7 +863,7 @@ export default function NormalProductChatScreen() {
                 color: otherUserOnline ? "#10B981" : themeColors.text + "50",
               }}
             >
-              {otherUserOnline ? "Active now" : isMuted ? "Muted" : "Offline"}
+              {otherUserOnline ? t("chat.active_now") : isMuted ? t("chat.muted") : t("chat.offline")}
             </ThemedText>
           </View>
         </View>
@@ -933,7 +936,7 @@ export default function NormalProductChatScreen() {
               <ThemedText
                 style={[styles.dateLabel, { color: themeColors.text + "50" }]}
               >
-                Today
+                {t("chat.today")}
               </ThemedText>
               <View
                 style={[
@@ -1001,7 +1004,7 @@ export default function NormalProductChatScreen() {
                 marginRight: 10,
               }}
             >
-              Tap ✓ to send
+              {t("chat.tap_to_send")}
             </ThemedText>
             {/* ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary */}
             <TouchableOpacity
@@ -1039,7 +1042,7 @@ export default function NormalProductChatScreen() {
               <ThemedText
                 style={[styles.attachLabel, { color: themeColors.text }]}
               >
-                Photo
+                {t("chat.photo")}
               </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
@@ -1052,7 +1055,7 @@ export default function NormalProductChatScreen() {
               <ThemedText
                 style={[styles.attachLabel, { color: themeColors.text }]}
               >
-                Location
+                {t("chat.location")}
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -1095,7 +1098,7 @@ export default function NormalProductChatScreen() {
             >
               <TextInput
                 style={[styles.textInput, { color: themeColors.text }]}
-                placeholder="Type a message…"
+                placeholder={t("chat.type_a_message")}
                 placeholderTextColor={themeColors.text + "40"}
                 value={inputText}
                 onChangeText={(v) => {
@@ -1168,7 +1171,7 @@ export default function NormalProductChatScreen() {
                 { backgroundColor: themeColors.border },
               ]}
             />
-            <ThemedText style={styles.sheetTitle}>Options</ThemedText>
+            <ThemedText style={styles.sheetTitle}>{t("chat.options")}</ThemedText>
 
             <TouchableOpacity style={styles.optRow} onPress={handleToggleMute}>
               {isMuted ? (
@@ -1183,7 +1186,7 @@ export default function NormalProductChatScreen() {
               <ThemedText
                 style={[styles.optLabel, { color: themeColors.text }]}
               >
-                {isMuted ? "Unmute Notifications" : "Mute Notifications"}
+                {isMuted ? t("chat.unmute_notifications") : t("chat.mute_notifications")}
               </ThemedText>
             </TouchableOpacity>
 
@@ -1198,7 +1201,7 @@ export default function NormalProductChatScreen() {
               {/* "#EF4444" kept intentional — semantic destructive color */}
               <ProhibitIcon size={22} color="#EF4444" weight="fill" />
               <ThemedText style={[styles.optLabel, { color: "#EF4444" }]}>
-                Block {otherUser?.first_name || "User"}
+                {t("chat.block")} {otherUser?.first_name || "User"}
               </ThemedText>
             </TouchableOpacity>
 
@@ -1216,7 +1219,7 @@ export default function NormalProductChatScreen() {
                   color: themeColors.text,
                 }}
               >
-                Cancel
+                {t("common.cancel")}
               </ThemedText>
             </TouchableOpacity>
           </View>

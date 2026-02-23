@@ -163,18 +163,18 @@ export default function MyListingsScreen() {
           onPress={() => router.push(`/sell/details?editId=${item.id}`)}
         >
           <PencilSimpleIcon size={18} color={themeColors.text} />
-          <ThemedText style={styles.actionButtonText}>Edit</ThemedText>
+          <ThemedText style={styles.actionButtonText}>{t("listings_screen.edit")}</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <RocketLaunchIcon size={18} color={themeColors.text} />
-          <ThemedText style={styles.actionButtonText}>Boost</ThemedText>
+          <ThemedText style={styles.actionButtonText}>{t("listings_screen.boost")}</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => handleUpdateStatus(item.id, "sold")}
         >
           <CheckCircleIcon size={18} color={themeColors.text} />
-          <ThemedText style={styles.actionButtonText}>Sold</ThemedText>
+          <ThemedText style={styles.actionButtonText}>{t("listings_screen.sold")}</ThemedText>
         </TouchableOpacity>
       </View>
     </View>
@@ -193,7 +193,9 @@ export default function MyListingsScreen() {
           <ThemedText style={styles.title} numberOfLines={1}>
             {item.title}
           </ThemedText>
-          <ThemedText style={styles.soldOn}>Sold on 2025-01-12</ThemedText>
+          <ThemedText style={styles.soldOn}>
+            {t("listings_screen.sold_on")} {new Date(item.updated_at).toLocaleDateString()}
+          </ThemedText>
 
           <View style={styles.soldPriceRow}>
             <ThemedText style={styles.price}>
@@ -204,7 +206,7 @@ export default function MyListingsScreen() {
               onPress={() => handleUpdateStatus(item.id, "active")}
             >
               <ArrowsCounterClockwiseIcon size={16} color="#fff" />
-              <ThemedText style={styles.relistText}>Relist</ThemedText>
+              <ThemedText style={styles.relistText}>{t("listings_screen.relist")}</ThemedText>
             </TouchableOpacity>
           </View>
         </View>
@@ -223,12 +225,12 @@ export default function MyListingsScreen() {
         />
         <View style={styles.details}>
           <ThemedText style={styles.title} numberOfLines={1}>
-            {item.title || "Untitled Draft"}
+            {item.title || t("listings_screen.untitled_draft")}
           </ThemedText>
 
           <View style={styles.progressContainer}>
             <View style={styles.progressHeader}>
-              <ThemedText style={styles.progressLabel}>Completion</ThemedText>
+              <ThemedText style={styles.progressLabel}>{t("listings_screen.completion")}</ThemedText>
               <ThemedText style={styles.progressPercent}>65%</ThemedText>
             </View>
             <View style={styles.progressBarBg}>
@@ -239,7 +241,7 @@ export default function MyListingsScreen() {
           <View style={styles.missingInfoRow}>
             <WarningCircleIcon size={14} color="#E44336" weight="fill" />
             <ThemedText style={styles.missingText}>
-              Missing: Price, Description
+              {t("listings_screen.missing_info", { info: "Price, Description" })}
             </ThemedText>
           </View>
         </View>
@@ -251,7 +253,7 @@ export default function MyListingsScreen() {
           onPress={() => router.push(`/sell/details?editId=${item.id}`)}
         >
           <ThemedText style={styles.draftActionText}>
-            Continue Editing
+            {t("listings_screen.continue_editing")}
           </ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
@@ -261,7 +263,7 @@ export default function MyListingsScreen() {
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
             <TrashIcon size={16} color="#000" weight="fill" />
             <ThemedText style={[styles.draftActionText, { color: "#000" }]}>
-              Delete
+              {t("common.delete")}
             </ThemedText>
           </View>
         </TouchableOpacity>

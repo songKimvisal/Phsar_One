@@ -3,12 +3,14 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { Href, Stack, useRouter } from "expo-router";
 import { CaretLeftIcon, WarningDiamondIcon } from "phosphor-react-native";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SupportScreen() {
   const router = useRouter();
   const themeColors = useThemeColor();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView
@@ -23,7 +25,9 @@ export default function SupportScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
-        <ThemedText style={styles.headerTitle}>Help Center</ThemedText>
+        <ThemedText style={styles.headerTitle}>
+          {t("support_screen.help_center")}
+        </ThemedText>
         <View style={{ width: 44 }} />
       </View>
 
@@ -31,7 +35,9 @@ export default function SupportScreen() {
         style={[styles.content, { backgroundColor: themeColors.background }]}
       >
         <View style={styles.subHeader}>
-          <ThemedText style={styles.sectionTitle}>Opened tickets</ThemedText>
+          <ThemedText style={styles.sectionTitle}>
+            {t("support_screen.opened_tickets")}
+          </ThemedText>
           <TouchableOpacity
             style={[
               styles.newTicketBtn,
@@ -45,14 +51,16 @@ export default function SupportScreen() {
                 { color: themeColors.primaryButtonText },
               ]}
             >
-              New ticket
+              {t("support_screen.new_ticket")}
             </ThemedText>
           </TouchableOpacity>
         </View>
 
         <View style={styles.emptyState}>
           <WarningDiamondIcon size={60} color="#FFB800" weight="thin" />
-          <ThemedText style={styles.emptyTitle}>You have no tickets</ThemedText>
+          <ThemedText style={styles.emptyTitle}>
+            {t("support_screen.no_tickets")}
+          </ThemedText>
         </View>
       </View>
     </SafeAreaView>

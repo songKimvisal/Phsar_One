@@ -205,7 +205,7 @@ export default function ProductDetail() {
 
   const handleFavorite = async () => {
     if (!userId) {
-      Alert.alert("Sign In", "Please sign in to bookmark items.");
+      Alert.alert(t("common.sign_in_required"), t("common.sign_in_to_bookmark"));
       return;
     }
 

@@ -22,6 +22,8 @@ interface PricingCardProps {
   onContinue: () => void;
 }
 
+import { useTranslation } from "react-i18next";
+
 export default function PricingCard({
   plans,
   selectedPlanId,
@@ -29,6 +31,7 @@ export default function PricingCard({
   onContinue,
 }: PricingCardProps) {
   const selectedPlan = plans.find((p) => p.id === selectedPlanId) || plans[0];
+  const { t } = useTranslation();
 
   return (
     <LinearGradient
@@ -62,7 +65,7 @@ export default function PricingCard({
         <ThemedText style={styles.currencySymbol}>$</ThemedText>
         <ThemedText style={styles.price}>{selectedPlan.price}</ThemedText>
       </View>
-      <ThemedText style={styles.perMonth}>PER MONTH</ThemedText>
+      <ThemedText style={styles.perMonth}>{t("subscription_screen.per_month")}</ThemedText>
 
       {/* Features List */}
       <View style={styles.featuresContainer}>
@@ -77,7 +80,7 @@ export default function PricingCard({
       {/* Continue Button */}
       <TouchableOpacity style={styles.continueButton} onPress={onContinue}>
         <ThemedText style={styles.continueButtonText}>
-          Continue with this plan
+          {t("subscription_screen.continue_with_plan")}
         </ThemedText>
         <ArrowRightIcon size={18} color="#FFFFFF" weight="bold" />
       </TouchableOpacity>

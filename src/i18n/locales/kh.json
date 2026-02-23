@@ -28,7 +28,11 @@
     "billing": "ការទូទាត់",
     "helpCenter": "មជ្ឈមណ្ឌលជំនួយ",
     "viewAll": "មើលទាំងអស់",
-    "regular_account": "គណនីធម្មតា"
+    "regular_account": "គណនីធម្មតា",
+    "clear_all": "សម្អាតទាំងអស់",
+    "clear_history_title": "សម្អាតប្រវត្តិ",
+    "clear_history_confirm": "តើអ្នកប្រាកដជាចង់សម្អាតប្រវត្តិមើលរបស់អ្នកទាំងអស់មែនទេ?",
+    "no_history": "មិនទាន់មានប្រវត្តិមើលនៅឡើយទេ"
   },
   "categories": {
     "smart_phone": "ទូរស័ព្ទឆ្លាតវៃ",
@@ -40,6 +44,9 @@
     "electronic": "គ្រឿងអេឡិចត្រូនិច",
     "furniture": "គ្រឿងសង្ហារឹម",
     "other": "ផ្សេងៗ"
+  },
+  "category": {
+    "no_products": "មិនមានផលិតផល"
   },
   "subcategories": {
     "Phone": "ទូរស័ព្ទ",
@@ -337,7 +344,18 @@
     "Change_Location": "ផ្លាស់ប្តូរ",
     "View_on_Map": "មើលនៅលើផែនទី",
     "Open_on_Google_Maps": "បើកនៅលើ Google Maps",
-    "Delete": "លប់"
+    "Delete": "លប់",
+    "edit_listing": "កែសម្រួលការផ្សាយលក់",
+    "loading_details": "កំពុងផ្ទុកព័ត៌មាន...",
+    "saving": "កំពុងរក្សាទុក...",
+    "update": "ធ្វើបច្ចុប្បន្នភាព",
+    "save": "រក្សាទុក",
+    "post_success": "ផលិតផលរបស់អ្នកត្រូវបានផ្សព្វផ្សាយ!",
+    "post_success_msg": "ផលិតផលរបស់អ្នកត្រូវបានផ្សព្វផ្សាយដោយជោគជ័យ!",
+    "update_success": "ផលិតផលរបស់អ្នកត្រូវបានធ្វើបច្ចុប្បន្នភាព!",
+    "load_failed": "ការផ្ទុកព័ត៌មានផលិតផលបានបរាជ័យ។",
+    "save_failed": "ការរក្សាទុកផលិតផលបានបរាជ័យ។",
+    "photo_required": "សូមបញ្ចូលរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក។"
   },
   "trade_screen": {
     "title": "អេក្រង់ជួញដូរ",
@@ -391,7 +409,11 @@
     "filter": "ចម្រាញ់",
     "noProductsFound": "រកមិនឃើញផលិតផលទេ",
     "failed_to_delete_listing": "បរាជ័យក្នុងការលុបការផ្សាយលក់។",
-    "go_back": "ត្រឡប់ក្រោយ"
+    "go_back": "ត្រឡប់ក្រោយ",
+    "select": "ជ្រើសរើស",
+    "error": "កំហុស",
+    "sign_in_required": "តម្រូវឱ្យចូលគណនី",
+    "sign_in_to_bookmark": "សូមចូលគណនីដើម្បីរក្សាទុកទំនិញ។"
   },
   "chat": {
     "normal_product_chat": "ជជែកអំពីផលិតផល",
@@ -418,7 +440,20 @@
     "trade": "ប្តូរ",
     "no_conversations": "មិនទាន់មានការសន្ទនាឡើយ។",
     "start_conversation": "ចុចដើម្បីចាប់ផ្តើមការសន្ទនា",
-    "phone_not_available": "លេខទូរស័ព្ទមិនមានសម្រាប់អ្នកប្រើប្រាស់នេះទេ។"
+    "phone_not_available": "លេខទូរស័ព្ទមិនមានសម្រាប់អ្នកប្រើប្រាស់នេះទេ។",
+    "sending": "កំពុងផ្ញើ...",
+    "listing": "ការផ្សាយលក់",
+    "view_listing": "មើលការផ្សាយលក់",
+    "offline": "មិនមានអ៊ីនធឺណិត",
+    "muted": "បិទសំឡេង",
+    "active_now": "កំពុងប្រើប្រាស់",
+    "options": "ជម្រើស",
+    "mute_notifications": "បិទការជូនដំណឹង",
+    "unmute_notifications": "បើកការជូនដំណឹងវិញ",
+    "today": "ថ្ងៃនេះ",
+    "photo": "រូបភាព",
+    "location": "ទីតាំង",
+    "tap_to_send": "ចុច ✓ ដើម្បីផ្ញើ"
   },
   "time_ago": {
     "minutes": "{{count}} នាទីមុន",
@@ -459,7 +494,23 @@
     "contact_information": "ព័ត៌មានទំនាក់ទំនង",
     "phone_number": "លេខទូរស័ព្ទ",
     "phone_number_placeholder": "បញ្ចូលលេខទូរស័ព្ទរបស់អ្នក",
-    "post_trade_product": "ផ្សព្វផ្សាយផលិតផលដោះដូរ"
+    "post_trade_product": "ផ្សព្វផ្សាយផលិតផលដោះដូរ",
+    "alerts": {
+      "max_phones_reached": "អ្នកអាចបន្ថែមលេខទូរស័ព្ទបានត្រឹមតែ ៣ ប៉ុណ្ណោះ។",
+      "title_required": "សូមបញ្ចូលចំណងជើងផលិតផល",
+      "description_required": "សូមបញ្ចូលការពិពណ៌នាផលិតផល",
+      "condition_required": "សូមជ្រើសរើសស្ថានភាពផលិតផល",
+      "photo_required": "សូមបន្ថែមរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក",
+      "looking_for_required": "សូមបញ្ចូលឈ្មោះទំនិញដែលអ្នកកំពុងស្វែងរក",
+      "value_range_required": "សូមបញ្ចូលចន្លោះតម្លៃប៉ាន់ស្មានសម្រាប់ការដោះដូរ",
+      "invalid_value": "សូមបញ្ចូលលេខដែលមានសុពលភាពសម្រាប់តម្លៃដោះដូរ",
+      "min_greater_than_max": "តម្លៃអប្បបរមាមិនអាចធំជាងតម្លៃអតិបរមាបានទេ",
+      "location_required": "សូមជ្រើសរើសទីតាំងរបស់អ្នក",
+      "map_confirm_required": "សូមបញ្ជាក់ទីតាំងរបស់អ្នកនៅលើផែនទី",
+      "phone_required": "សូមបន្ថែមលេខទូរស័ព្ទយ៉ាងហោចណាស់ ១",
+      "post_success": "ផលិតផលដោះដូររបស់អ្នកត្រូវបានផ្សព្វផ្សាយដោយជោគជ័យ!",
+      "post_failed": "ការផ្សព្វផ្សាយផលិតផលបានបរាជ័យ។ សូមព្យាយាមម្តងទៀត។"
+    }
   },
   "condition": {
     "brand_new": "ថ្មីស្រឡាង",
@@ -470,5 +521,124 @@
   },
   "optional": "ស្រេចចិត្ត",
   "error": "កំហុស",
-  "success": "ជោគជ័យ"
+  "success": "ជោគជ័យ",
+  "profile_screen": {
+    "edit_profile": "កែសម្រួលគណនី",
+    "save": "រក្សាទុក",
+    "change_photo": "ផ្លាស់ប្តូររូបភាពកម្រងព័ត៌មាន",
+    "first_name": "នាមខ្លួន",
+    "last_name": "នាមត្រកូល",
+    "phone_number": "លេខទូរស័ព្ទ",
+    "bio": "ជីវប្រវត្តិសង្ខេប",
+    "first_name_placeholder": "បញ្ចូលនាមខ្លួន",
+    "last_name_placeholder": "បញ្ចូលនាមត្រកូល",
+    "phone_placeholder": "បញ្ចូលលេខទូរស័ព្ទ",
+    "bio_placeholder": "រៀបរាប់អំពីខ្លួនអ្នក...",
+    "update_success": "កែសម្រួលគណនីដោយជោគជ័យ!",
+    "update_failed": "ការកែសម្រួលគណនីបានបរាជ័យ។",
+    "upload_failed": "ការផ្ទុករូបភាពបានបរាជ័យ។"
+  },
+  "listings_screen": {
+    "sold_on": "លក់ដាច់នៅថ្ងៃ",
+    "relist": "ដាក់លក់ម្តងទៀត",
+    "completion": "ភាពពេញលេញ",
+    "missing_info": "ខ្វះខាត៖ {{info}}",
+    "continue_editing": "បន្តកែសម្រួល",
+    "untitled_draft": "ការព្រាងគ្មានចំណងជើង",
+    "boost": "រុញលក់ (Boost)",
+    "edit": "កែសម្រួល",
+    "sold": "លក់ដាច់ហើយ"
+  },
+  "public_profile": {
+    "no_bio": "មិនទាន់មានជីវប្រវត្តិ។",
+    "followers": "អ្នកតាមដាន",
+    "followings": "កំពុងតាមដាន",
+    "edit_profile": "កែសម្រួលគណនី",
+    "follow": "តាមដាន",
+    "unfollow": "ឈប់តាមដាន",
+    "following": "កំពុងតាមដាន",
+    "message": "ផ្ញើសារ",
+    "recent_post": "ការផ្សាយថ្មីៗ",
+    "no_posts": "មិនទាន់មានការផ្សាយលក់ថ្មីៗនៅឡើយទេ។",
+    "profile": "គណនី"
+  },
+  "notifications_screen": {
+    "notifications": "ការជូនដំណឹង",
+    "no_notifications": "មិនទាន់មានការជូនដំណឹងនៅឡើយទេ",
+    "no_notifications_subtitle": "នៅពេលដែលអ្នកមានការជូនដំណឹង វានឹងបង្ហាញនៅទីនេះ។"
+  },
+  "settings_screen": {
+    "settings": "ការកំណត់",
+    "my_addresses": "អាសយដ្ឋានរបស់ខ្ញុំ",
+    "account_security": "គណនី និងសុវត្ថិភាព",
+    "payment_settings": "ការកំណត់ការទូទាត់",
+    "general": "ទូទៅ",
+    "notifications": "ការជូនដំណឹង",
+    "privacy": "ឯកជនភាព",
+    "help_feedback": "ជំនួយ និងមតិកែលម្អ",
+    "about_phsarone": "អំពី PhsarOne",
+    "sign_out": "ចាកចេញ",
+    "sign_out_failed": "ការចាកចេញបានបរាជ័យ។ សូមព្យាយាមម្តងទៀត។"
+  },
+  "subscription_screen": {
+    "subscriptions": "សេវាកម្មវ៉ិបសាយ",
+    "per_month": "ក្នុងមួយខែ",
+    "continue_with_plan": "បន្តជាមួយគម្រោងនេះ",
+    "starter": "ដំបូង",
+    "pro": "អាជីព",
+    "business": "អាជីវកម្ម",
+    "features": {
+      "up_to_15_ads": "ការផ្សាយលក់រហូតដល់ ១៥",
+      "ads_active_30_days": "ការផ្សាយមានសុពលភាព ៣០ ថ្ងៃ",
+      "trade_swap_enabled": "អាចដោះដូរបាន",
+      "view_chat_count": "មើលចំនួនអ្នកមើល និងអ្នកឆាត",
+      "free_weekly_boost": "រុញលក់ឥតគិតថ្លៃ ១ ដងក្នុងមួយសប្តាហ៍",
+      "up_to_50_ads": "ការផ្សាយលក់រហូតដល់ ៥០",
+      "ads_active_60_days": "ការផ្សាយមានសុពលភាព ៦០ ថ្ងៃ",
+      "top_priority": "អាទិភាពខ្ពស់ក្នុងការស្វែងរក",
+      "seller_profile": "កម្រងព័ត៌មានអ្នកលក់ដែលមានការវាយតម្លៃ",
+      "5_boosts": "រុញលក់ ៥ ដងក្នុងមួយខែ",
+      "unlimited_ads": "ការផ្សាយលក់មិនកំណត់",
+      "ads_active_120_days": "ការផ្សាយមានសុពលភាព ១២០ ថ្ងៃ",
+      "verified_badge": "សញ្ញាបញ្ជាក់អាជីវកម្ម",
+      "advanced_analytics": "ការវិភាគកម្រិតខ្ពស់",
+      "unlimited_boosts": "រុញលក់មិនកំណត់"
+    }
+  },
+  "bookmarks_screen": {
+    "bookmarks": "បានរក្សាទុក",
+    "no_bookmarks": "មិនទាន់មានទំនិញរក្សាទុកឡើយ",
+    "no_bookmarks_subtitle": "រក្សាទុកទំនិញដែលអ្នកចាប់អារម្មណ៍ដើម្បីមើលវានៅពេលក្រោយ។"
+  },
+  "support_screen": {
+    "help_center": "មជ្ឈមណ្ឌលជំនួយ",
+    "opened_tickets": "សំបុត្រជំនួយដែលបានបើក",
+    "new_ticket": "បង្កើតសំបុត្រថ្មី",
+    "no_tickets": "អ្នកមិនទាន់មានសំបុត្រជំនួយឡើយ",
+    "subject": "ប្រធានបទ",
+    "description": "ការពិពណ៌នា",
+    "choose_files": "ជ្រើសរើសឯកសារ",
+    "send": "ផ្ញើ"
+  },
+  "auth": {
+    "welcome_back": "សូមស្វាគមន៍មកវិញ!",
+    "login_subtitle": "ចូលគណនីជាមួយអ៊ីមែល ឬគណនី Google របស់អ្នក",
+    "email": "អ៊ីមែល",
+    "password": "ពាក្យសម្ងាត់",
+    "confirm_password": "បញ្ជាក់ពាក្យសម្ងាត់",
+    "forgot_password": "ភ្លេចពាក្យសម្ងាត់?",
+    "or_continue_with": "ឬបន្តជាមួយ",
+    "sign_in": "ចូលគណនី",
+    "sign_up": "ចុះឈ្មោះ",
+    "dont_have_account": "មិនទាន់មានគណនី? ",
+    "already_have_account": "មានគណនីរួចហើយ? ",
+    "terms": "តាមរយៈការបន្ត អ្នកយល់ព្រមតាមលក្ខខណ្ឌប្រើប្រាស់\nនិងគោលការណ៍ឯកជនភាពរបស់ PhsarOne។",
+    "create_account": "បង្កើតគណនីរបស់អ្នក",
+    "create_account_subtitle": "បញ្ចូលអ៊ីមែលរបស់អ្នកខាងក្រោមដើម្បីបង្កើតគណនី",
+    "password_hint": "ត្រូវមានយ៉ាងហោចណាស់ ៨ តួអក្សរ។",
+    "verify_email": "ផ្ទៀងផ្ទាត់អ៊ីមែលរបស់អ្នក",
+    "verify_subtitle": "បញ្ចូលលេខកូដដែលបានផ្ញើទៅកាន់ {{email}}",
+    "verification_code_placeholder": "បញ្ចូលលេខកូដផ្ទៀងផ្ទាត់",
+    "verify": "ផ្ទៀងផ្ទាត់"
+  }
 }

@@ -5,6 +5,7 @@ import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { Href, Stack, useFocusEffect, useRouter } from "expo-router";
 import { BookmarkSimpleIcon, CaretLeftIcon } from "phosphor-react-native";
 import React, { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   FlatList,
@@ -19,6 +20,7 @@ export default function BookmarksScreen() {
   const { userId, getToken } = useAuth();
   const router = useRouter();
   const themeColors = useThemeColor();
+  const { t } = useTranslation();
   const [bookmarks, setBookmarks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -87,7 +89,6 @@ export default function BookmarksScreen() {
             </ThemedText>
           </View>
 
-          {/* ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary */}
           <ThemedText
             style={[styles.listPrice, { color: themeColors.primary }]}
           >
@@ -100,21 +101,21 @@ export default function BookmarksScreen() {
   };
 
   return (
-    // ✅ Was hardcoded "#FFF" — now uses themeColors.background
     <SafeAreaView
       style={{ flex: 1, backgroundColor: themeColors.background }}
       edges={["top"]}
     >
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* ✅ Was hardcoded backgroundColor "#FFF" in StyleSheet — now inline via themeColors */}
       <View
         style={[styles.header, { backgroundColor: themeColors.background }]}
       >
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
-        <ThemedText style={styles.headerTitle}>Bookmarks</ThemedText>
+        <ThemedText style={styles.headerTitle}>
+          {t("bookmarks_screen.bookmarks")}
+        </ThemedText>
         <View style={{ width: 44 }} />
       </View>
 
@@ -141,10 +142,10 @@ export default function BookmarksScreen() {
                   weight="thin"
                 />
                 <ThemedText style={styles.emptyTitle}>
-                  No bookmarks yet
+                  {t("bookmarks_screen.no_bookmarks")}
                 </ThemedText>
                 <ThemedText style={styles.emptySubtitle}>
-                  Save items you're interested in to see them later.
+                  {t("bookmarks_screen.no_bookmarks_subtitle")}
                 </ThemedText>
               </View>
             }
