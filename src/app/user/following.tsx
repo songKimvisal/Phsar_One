@@ -4,6 +4,7 @@ import { supabase } from "@src/lib/supabase";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { CaretLeftIcon, UsersIcon } from "phosphor-react-native";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   FlatList,
@@ -18,6 +19,7 @@ export default function FollowingScreen() {
   const { id, type } = useLocalSearchParams<{ id: string; type: string }>();
   const router = useRouter();
   const themeColors = useThemeColor();
+  const { t } = useTranslation();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,7 +71,7 @@ export default function FollowingScreen() {
       </View>
 
       <View style={[styles.badge, { backgroundColor: themeColors.primary }]}>
-        <ThemedText style={styles.badgeText}>Following</ThemedText>
+        <ThemedText style={styles.badgeText}>{t("public_profile.following")}</ThemedText>
       </View>
     </TouchableOpacity>
   );
@@ -88,7 +90,7 @@ export default function FollowingScreen() {
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
         <ThemedText style={styles.headerTitle}>
-          {type === "followers" ? "Followers" : "Followings"}
+          {type === "followers" ? t("public_profile.followers") : t("public_profile.followings")}
         </ThemedText>
         <View style={{ width: 44 }} />
       </View>
@@ -111,7 +113,9 @@ export default function FollowingScreen() {
             ListEmptyComponent={
               <View style={styles.emptyState}>
                 <UsersIcon size={60} color={themeColors.text} />
-                <ThemedText style={styles.emptyTitle}>No {type} yet</ThemedText>
+                <ThemedText style={styles.emptyTitle}>
+                  {t("common.noProductsFound")}
+                </ThemedText>
               </View>
             }
           />

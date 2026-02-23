@@ -15,6 +15,7 @@ import {
   UserCircleIcon,
 } from "phosphor-react-native";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -61,6 +62,7 @@ export default function SettingsScreen() {
   const themeColors = useThemeColor();
   const { signOut } = useAuth();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleSignOut = async () => {
     try {
@@ -68,7 +70,7 @@ export default function SettingsScreen() {
       router.replace("/(auth)/sign-in");
     } catch (error: any) {
       console.error("Sign out error:", error);
-      alert("Failed to sign out. Please try again.");
+      alert(t("settings_screen.sign_out_failed"));
     }
   };
 
@@ -94,7 +96,7 @@ export default function SettingsScreen() {
           >
             <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
           </TouchableOpacity>
-          <ThemedText style={styles.headerTitle}>Settings</ThemedText>
+          <ThemedText style={styles.headerTitle}>{t("settings_screen.settings")}</ThemedText>
           <View style={{ width: 44 }} />
         </View>
       </SafeAreaView>
@@ -106,28 +108,28 @@ export default function SettingsScreen() {
       >
         {/* Group 1 */}
         <View style={[styles.card, { backgroundColor: themeColors.card }]}>
-          <SettingItem icon={MapPinIcon} label="My addresses" />
-          <SettingItem icon={UserCircleIcon} label="Account and security" />
+          <SettingItem icon={MapPinIcon} label={t("settings_screen.my_addresses")} />
+          <SettingItem icon={UserCircleIcon} label={t("settings_screen.account_security")} />
           <SettingItem
             icon={CreditCardIcon}
-            label="Payment settings"
+            label={t("settings_screen.payment_settings")}
             showSeparator={false}
           />
         </View>
 
         {/* Group 2 */}
         <View style={[styles.card, { backgroundColor: themeColors.card }]}>
-          <SettingItem icon={GearSixIcon} label="General" />
-          <SettingItem icon={BellIcon} label="Notifications" />
-          <SettingItem icon={LockIcon} label="Privacy" showSeparator={false} />
+          <SettingItem icon={GearSixIcon} label={t("settings_screen.general")} />
+          <SettingItem icon={BellIcon} label={t("settings_screen.notifications")} />
+          <SettingItem icon={LockIcon} label={t("settings_screen.privacy")} showSeparator={false} />
         </View>
 
         {/* Group 3 */}
         <View style={[styles.card, { backgroundColor: themeColors.card }]}>
-          <SettingItem icon={HeadphonesIcon} label="Help and feedback" />
+          <SettingItem icon={HeadphonesIcon} label={t("settings_screen.help_feedback")} />
           <SettingItem
             icon={InfoIcon}
-            label="About PhsarOne"
+            label={t("settings_screen.about_phsarone")}
             showSeparator={false}
           />
         </View>
@@ -144,7 +146,7 @@ export default function SettingsScreen() {
           <ThemedText
             style={[styles.signOutText, { color: themeColors.background }]}
           >
-            Sign out
+            {t("settings_screen.sign_out")}
           </ThemedText>
         </TouchableOpacity>
       </ScrollView>

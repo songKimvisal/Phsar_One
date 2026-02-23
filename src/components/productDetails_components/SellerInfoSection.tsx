@@ -106,7 +106,7 @@ const SellerInfoSection: React.FC<SellerInfoSectionProps> = ({
               <Ionicons name="star" size={14} color={themeColors.warning} />
               <ThemedText style={styles.ratingText}>
                 {product.seller.rating} ({product.seller.totalListings}{" "}
-                listings)
+                {t("common.listings")})
               </ThemedText>
             </View>
           )}

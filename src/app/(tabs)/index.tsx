@@ -54,7 +54,7 @@ export default function Index() {
             },
           ]}
         >
-          <ThemedText style={styles.searchPlaceholder}>Search...</ThemedText>
+          <ThemedText style={styles.searchPlaceholder}>{t("navigation.search")}...</ThemedText>
           <MagnifyingGlassIcon size={22} color={themeColors.text} />
         </TouchableOpacity>
 

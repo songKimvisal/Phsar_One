@@ -149,7 +149,7 @@ export default function AddressDropdowns({
           disabled={isDisabled}
         >
           <ThemedText style={[styles.triggerText, !value && { opacity: 0.3 }]}>
-            {displayLabel || `Select ${t(`sellSection.${labelKey}`)}`}
+            {displayLabel || `${t("common.select")} ${t(`sellSection.${labelKey}`)}`}
           </ThemedText>
           <CaretDownIcon
             size={20}
@@ -188,7 +188,7 @@ export default function AddressDropdowns({
             ]}
           >
             <ThemedText style={styles.modalTitle}>
-              Select {modalType}
+              {t("common.select")} {modalType}
             </ThemedText>
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
@@ -209,7 +209,7 @@ export default function AddressDropdowns({
                 styles.modalSearchInput,
                 { backgroundColor: themeColors.secondaryBackground },
               ]}
-              placeholder="Search..."
+              placeholder={t("common.search")}
               value={searchQuery}
               onChangeText={setSearchQuery}
               autoFocus

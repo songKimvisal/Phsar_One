@@ -3,12 +3,14 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { Stack, useRouter } from "expo-router";
 import { BellSlashIcon, CaretLeftIcon } from "phosphor-react-native";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NotificationsScreen() {
   const router = useRouter();
   const themeColors = useThemeColor();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFF" }} edges={["top"]}>
@@ -19,7 +21,7 @@ export default function NotificationsScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
-        <ThemedText style={styles.headerTitle}>Notifications</ThemedText>
+        <ThemedText style={styles.headerTitle}>{t("notifications_screen.notifications")}</ThemedText>
         <View style={{ width: 44 }} />
       </View>
 
@@ -29,10 +31,10 @@ export default function NotificationsScreen() {
             <BellSlashIcon size={40} color={themeColors.text} />
           </View>
           <ThemedText style={styles.emptyTitle}>
-            No notifications yet
+            {t("notifications_screen.no_notifications")}
           </ThemedText>
           <ThemedText style={styles.emptySubtitle}>
-            When you get notifications, they'll show up here.
+            {t("notifications_screen.no_notifications_subtitle")}
           </ThemedText>
         </View>
       </View>

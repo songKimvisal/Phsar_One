@@ -70,17 +70,17 @@ export default function ProductDetailsForm() {
 
   const handlePost = async () => {
     if (!draft.photos || draft.photos.length === 0) {
-      Alert.alert(t("common.error"), "Please upload at least one photo.");
+      Alert.alert(t("common.error"), t("sellSection.photo_required"));
       return;
     }
 
     try {
       if (editId) {
         await updateProduct(editId, draft);
-        Alert.alert(t("common.success"), "Your product has been updated!");
+        Alert.alert(t("common.success"), t("sellSection.update_success"));
       } else {
         await postProduct(draft);
-        Alert.alert(t("common.success"), "Your product has been posted!");
+        Alert.alert(t("common.success"), t("sellSection.post_success"));
       }
       resetDraft();
       router.replace("/(tabs)");
@@ -88,7 +88,7 @@ export default function ProductDetailsForm() {
       console.error("Post handle error:", error);
       Alert.alert(
         t("common.error"),
-        error.message || "Failed to save product.",
+        error.message || t("sellSection.save_failed"),
       );
     }
   };
@@ -99,7 +99,7 @@ export default function ProductDetailsForm() {
         style={[styles.center, { backgroundColor: themeColors.background }]}
       >
         <ActivityIndicator size="small" color={themeColors.primary} />
-        <ThemedText style={{ marginTop: 12 }}>Loading details...</ThemedText>
+        <ThemedText style={{ marginTop: 12 }}>{t("sellSection.loading_details")}</ThemedText>
       </View>
     );
   }
@@ -123,7 +123,7 @@ export default function ProductDetailsForm() {
 
         <ThemedText style={styles.headerTitle}>
           {editId
-            ? "Edit Listing"
+            ? t("sellSection.edit_listing")
             : t(`subcategories.${draft.subCategory}`) || draft.subCategory}
         </ThemedText>
 
@@ -211,7 +211,7 @@ export default function ProductDetailsForm() {
                   <ThemedText
                     style={[styles.cancelBtnText, { color: themeColors.text }]}
                   >
-                    Cancel
+                    {t("common.cancel")}
                   </ThemedText>
                 </TouchableOpacity>
 
@@ -225,7 +225,7 @@ export default function ProductDetailsForm() {
                   disabled={isPosting}
                 >
                   <ThemedText style={styles.submitBtnText}>
-                    {isPosting ? "Saving..." : editId ? "Update" : "Save"}
+                    {isPosting ? t("sellSection.saving") : editId ? t("sellSection.update") : t("sellSection.save")}
                   </ThemedText>
                 </TouchableOpacity>
               </View>

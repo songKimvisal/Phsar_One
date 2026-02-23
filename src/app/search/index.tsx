@@ -67,7 +67,7 @@ export default function SearchScreen() {
           <TextInput
             ref={inputRef}
             style={[styles.input, { color: themeColors.text }]}
-            placeholder="macbook"
+            placeholder={t("navigation.search")}
             placeholderTextColor={themeColors.text + "50"}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -78,7 +78,7 @@ export default function SearchScreen() {
             onPress={handleSearch}
             style={styles.searchTextButton}
           >
-            <ThemedText style={styles.searchText}>Search</ThemedText>
+            <ThemedText style={styles.searchText}>{t("navigation.search")}</ThemedText>
           </TouchableOpacity>
         </View>
       </View>

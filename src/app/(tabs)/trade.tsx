@@ -50,7 +50,7 @@ export default function TradeScreen() {
             image: item.images[0],
             title: item.title,
             seller: item.seller,
-            timeAgo: `${item.timeAgo.value} ${item.timeAgo.unit}`,
+            timeAgo: t(`time_ago.${item.timeAgo.unit}`, { count: item.timeAgo.value }),
             location: t(`provinces.${item.province}`),
             lookingFor: item.lookingFor.map((lf) => lf.name),
             condition: item.condition,

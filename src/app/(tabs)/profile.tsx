@@ -175,7 +175,7 @@ export default function ProfileScreen() {
               onPress={() => userId && router.push(`/user/${userId}` as Href)}
             >
               <ThemedText style={styles.viewProfileText}>
-                View Profile
+                {t("productDetail.viewProfile")}
               </ThemedText>
               <CaretRightIcon
                 size={14}

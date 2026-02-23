@@ -190,7 +190,7 @@ export default function PublicProfileScreen() {
           <ThemedText style={styles.userName}>
             {userData?.first_name} {userData?.last_name}
           </ThemedText>
-          <ThemedText style={styles.userType}>Regular account</ThemedText>
+          <ThemedText style={styles.userType}>{t("user_actions.regular_account")}</ThemedText>
         </View>
 
         <TouchableOpacity
@@ -206,7 +206,7 @@ export default function PublicProfileScreen() {
 
       <View style={styles.bioRow}>
         <ThemedText style={styles.bioText}>
-          {userData?.bio || "No bio yet."}
+          {userData?.bio || t("public_profile.no_bio")}
         </ThemedText>
         {isOwnProfile && (
           <TouchableOpacity
@@ -230,7 +230,7 @@ export default function PublicProfileScreen() {
             }
           >
             <ThemedText style={styles.statNumber}>{followerCount}</ThemedText>
-            <ThemedText style={styles.statLabel}>Followers</ThemedText>
+            <ThemedText style={styles.statLabel}>{t("public_profile.followers")}</ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.statItem}
@@ -242,7 +242,7 @@ export default function PublicProfileScreen() {
             }
           >
             <ThemedText style={styles.statNumber}>{followingCount}</ThemedText>
-            <ThemedText style={styles.statLabel}>Followings</ThemedText>
+            <ThemedText style={styles.statLabel}>{t("public_profile.followings")}</ThemedText>
           </TouchableOpacity>
         </View>
 
@@ -254,7 +254,7 @@ export default function PublicProfileScreen() {
             <ThemedText
               style={[styles.actionBtnText, { color: themeColors.text }]}
             >
-              Edit profile
+              {t("public_profile.edit_profile")}
             </ThemedText>
           </TouchableOpacity>
         ) : (
@@ -278,7 +278,7 @@ export default function PublicProfileScreen() {
                   isFollowing && { color: "#374151" },
                 ]}
               >
-                {isFollowing ? "Unfollow" : "Follow"}
+                {isFollowing ? t("public_profile.unfollow") : t("public_profile.follow")}
               </ThemedText>
             </TouchableOpacity>
 
@@ -289,7 +289,7 @@ export default function PublicProfileScreen() {
               <ThemedText
                 style={[styles.messageBtnText, { color: Colors.reds[500] }]}
               >
-                Message
+                {t("public_profile.message")}
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -297,7 +297,7 @@ export default function PublicProfileScreen() {
       </View>
 
       <View style={styles.sectionHeader}>
-        <ThemedText style={styles.sectionTitle}>Recent post</ThemedText>
+        <ThemedText style={styles.sectionTitle}>{t("public_profile.recent_post")}</ThemedText>
         <View style={styles.viewToggle}>
           <TouchableOpacity onPress={() => setViewMode("list")}>
             <RowsIcon
@@ -396,7 +396,7 @@ export default function PublicProfileScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
-        <ThemedText style={styles.navTitle}>Profile</ThemedText>
+        <ThemedText style={styles.navTitle}>{t("public_profile.profile")}</ThemedText>
         <TouchableOpacity style={styles.backBtn}>
           <DotsThreeIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
@@ -413,7 +413,7 @@ export default function PublicProfileScreen() {
         renderItem={renderProductItem}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <ThemedText>No recent posts found.</ThemedText>
+            <ThemedText>{t("public_profile.no_posts")}</ThemedText>
           </View>
         }
       />

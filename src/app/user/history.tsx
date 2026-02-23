@@ -8,6 +8,7 @@ import {
   ClockCounterClockwiseIcon,
 } from "phosphor-react-native";
 import React, { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
@@ -24,6 +25,7 @@ export default function HistoryScreen() {
   const router = useRouter();
   const themeColors = useThemeColor();
   const [history, setHistory] = useState<any[]>([]);
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
 
   useFocusEffect(
@@ -76,12 +78,12 @@ export default function HistoryScreen() {
 
   const handleClearHistory = async () => {
     Alert.alert(
-      "Clear History",
-      "Are you sure you want to clear your entire viewing history?",
+      t("user_actions.clear_history_title"),
+      t("user_actions.clear_history_confirm"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Clear All",
+          text: t("user_actions.clear_all"),
           style: "destructive",
           onPress: async () => {
             try {
@@ -95,7 +97,7 @@ export default function HistoryScreen() {
               if (error) throw error;
               setHistory([]);
             } catch (err) {
-              Alert.alert("Error", "Failed to clear history.");
+              Alert.alert(t("error"), "Failed to clear history.");
             }
           },
         },
@@ -153,12 +155,14 @@ export default function HistoryScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
-        <ThemedText style={styles.headerTitle}>History</ThemedText>
+        <ThemedText style={styles.headerTitle}>
+          {t("user_actions.history")}
+        </ThemedText>
         <TouchableOpacity onPress={handleClearHistory} style={styles.clearBtn}>
           <ThemedText
             style={[styles.clearBtnText, { color: themeColors.primary }]}
           >
-            Clear all
+            {t("user_actions.clear_all")}
           </ThemedText>
         </TouchableOpacity>
       </View>
@@ -186,7 +190,7 @@ export default function HistoryScreen() {
                   weight="light"
                 />
                 <ThemedText style={styles.emptyTitle}>
-                  No history yet
+                  {t("user_actions.no_history")}
                 </ThemedText>
               </View>
             }

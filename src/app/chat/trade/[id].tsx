@@ -192,7 +192,7 @@ function Bubble({
   const content = parseContent(item.content);
   const bubbleBg = isMe ? Colors.reds[500] : themeColors.card;
   const textColor = isMe ? "#fff" : themeColors.text;
-
+  const { t } = useTranslation();
   const inner = () => {
     switch (content.type) {
       case "image":
@@ -283,7 +283,7 @@ function Bubble({
           style={[styles.msgTime, { color: themeColors.text + "55" }]}
         >
           {isOptimistic
-            ? "Sending…"
+            ? t("chat.sending")
             : new Date(item.created_at || "").toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -324,6 +324,7 @@ function ProductBanner({
   themeColors: any;
   onPress?: () => void;
 }) {
+  const { t } = useTranslation();
   if (!title) return null;
   return (
     <TouchableOpacity
@@ -365,7 +366,7 @@ function ProductBanner({
       <ThemedText
         style={{ color: Colors.reds[500], fontSize: 12, fontWeight: "600" }}
       >
-        View
+        {t("common.viewAll")}
       </ThemedText>
     </TouchableOpacity>
   );
@@ -476,7 +477,7 @@ export default function TradeProductChatScreen() {
     if (Platform.OS === "ios") {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ["Cancel", "Delete Message"],
+          options: [t("common.cancel"), t("chat.delete_conversation")],
           destructiveButtonIndex: 1,
           cancelButtonIndex: 0,
         },
@@ -485,26 +486,30 @@ export default function TradeProductChatScreen() {
             try {
               await deleteMessage(msg.id);
             } catch (e: any) {
-              Alert.alert("Error", e.message);
+              Alert.alert(t("error"), e.message);
             }
           }
         },
       );
     } else {
-      Alert.alert("Delete Message", "Remove this message?", [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteMessage(msg.id);
-            } catch (e: any) {
-              Alert.alert("Error", e.message);
-            }
+      Alert.alert(
+        t("chat.delete_conversation_title"),
+        t("chat.delete_conversation_confirmation"),
+        [
+          { text: t("common.cancel"), style: "cancel" },
+          {
+            text: t("common.delete"),
+            style: "destructive",
+            onPress: async () => {
+              try {
+                await deleteMessage(msg.id);
+              } catch (e: any) {
+                Alert.alert(t("error"), e.message);
+              }
+            },
           },
-        },
-      ]);
+        ],
+      );
     }
   };
 
@@ -517,7 +522,7 @@ export default function TradeProductChatScreen() {
     try {
       await sendMessage({ type: "text", text });
     } catch (e: any) {
-      Alert.alert("Error", e.message || "Failed to send.");
+      Alert.alert(t("error"), e.message || t("chat.failed_to_send_message"));
     } finally {
       setIsSending(false);
     }
@@ -528,7 +533,7 @@ export default function TradeProductChatScreen() {
     setShowAttachMenu(false);
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission needed", "Please allow photo library access.");
+      Alert.alert(t("error"), "Please allow photo library access.");
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -544,7 +549,7 @@ export default function TradeProductChatScreen() {
       const url = await uploadFile(asset.uri, path, `image/${ext}`);
       await sendMessage({ type: "image", url });
     } catch (e: any) {
-      Alert.alert("Upload failed", e.message || "Could not upload image.");
+      Alert.alert(t("error"), e.message || "Could not upload image.");
     } finally {
       setIsSending(false);
     }
@@ -555,7 +560,7 @@ export default function TradeProductChatScreen() {
     setShowAttachMenu(false);
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission needed", "Please allow location access.");
+      Alert.alert(t("error"), "Please allow location access.");
       return;
     }
     setIsSending(true);
@@ -577,7 +582,7 @@ export default function TradeProductChatScreen() {
         label,
       });
     } catch (e: any) {
-      Alert.alert("Error", e.message || "Failed to get location.");
+      Alert.alert(t("error"), e.message || "Failed to get location.");
     } finally {
       setIsSending(false);
     }
@@ -588,7 +593,7 @@ export default function TradeProductChatScreen() {
     if (isRecording) return;
     const { status } = await Audio.requestPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission needed", "Please allow microphone access.");
+      Alert.alert(t("error"), "Please allow microphone access.");
       return;
     }
     try {
@@ -607,7 +612,7 @@ export default function TradeProductChatScreen() {
         1000,
       );
     } catch (e: any) {
-      Alert.alert("Error", e.message || "Failed to start recording.");
+      Alert.alert(t("error"), e.message || "Failed to start recording.");
     }
   };
 
@@ -627,10 +632,7 @@ export default function TradeProductChatScreen() {
       const url = await uploadFile(uri, path, "audio/m4a");
       await sendMessage({ type: "voice", url, duration: dur });
     } catch (e: any) {
-      Alert.alert(
-        "Upload failed",
-        e.message || "Could not send voice message.",
-      );
+      Alert.alert(t("error"), e.message || "Could not send voice message.");
     } finally {
       setIsSending(false);
     }
@@ -656,23 +658,22 @@ export default function TradeProductChatScreen() {
   const handleBlock = () => {
     setShowOptionsMenu(false);
     Alert.alert(
-      "Block User",
-      `Block ${otherUser?.first_name || "this user"}? They won't be able to send you messages.`,
+      t("chat.block_user_title"),
+      t("chat.block_user_confirmation", {
+        userName: otherUser?.first_name || "this user",
+      }),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Block",
+          text: t("chat.block"),
           style: "destructive",
           onPress: async () => {
             try {
               await blockUser(otherUser?.id || "");
-              Alert.alert(
-                "Blocked",
-                `${otherUser?.first_name || "User"} has been blocked.`,
-              );
+              Alert.alert(t("chat.block"), t("chat.user_blocked_successfully"));
               router.back();
             } catch (e: any) {
-              Alert.alert("Error", e.message);
+              Alert.alert(t("error"), e.message);
             }
           },
         },
@@ -684,7 +685,7 @@ export default function TradeProductChatScreen() {
     if (otherUser?.phone) {
       Linking.openURL(`tel:${otherUser.phone}`);
     } else {
-      Alert.alert("Unavailable", "Phone number not available.");
+      Alert.alert(t("error"), t("chat.phone_not_available"));
     }
   };
 
@@ -760,7 +761,11 @@ export default function TradeProductChatScreen() {
                 color: otherUserOnline ? "#10B981" : themeColors.text + "50",
               }}
             >
-              {otherUserOnline ? "Active now" : isMuted ? "Muted" : "Offline"}
+              {otherUserOnline
+                ? t("chat.active_now")
+                : isMuted
+                  ? t("chat.muted")
+                  : t("chat.offline")}
             </ThemedText>
           </View>
         </View>
@@ -832,7 +837,7 @@ export default function TradeProductChatScreen() {
               <ThemedText
                 style={[styles.dateLabel, { color: themeColors.text + "50" }]}
               >
-                Today
+                {t("chat.today")}
               </ThemedText>
               <View
                 style={[
@@ -897,7 +902,7 @@ export default function TradeProductChatScreen() {
                 marginRight: 10,
               }}
             >
-              Tap ✓ to send
+              {t("chat.tap_to_send")}
             </ThemedText>
             <TouchableOpacity onPress={stopAndSend} style={styles.recordSend}>
               <PaperPlaneTiltIcon size={18} color="#fff" weight="fill" />
@@ -926,7 +931,7 @@ export default function TradeProductChatScreen() {
               <ThemedText
                 style={[styles.attachLabel, { color: themeColors.text }]}
               >
-                Photo
+                {t("chat.photo")}
               </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
@@ -939,7 +944,7 @@ export default function TradeProductChatScreen() {
               <ThemedText
                 style={[styles.attachLabel, { color: themeColors.text }]}
               >
-                Location
+                {t("chat.location")}
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -979,7 +984,7 @@ export default function TradeProductChatScreen() {
             >
               <TextInput
                 style={[styles.textInput, { color: themeColors.text }]}
-                placeholder="Type a message…"
+                placeholder={t("chat.type_a_message")}
                 placeholderTextColor={themeColors.text + "40"}
                 value={inputText}
                 onChangeText={(v) => {
@@ -1038,7 +1043,9 @@ export default function TradeProductChatScreen() {
                 { backgroundColor: themeColors.border },
               ]}
             />
-            <ThemedText style={styles.sheetTitle}>Options</ThemedText>
+            <ThemedText style={styles.sheetTitle}>
+              {t("chat.options")}
+            </ThemedText>
 
             {/* Mute */}
             <TouchableOpacity style={styles.optRow} onPress={handleToggleMute}>
@@ -1054,7 +1061,9 @@ export default function TradeProductChatScreen() {
               <ThemedText
                 style={[styles.optLabel, { color: themeColors.text }]}
               >
-                {isMuted ? "Unmute Notifications" : "Mute Notifications"}
+                {isMuted
+                  ? t("chat.unmute_notifications")
+                  : t("chat.mute_notifications")}
               </ThemedText>
             </TouchableOpacity>
 
@@ -1069,7 +1078,7 @@ export default function TradeProductChatScreen() {
             <TouchableOpacity style={styles.optRow} onPress={handleBlock}>
               <ProhibitIcon size={22} color="#EF4444" weight="fill" />
               <ThemedText style={[styles.optLabel, { color: "#EF4444" }]}>
-                Block {otherUser?.first_name || "User"}
+                {t("chat.block")} {otherUser?.first_name || "User"}
               </ThemedText>
             </TouchableOpacity>
 
@@ -1087,7 +1096,7 @@ export default function TradeProductChatScreen() {
                   color: themeColors.text,
                 }}
               >
-                Cancel
+                {t("common.cancel")}
               </ThemedText>
             </TouchableOpacity>
           </View>
