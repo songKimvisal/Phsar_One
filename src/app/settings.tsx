@@ -73,12 +73,21 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
-      <Stack.Screen options={{ headerShown: false }} />
+    <View style={{ flex: 1, backgroundColor: themeColors.background }}>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
 
       {/* Custom Header with White Status Bar */}
-      <SafeAreaView edges={["top"]} style={{ backgroundColor: "#FFF" }}>
-        <View style={styles.header}>
+      <SafeAreaView
+        edges={["top"]}
+        style={{ backgroundColor: themeColors.background }}
+      >
+        <View
+          style={[styles.header, { backgroundColor: themeColors.background }]}
+        >
           <TouchableOpacity
             onPress={() => router.back()}
             style={styles.backButton}
@@ -159,7 +168,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 8,
     paddingVertical: 12,
-    backgroundColor: "#FFF",
   },
   headerTitle: {
     fontSize: 20,

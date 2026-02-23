@@ -1,6 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
-import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { Href, Stack, useFocusEffect, useRouter } from "expo-router";
@@ -59,11 +58,6 @@ export default function HistoryScreen() {
         .order("viewed_at", { ascending: false });
 
       if (error) throw error;
-
-      console.log(`DEBUG: Found ${data?.length || 0} history records`);
-      if (data && data.length > 0) {
-        console.log(`DEBUG: Sample record:`, JSON.stringify(data[0], null, 2));
-      }
 
       const extractedHistory = data
         ?.map((item: any) => ({
@@ -147,24 +141,35 @@ export default function HistoryScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFF" }} edges={["top"]}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: themeColors.background }}
+      edges={["top"]}
+    >
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={styles.header}>
+      <View
+        style={[styles.header, { backgroundColor: themeColors.background }]}
+      >
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
         <ThemedText style={styles.headerTitle}>History</ThemedText>
         <TouchableOpacity onPress={handleClearHistory} style={styles.clearBtn}>
-          <ThemedText style={styles.clearBtnText}>Clear all</ThemedText>
+          <ThemedText
+            style={[styles.clearBtnText, { color: themeColors.primary }]}
+          >
+            Clear all
+          </ThemedText>
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.content, { backgroundColor: "#F9FAFB" }]}>
+      <View
+        style={[styles.content, { backgroundColor: themeColors.background }]}
+      >
         {loading ? (
           <ActivityIndicator
             size="small"
-            color={Colors.reds[500]}
+            color={themeColors.primary}
             style={{ marginTop: 40 }}
           />
         ) : (
@@ -199,7 +204,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 8,
     paddingVertical: 12,
-    backgroundColor: "#FFF",
   },
   headerTitle: {
     fontSize: 18,
@@ -212,7 +216,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   clearBtnText: {
-    color: Colors.reds[500],
     fontWeight: "600",
     fontSize: 14,
   },
@@ -237,7 +240,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   listImage: {
-    width: 60, // Smaller as seen in history.png
+    width: 60,
     height: 60,
     borderRadius: 8,
     backgroundColor: "#F3F4F6",

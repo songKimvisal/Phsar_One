@@ -139,8 +139,10 @@ export default function AddressDropdowns({
           style={[
             styles.trigger,
             {
-              borderColor: themeColors.text + "15",
-              backgroundColor: isDisabled ? "#F5F5F5" : "#FFF",
+              borderColor: themeColors.border,
+              backgroundColor: isDisabled
+                ? themeColors.secondaryBackground
+                : themeColors.card,
             },
           ]}
           onPress={() => openPicker(type)}
@@ -149,7 +151,10 @@ export default function AddressDropdowns({
           <ThemedText style={[styles.triggerText, !value && { opacity: 0.3 }]}>
             {displayLabel || `Select ${t(`sellSection.${labelKey}`)}`}
           </ThemedText>
-          <CaretDownIcon size={20} color={themeColors.text} />
+          <CaretDownIcon
+            size={20}
+            color={isDisabled ? themeColors.tabIconDefault : themeColors.text}
+          />
         </TouchableOpacity>
       </View>
     );
@@ -168,14 +173,20 @@ export default function AddressDropdowns({
         presentationStyle="fullScreen"
       >
         <View
-          style={{
-            flex: 1,
-            backgroundColor: "#FFF",
-            paddingTop: insets.top,
-            paddingBottom: 32,
-          }}
+          style={[
+            styles.modalContainer,
+            {
+              backgroundColor: themeColors.background,
+              paddingTop: insets.top,
+            },
+          ]}
         >
-          <View style={styles.modalHeader}>
+          <View
+            style={[
+              styles.modalHeader,
+              { borderBottomColor: themeColors.border },
+            ]}
+          >
             <ThemedText style={styles.modalTitle}>
               Select {modalType}
             </ThemedText>
@@ -183,18 +194,21 @@ export default function AddressDropdowns({
               onPress={() => setModalVisible(false)}
               style={styles.closeBtn}
             >
-              <XIcon size={24} color="#000" />
+              <XIcon size={24} color={themeColors.text} />
             </TouchableOpacity>
           </View>
 
           <View style={styles.searchContainer}>
             <MagnifyingGlassIcon
               size={20}
-              color="#999"
+              color={themeColors.tabIconDefault}
               style={styles.searchIcon}
             />
             <ThemedTextInput
-              style={styles.modalSearchInput}
+              style={[
+                styles.modalSearchInput,
+                { backgroundColor: themeColors.secondaryBackground },
+              ]}
               placeholder="Search..."
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -218,7 +232,14 @@ export default function AddressDropdowns({
                 </ThemedText>
               </TouchableOpacity>
             )}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            ItemSeparatorComponent={() => (
+              <View
+                style={[
+                  styles.separator,
+                  { backgroundColor: themeColors.border },
+                ]}
+              />
+            )}
           />
         </View>
       </Modal>
@@ -248,13 +269,16 @@ const styles = StyleSheet.create({
   triggerText: {
     fontSize: 16,
   },
+  modalContainer: {
+    flex: 1,
+    paddingBottom: 32,
+  },
   modalHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#EEE",
   },
   modalTitle: {
     fontSize: 18,
@@ -277,7 +301,6 @@ const styles = StyleSheet.create({
   modalSearchInput: {
     flex: 1,
     height: 44,
-    backgroundColor: "#F3F4F6",
     borderRadius: 24,
     paddingLeft: 44,
     borderWidth: 0,
@@ -298,7 +321,6 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: "#F3F4F6",
     marginHorizontal: 16,
   },
 });

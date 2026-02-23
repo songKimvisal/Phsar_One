@@ -1,4 +1,4 @@
-import { Colors } from "@src/constants/Colors";
+import useThemeColor from "@src/hooks/useThemeColor";
 import React, { useEffect, useRef } from "react";
 import {
   FlatList,
@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { ThemedText } from "../shared_components/ThemedText";
 
-const ITEM_HEIGHT = 50; // Increased for better touch target
+const ITEM_HEIGHT = 50;
 
 interface WheelPickerProps {
   options: string[];
@@ -24,9 +24,9 @@ export default function CustomWheelPicker({
   onValueChange,
   label,
 }: WheelPickerProps) {
+  const themeColors = useThemeColor();
   const flatListRef = useRef<FlatList>(null);
 
-  // For a 3-item visible area, we need 1 empty item at start/end to center the real items
   const paddedOptions = ["", ...options, ""];
 
   const onMomentumScrollEnd = (
@@ -43,7 +43,6 @@ export default function CustomWheelPicker({
   useEffect(() => {
     const index = options.indexOf(selectedValue);
     if (index !== -1) {
-      // Small delay to ensure FlatList is ready
       const timer = setTimeout(() => {
         flatListRef.current?.scrollToOffset({
           offset: index * ITEM_HEIGHT,
@@ -58,12 +57,28 @@ export default function CustomWheelPicker({
     <View style={styles.container}>
       <View style={styles.labelRow}>
         <ThemedText style={styles.label}>{label}</ThemedText>
-        <ThemedText style={{ color: Colors.reds[500] }}>*</ThemedText>
+        <ThemedText style={{ color: themeColors.primary }}>*</ThemedText>
       </View>
 
-      <View style={styles.pickerWrapper}>
-        {/* Selection Highlight - pointerEvents none ensures it doesn't block scrolling */}
-        <View style={styles.highlight} pointerEvents="none" />
+      <View
+        style={[
+          styles.pickerWrapper,
+          {
+            backgroundColor: themeColors.background,
+            borderColor: themeColors.border,
+          },
+        ]}
+      >
+        <View
+          style={[
+            styles.highlight,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.primary + "30",
+            },
+          ]}
+          pointerEvents="none"
+        />
 
         <FlatList
           ref={flatListRef}
@@ -73,8 +88,8 @@ export default function CustomWheelPicker({
           snapToInterval={ITEM_HEIGHT}
           decelerationRate="fast"
           onMomentumScrollEnd={onMomentumScrollEnd}
-          nestedScrollEnabled={true} // Crucial for Android within another ScrollView
-          removeClippedSubviews={false} // Fix for disappearing items in nested lists
+          nestedScrollEnabled={true}
+          removeClippedSubviews={false}
           scrollEventThrottle={16}
           getItemLayout={(_, index) => ({
             length: ITEM_HEIGHT,
@@ -88,7 +103,12 @@ export default function CustomWheelPicker({
                 <ThemedText
                   style={[
                     styles.itemText,
-                    isSelected && styles.selectedItemText,
+                    { color: themeColors.tabIconDefault },
+                    isSelected && {
+                      color: themeColors.primary,
+                      fontWeight: "700",
+                      fontSize: 18,
+                    },
                   ]}
                 >
                   {item}
@@ -114,27 +134,22 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#111827",
   },
   pickerWrapper: {
-    height: ITEM_HEIGHT * 3, // Exactly 3 items tall
-    backgroundColor: "#FAFAFA",
+    height: ITEM_HEIGHT * 3,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
     overflow: "hidden",
   },
   highlight: {
     position: "absolute",
-    top: ITEM_HEIGHT, // The middle item
+    top: ITEM_HEIGHT,
     left: 8,
     right: 8,
     height: ITEM_HEIGHT,
-    backgroundColor: "#FFFFFF",
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.reds[500] + "30",
-    zIndex: 1, // Visual only, pointerEvents="none" handles touch
+    zIndex: 1,
   },
   item: {
     justifyContent: "center",
@@ -143,12 +158,6 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
-    color: "#9CA3AF",
     fontWeight: "500",
-  },
-  selectedItemText: {
-    color: Colors.reds[500],
-    fontWeight: "700",
-    fontSize: 18,
   },
 });

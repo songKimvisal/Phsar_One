@@ -1,5 +1,4 @@
 import { ThemedText } from "@src/components/shared_components/ThemedText";
-import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Href, Stack, useRouter } from "expo-router";
 import { CaretLeftIcon, WarningDiamondIcon } from "phosphor-react-native";
@@ -12,11 +11,15 @@ export default function SupportScreen() {
   const themeColors = useThemeColor();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFF" }} edges={["top"]}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: themeColors.background }}
+      edges={["top"]}
+    >
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Custom Header */}
-      <View style={styles.header}>
+      <View
+        style={[styles.header, { backgroundColor: themeColors.background }]}
+      >
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
@@ -24,14 +27,26 @@ export default function SupportScreen() {
         <View style={{ width: 44 }} />
       </View>
 
-      <View style={styles.content}>
+      <View
+        style={[styles.content, { backgroundColor: themeColors.background }]}
+      >
         <View style={styles.subHeader}>
           <ThemedText style={styles.sectionTitle}>Opened tickets</ThemedText>
           <TouchableOpacity
-            style={styles.newTicketBtn}
+            style={[
+              styles.newTicketBtn,
+              { backgroundColor: themeColors.primary },
+            ]}
             onPress={() => router.push("/user/new_ticket" as Href)}
           >
-            <ThemedText style={styles.newTicketText}>New ticket</ThemedText>
+            <ThemedText
+              style={[
+                styles.newTicketText,
+                { color: themeColors.primaryButtonText },
+              ]}
+            >
+              New ticket
+            </ThemedText>
           </TouchableOpacity>
         </View>
 
@@ -51,7 +66,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 8,
     paddingVertical: 12,
-    backgroundColor: "#FFF",
   },
   headerTitle: {
     fontSize: 18,
@@ -62,7 +76,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: "#FFF",
   },
   subHeader: {
     flexDirection: "row",
@@ -76,13 +89,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   newTicketBtn: {
-    backgroundColor: Colors.reds[500],
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 99,
   },
   newTicketText: {
-    color: "#FFF",
     fontWeight: "600",
     fontSize: 14,
   },

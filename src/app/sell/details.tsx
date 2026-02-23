@@ -5,7 +5,6 @@ import LocationPickerMap from "@src/components/shared_components/LocationPickerM
 import PhotoUploadSection from "@src/components/shared_components/PhotoUploadSection";
 import SellerContactForm from "@src/components/shared_components/SellerContactForm";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
-import { Colors } from "@src/constants/Colors";
 import { POST_FIELDS_MAP } from "@src/constants/postFields";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import { usePostProduct } from "@src/hooks/usePostProduct";
@@ -96,8 +95,10 @@ export default function ProductDetailsForm() {
 
   if (isInitialLoading) {
     return (
-      <View style={[styles.center, { backgroundColor: "#F9FAFB" }]}>
-        <ActivityIndicator size="small" color={Colors.reds[500]} />
+      <View
+        style={[styles.center, { backgroundColor: themeColors.background }]}
+      >
+        <ActivityIndicator size="small" color={themeColors.primary} />
         <ThemedText style={{ marginTop: 12 }}>Loading details...</ThemedText>
       </View>
     );
@@ -106,11 +107,13 @@ export default function ProductDetailsForm() {
   return (
     <SafeAreaView
       edges={["top", "left", "right"]}
-      style={{ flex: 1, backgroundColor: "#FFF" }}
+      style={{ flex: 1, backgroundColor: themeColors.background }}
     >
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={styles.header}>
+      <View
+        style={[styles.header, { backgroundColor: themeColors.background }]}
+      >
         <TouchableOpacity
           onPress={() => router.back()}
           style={styles.backButton}
@@ -128,7 +131,7 @@ export default function ProductDetailsForm() {
       </View>
 
       <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: "#F9FAFB" }}
+        style={{ flex: 1, backgroundColor: themeColors.background }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <FlatList
@@ -199,14 +202,25 @@ export default function ProductDetailsForm() {
 
               <View style={styles.buttonRow}>
                 <TouchableOpacity
-                  style={styles.cancelBtn}
+                  style={[
+                    styles.cancelBtn,
+                    { backgroundColor: themeColors.secondaryBackground },
+                  ]}
                   onPress={() => router.back()}
                 >
-                  <ThemedText style={styles.cancelBtnText}>Cancel</ThemedText>
+                  <ThemedText
+                    style={[styles.cancelBtnText, { color: themeColors.text }]}
+                  >
+                    Cancel
+                  </ThemedText>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[styles.submitBtn, isPosting && { opacity: 0.7 }]}
+                  style={[
+                    styles.submitBtn,
+                    { backgroundColor: themeColors.primary },
+                    isPosting && { opacity: 0.7 },
+                  ]}
                   onPress={handlePost}
                   disabled={isPosting}
                 >
@@ -231,7 +245,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 8,
     paddingVertical: 8,
-    backgroundColor: "#FFF",
   },
   headerTitle: {
     fontSize: 18,
@@ -265,7 +278,6 @@ const styles = StyleSheet.create({
   },
   cancelBtn: {
     flex: 1,
-    backgroundColor: "#E5E7EB",
     paddingVertical: 14,
     borderRadius: 99,
     alignItems: "center",
@@ -273,11 +285,9 @@ const styles = StyleSheet.create({
   cancelBtnText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#4B5563",
   },
   submitBtn: {
     flex: 1,
-    backgroundColor: Colors.reds[500],
     paddingVertical: 14,
     borderRadius: 99,
     alignItems: "center",

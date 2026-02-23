@@ -38,11 +38,16 @@ export default function SubcategoryScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} edges={["top"]}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: themeColors.background }}
+      edges={["top"]}
+    >
       <Stack.Screen options={{ headerShown: false }} />
 
       {/* Custom Header */}
-      <View style={styles.header}>
+      <View
+        style={[styles.header, { backgroundColor: themeColors.background }]}
+      >
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
@@ -50,8 +55,18 @@ export default function SubcategoryScreen() {
 
       <View style={{ flex: 1, backgroundColor: themeColors.background }}>
         {/* Category Info */}
-        <View style={styles.categoryInfo}>
-          <View style={styles.categoryIconContainer}>
+        <View
+          style={[
+            styles.categoryInfo,
+            { backgroundColor: themeColors.background },
+          ]}
+        >
+          <View
+            style={[
+              styles.categoryIconContainer,
+              { backgroundColor: themeColors.background },
+            ]}
+          >
             <DynamicPhosphorIcon
               name={categoryData?.icon || "Shapes"}
               size={32}
