@@ -338,17 +338,17 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
     const blob = await response.blob();
     const arrayBuffer = await new Response(blob).arrayBuffer();
 
-    const buckets = ['chat-media', 'media', 'uploads', 'storage'];
-    let lastError: any;
-    for (const bucket of buckets) {
-      const { data, error } = await authSupabase.storage.from(bucket).upload(path, arrayBuffer, { contentType, upsert: true });
-      if (!error && data) {
-        const { data: urlData } = authSupabase.storage.from(bucket).getPublicUrl(data.path);
-        return urlData.publicUrl;
-      }
-      lastError = error;
+    const bucket = "chat-media";
+    const { data, error } = await authSupabase.storage
+      .from(bucket)
+      .upload(path, arrayBuffer, { contentType, upsert: true });
+
+    if (error || !data) {
+      throw error || new Error("Could not upload file to 'chat-media'.");
     }
-    throw lastError || new Error("No storage bucket found. Ask backend to create a 'chat-media' bucket.");
+
+    const { data: urlData } = authSupabase.storage.from(bucket).getPublicUrl(data.path);
+    return urlData.publicUrl;
   };
 
   // ── markMessagesAsRead ────────────────────────────────────────────────────
