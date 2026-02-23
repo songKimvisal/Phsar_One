@@ -1,6 +1,5 @@
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { ThemedTextInput } from "@src/components/shared_components/ThemedTextInput";
-import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Stack, useRouter } from "expo-router";
 import { CaretLeftIcon, PlusCircleIcon } from "phosphor-react-native";
@@ -22,11 +21,15 @@ export default function NewTicketScreen() {
   const [description, setDescription] = useState("");
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFF" }} edges={["top"]}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: themeColors.background }}
+      edges={["top"]}
+    >
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Custom Header */}
-      <View style={styles.header}>
+      <View
+        style={[styles.header, { backgroundColor: themeColors.background }]}
+      >
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
@@ -45,7 +48,14 @@ export default function NewTicketScreen() {
           <View style={styles.inputGroup}>
             <ThemedText style={styles.label}>Subject</ThemedText>
             <ThemedTextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: themeColors.background,
+                  borderColor: themeColors.border,
+                  borderWidth: 1,
+                },
+              ]}
               value={subject}
               onChangeText={setSubject}
               placeholder=""
@@ -55,7 +65,15 @@ export default function NewTicketScreen() {
           <View style={styles.inputGroup}>
             <ThemedText style={styles.label}>Description</ThemedText>
             <ThemedTextInput
-              style={[styles.input, styles.textArea]}
+              style={[
+                styles.input,
+                styles.textArea,
+                {
+                  backgroundColor: themeColors.background,
+                  borderColor: themeColors.border,
+                  borderWidth: 1,
+                },
+              ]}
               value={description}
               onChangeText={setDescription}
               multiline
@@ -64,7 +82,17 @@ export default function NewTicketScreen() {
             />
           </View>
 
-          <TouchableOpacity style={styles.filePicker}>
+          <TouchableOpacity
+            style={[
+              styles.filePicker,
+              {
+                backgroundColor: themeColors.background,
+                borderColor: themeColors.border,
+                borderWidth: 1,
+                borderStyle: "dashed",
+              },
+            ]}
+          >
             <PlusCircleIcon
               size={24}
               color={themeColors.text}
@@ -75,8 +103,18 @@ export default function NewTicketScreen() {
             </ThemedText>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.sendBtn} onPress={() => {}}>
-            <ThemedText style={styles.sendBtnText}>Send</ThemedText>
+          <TouchableOpacity
+            style={[styles.sendBtn, { backgroundColor: themeColors.primary }]}
+            onPress={() => {}}
+          >
+            <ThemedText
+              style={[
+                styles.sendBtnText,
+                { color: themeColors.primaryButtonText },
+              ]}
+            >
+              Send
+            </ThemedText>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -91,7 +129,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 8,
     paddingVertical: 12,
-    backgroundColor: "#FFF",
   },
   headerTitle: {
     fontSize: 18,
@@ -110,7 +147,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#111827",
   },
   input: {
     height: 44,
@@ -118,7 +154,6 @@ const styles = StyleSheet.create({
     borderCurve: "continuous",
     paddingHorizontal: 16,
     borderWidth: 0,
-    backgroundColor: "#E5E7EB80", // Light gray subtle background
   },
   textArea: {
     height: 150,
@@ -128,7 +163,6 @@ const styles = StyleSheet.create({
   filePicker: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#E5E7EB80",
     padding: 16,
     borderRadius: 10,
     borderCurve: "continuous",
@@ -139,13 +173,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   sendBtn: {
-    backgroundColor: Colors.reds[500],
     paddingVertical: 12,
     borderRadius: 99,
     alignItems: "center",
   },
   sendBtnText: {
-    color: "#FFF",
     fontSize: 16,
     fontWeight: "600",
   },

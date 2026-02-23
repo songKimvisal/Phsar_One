@@ -1,6 +1,5 @@
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { ThemedTextInput } from "@src/components/shared_components/ThemedTextInput";
-import { Colors } from "@src/constants/Colors";
 import { useSellDraft } from "@src/context/SellDraftContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { TFunction } from "i18next";
@@ -25,7 +24,7 @@ export default function DynamicPostFields({ fields }: DynamicPostFieldsProps) {
         {t(`fields.${field.key}`)}
       </ThemedText>
       {field.required && (
-        <ThemedText style={{ color: Colors.reds[500] }}>*</ThemedText>
+        <ThemedText style={{ color: themeColors.primary }}>*</ThemedText>
       )}
     </View>
   );
@@ -36,10 +35,17 @@ export default function DynamicPostFields({ fields }: DynamicPostFieldsProps) {
       <View style={styles.fieldSection}>
         <View style={styles.labelRow}>
           <ThemedText style={styles.inputLabel}>Title</ThemedText>
-          <ThemedText style={{ color: Colors.reds[500] }}>*</ThemedText>
+          <ThemedText style={{ color: themeColors.primary }}>*</ThemedText>
         </View>
         <ThemedTextInput
-          style={[styles.input, { borderColor: "#E5E7EB" }]}
+          style={[
+            styles.input,
+            {
+              borderColor: themeColors.border,
+              backgroundColor: themeColors.background,
+              color: themeColors.text,
+            },
+          ]}
           placeholder="e.g., Car for Sale"
           value={draft.title}
           onChangeText={(text) => updateDraft("title", text)}
@@ -52,14 +58,24 @@ export default function DynamicPostFields({ fields }: DynamicPostFieldsProps) {
           <ThemedText style={styles.inputLabel}>Description</ThemedText>
         </View>
         <ThemedTextInput
-          style={[styles.input, styles.textArea, { borderColor: "#E5E7EB" }]}
+          style={[
+            styles.input,
+            styles.textArea,
+            {
+              borderColor: themeColors.border,
+              backgroundColor: themeColors.background,
+              color: themeColors.text,
+            },
+          ]}
           placeholder="Describe your item ......"
           multiline
           numberOfLines={4}
           value={draft.description}
           onChangeText={(text) => updateDraft("description", text)}
         />
-        <ThemedText style={styles.hintText}>
+        <ThemedText
+          style={[styles.hintText, { color: themeColors.tabIconDefault }]}
+        >
           Add details about condition, features, or any other relevant
           information
         </ThemedText>
@@ -80,14 +96,28 @@ export default function DynamicPostFields({ fields }: DynamicPostFieldsProps) {
             {(fieldType === "text" || fieldType === "number") && (
               <View style={styles.inputWrapper}>
                 <ThemedTextInput
-                  style={[styles.input, { borderColor: "#E5E7EB" }]}
+                  style={[
+                    styles.input,
+                    {
+                      borderColor: themeColors.border,
+                      backgroundColor: themeColors.background,
+                      color: themeColors.text,
+                    },
+                  ]}
                   value={currentValue || ""}
                   onChangeText={(text) => updateDetail(field.key, text)}
                   keyboardType={fieldType === "number" ? "numeric" : "default"}
                   placeholder={field.key === "model" ? "Camry" : ""}
                 />
                 {field.key === "mileage" && (
-                  <ThemedText style={styles.unitText}>KM</ThemedText>
+                  <ThemedText
+                    style={[
+                      styles.unitText,
+                      { color: themeColors.tabIconDefault },
+                    ]}
+                  >
+                    KM
+                  </ThemedText>
                 )}
               </View>
             )}
@@ -104,14 +134,27 @@ export default function DynamicPostFields({ fields }: DynamicPostFieldsProps) {
                   return (
                     <TouchableOpacity
                       key={option}
-                      style={[styles.chip, isSelected && styles.chipSelected]}
+                      style={[
+                        styles.chip,
+                        {
+                          borderColor: themeColors.border,
+                          backgroundColor: themeColors.card,
+                        },
+                        isSelected && {
+                          borderColor: themeColors.primary,
+                          borderWidth: 2,
+                        },
+                      ]}
                       onPress={() => updateDetail(field.key, option)}
                       activeOpacity={0.7}
                     >
                       <ThemedText
                         style={[
                           styles.chipText,
-                          isSelected && styles.chipTextSelected,
+                          isSelected && {
+                            color: themeColors.primary,
+                            fontWeight: "700",
+                          },
                         ]}
                       >
                         {option}
@@ -141,7 +184,6 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#111827",
   },
   groupHeader: {
     fontSize: 20,
@@ -160,7 +202,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    backgroundColor: "#FFF",
     height: 44,
   },
   unitText: {
@@ -168,7 +209,6 @@ const styles = StyleSheet.create({
     right: 16,
     fontSize: 14,
     fontWeight: "600",
-    color: "#9CA3AF",
   },
   textArea: {
     height: 120,
@@ -176,7 +216,6 @@ const styles = StyleSheet.create({
   },
   hintText: {
     fontSize: 13,
-    color: "#6B7280",
     marginTop: 8,
     lineHeight: 18,
   },
@@ -192,23 +231,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
-    backgroundColor: "#FFF",
     minWidth: 90,
     alignItems: "center",
-  },
-  chipSelected: {
-    borderColor: Colors.reds[500],
-    backgroundColor: "#FFF",
-    borderWidth: 2,
   },
   chipText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#374151",
-  },
-  chipTextSelected: {
-    color: Colors.reds[500],
-    fontWeight: "700",
   },
 });

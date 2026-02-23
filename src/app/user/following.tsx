@@ -1,5 +1,4 @@
 import { ThemedText } from "@src/components/shared_components/ThemedText";
-import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { supabase } from "@src/lib/supabase";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -42,7 +41,6 @@ export default function FollowingScreen() {
 
       if (error) throw error;
 
-      // Extract the nested user data
       const extractedUsers = data.map((item: any) =>
         type === "followers" ? item.follower : item.following,
       );
@@ -70,18 +68,22 @@ export default function FollowingScreen() {
         </ThemedText>
       </View>
 
-      {/* Visual Badge from your UI reference */}
-      <View style={[styles.badge, { backgroundColor: Colors.reds[500] }]}>
+      <View style={[styles.badge, { backgroundColor: themeColors.primary }]}>
         <ThemedText style={styles.badgeText}>Following</ThemedText>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFF" }} edges={["top"]}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: themeColors.background }}
+      edges={["top"]}
+    >
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={styles.header}>
+      <View
+        style={[styles.header, { backgroundColor: themeColors.background }]}
+      >
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
@@ -91,11 +93,13 @@ export default function FollowingScreen() {
         <View style={{ width: 44 }} />
       </View>
 
-      <View style={[styles.content, { backgroundColor: "#F9FAFB" }]}>
+      <View
+        style={[styles.content, { backgroundColor: themeColors.background }]}
+      >
         {loading ? (
           <ActivityIndicator
             size="small"
-            color={Colors.reds[500]}
+            color={themeColors.primary}
             style={{ marginTop: 40 }}
           />
         ) : (
@@ -124,7 +128,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 8,
     paddingVertical: 12,
-    backgroundColor: "#FFF",
   },
   headerTitle: {
     fontSize: 18,

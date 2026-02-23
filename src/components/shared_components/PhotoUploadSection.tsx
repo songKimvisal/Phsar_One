@@ -1,5 +1,4 @@
 import { ThemedText } from "@src/components/shared_components/ThemedText";
-import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
 import * as ImagePicker from "expo-image-picker";
 import { ImagesIcon, PlusIcon } from "phosphor-react-native";
@@ -22,8 +21,6 @@ interface PhotoUploadSectionProps {
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-// Calculate square size for 3-column grid
-// Screen padding (16*2) + Card padding (16*2) + Gaps (10*2)
 const GRID_GAP = 10;
 const SQUARE_SIZE = (SCREEN_WIDTH - 64 - GRID_GAP * 2) / 3;
 
@@ -71,27 +68,41 @@ export default function PhotoUploadSection({
       </View>
 
       {photos.length === 0 ? (
-        /* Empty State: Large Dash Box */
         <TouchableOpacity
-          style={[styles.uploadBox, { borderColor: "#E5E7EB" }]}
+          style={[
+            styles.uploadBox,
+            {
+              borderColor: themeColors.border,
+              backgroundColor: themeColors.background,
+            },
+          ]}
           onPress={pickImage}
           activeOpacity={0.7}
         >
-          <ImagesIcon size={32} color={Colors.reds[500]} weight="regular" />
-          <ThemedText style={styles.uploadText}>Add images</ThemedText>
-          <ThemedText style={styles.uploadHint}>
+          <ImagesIcon size={32} color={themeColors.primary} weight="regular" />
+          <ThemedText
+            style={[styles.uploadText, { color: themeColors.primary }]}
+          >
+            Add images
+          </ThemedText>
+          <ThemedText
+            style={[styles.uploadHint, { color: themeColors.tabIconDefault }]}
+          >
             Pick a plan to add more media types
           </ThemedText>
         </TouchableOpacity>
       ) : (
-        /* Filled State: 3-Column Square Grid */
         <View style={styles.grid}>
           {photos.map((uri, index) => (
             <View
               key={index}
               style={[
                 styles.imageCard,
-                { width: SQUARE_SIZE, height: SQUARE_SIZE },
+                {
+                  width: SQUARE_SIZE,
+                  height: SQUARE_SIZE,
+                  backgroundColor: themeColors.secondaryBackground,
+                },
               ]}
             >
               <TouchableOpacity
@@ -120,13 +131,14 @@ export default function PhotoUploadSection({
                 {
                   width: SQUARE_SIZE,
                   height: SQUARE_SIZE,
-                  borderColor: "#E5E7EB",
+                  borderColor: themeColors.border,
+                  backgroundColor: themeColors.background,
                 },
               ]}
               onPress={pickImage}
               activeOpacity={0.7}
             >
-              <PlusIcon size={24} color={Colors.reds[500]} weight="bold" />
+              <PlusIcon size={24} color={themeColors.primary} weight="bold" />
             </TouchableOpacity>
           )}
         </View>
@@ -148,7 +160,10 @@ export default function PhotoUploadSection({
             />
           </View>
           <TouchableOpacity
-            style={styles.modalDelete}
+            style={[
+              styles.modalDelete,
+              { backgroundColor: themeColors.primary },
+            ]}
             onPress={deleteCurrentImage}
           >
             <ThemedText style={styles.modalDeleteText}>Delete</ThemedText>
@@ -191,17 +206,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FAFAFA",
     gap: 8,
   },
   uploadText: {
     fontSize: 16,
     fontWeight: "500",
-    color: Colors.reds[500],
   },
   uploadHint: {
     fontSize: 13,
-    color: "#6B7280",
     textAlign: "center",
     paddingHorizontal: 40,
   },
@@ -209,7 +221,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
     position: "relative",
-    backgroundColor: "#F3F4F6",
   },
   image: {
     width: "100%",
@@ -221,7 +232,6 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FAFAFA",
   },
   deleteBtn: {
     position: "absolute",
@@ -230,19 +240,19 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.5)", 
     justifyContent: "center",
     alignItems: "center",
   },
   deleteBtnText: {
-    color: "#FFF",
+    color: "#FFF", 
     fontSize: 14,
     fontWeight: "400",
     lineHeight: 16,
   },
   modalBg: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.95)",
+    backgroundColor: "rgba(0,0,0,0.95)", 
   },
   closeModal: {
     position: "absolute",
@@ -251,7 +261,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   closeModalText: {
-    color: "#FFF",
+    color: "#FFF", 
     fontSize: 32,
   },
   modalContent: {
@@ -265,13 +275,12 @@ const styles = StyleSheet.create({
   },
   modalDelete: {
     padding: 16,
-    backgroundColor: Colors.reds[500],
     margin: 20,
     borderRadius: 12,
     alignItems: "center",
   },
   modalDeleteText: {
-    color: "#FFF",
+    color: "#FFF", 
     fontSize: 16,
     fontWeight: "700",
   },

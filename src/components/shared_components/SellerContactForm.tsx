@@ -34,7 +34,7 @@ export default function SellerContactForm({}: SellerContactFormProps) {
             styles.input,
             {
               color: themeColors.text,
-              borderColor: "#E5E7EB",
+              borderColor: themeColors.border,
             },
           ]}
           value={draft.contact.sellerName}
@@ -61,7 +61,7 @@ export default function SellerContactForm({}: SellerContactFormProps) {
                   styles.phoneInput,
                   {
                     color: themeColors.text,
-                    borderColor: "#E5E7EB",
+                    borderColor: themeColors.border,
                   },
                 ]}
                 value={phone}
@@ -127,7 +127,7 @@ export default function SellerContactForm({}: SellerContactFormProps) {
             styles.input,
             {
               color: themeColors.text,
-              borderColor: "#E5E7EB",
+              borderColor: themeColors.border,
             },
           ]}
           value={draft.contact.email}

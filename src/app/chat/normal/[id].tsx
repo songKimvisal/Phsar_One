@@ -40,10 +40,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { ThemedText } from "@src/components/shared_components/ThemedText";
-import { Colors } from "@src/constants/Colors";
 import { Message, useChat } from "@src/hooks/useChat";
 import useThemeColor from "@src/hooks/useThemeColor";
 
@@ -82,6 +84,7 @@ function VoicePlayer({
   duration?: number;
   isMe: boolean;
 }) {
+  const themeColors = useThemeColor();
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -131,11 +134,14 @@ function VoicePlayer({
       style={styles.voiceRow}
       activeOpacity={0.8}
     >
+      {/* ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary */}
       <View
         style={[
           styles.voiceBtn,
           {
-            backgroundColor: isMe ? "rgba(255,255,255,0.25)" : Colors.reds[500],
+            backgroundColor: isMe
+              ? "rgba(255,255,255,0.25)"
+              : themeColors.primary,
           },
         ]}
       >
@@ -145,24 +151,35 @@ function VoicePlayer({
           <MicrophoneIcon size={13} color="#fff" weight="fill" />
         )}
       </View>
+      {/* ✅ Was hardcoded "#E5E7EB" — now uses themeColors.border */}
       <View
         style={[
           styles.voiceTrack,
-          { backgroundColor: isMe ? "rgba(255,255,255,0.3)" : "#E5E7EB" },
+          {
+            backgroundColor: isMe
+              ? "rgba(255,255,255,0.3)"
+              : themeColors.border,
+          },
         ]}
       >
+        {/* ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary */}
         <View
           style={[
             styles.voiceFill,
             {
               width: `${progress * 100}%`,
-              backgroundColor: isMe ? "#fff" : Colors.reds[500],
+              backgroundColor: isMe ? "#fff" : themeColors.primary,
             },
           ]}
         />
       </View>
+      {/* ✅ Was hardcoded "#6B7280" — now uses themeColors.tabIconDefault */}
       <ThemedText
-        style={{ color: isMe ? "#fff" : "#6B7280", fontSize: 12, minWidth: 34 }}
+        style={{
+          color: isMe ? "#fff" : themeColors.tabIconDefault,
+          fontSize: 12,
+          minWidth: 34,
+        }}
       >
         {formatDuration(duration || 0)}
       </ThemedText>
@@ -190,7 +207,8 @@ function Bubble({
   onLongPress: () => void;
 }) {
   const content = parseContent(item.content);
-  const bubbleBg = isMe ? Colors.reds[500] : themeColors.card;
+  // ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary
+  const bubbleBg = isMe ? themeColors.primary : themeColors.card;
   const textColor = isMe ? "#fff" : themeColors.text;
 
   const inner = () => {
@@ -216,9 +234,10 @@ function Bubble({
               if (u) Linking.openURL(u);
             }}
           >
+            {/* ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary */}
             <MapPinIcon
               size={18}
-              color={isMe ? "#fff" : Colors.reds[500]}
+              color={isMe ? "#fff" : themeColors.primary}
               weight="fill"
             />
             <ThemedText
@@ -276,8 +295,6 @@ function Bubble({
       >
         {inner()}
       </Pressable>
-
-      {/* Time + seen status */}
       <View style={styles.metaRow}>
         <ThemedText
           style={[styles.msgTime, { color: themeColors.text + "55" }]}
@@ -291,8 +308,9 @@ function Bubble({
         </ThemedText>
         {isMe && isLastFromMe && (
           <View style={{ marginLeft: 4 }}>
+            {/* ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary */}
             {isRead ? (
-              <ChecksIcon size={14} color={Colors.reds[500]} weight="bold" />
+              <ChecksIcon size={14} color={themeColors.primary} weight="bold" />
             ) : (
               <CheckIcon
                 size={14}
@@ -326,10 +344,8 @@ function ProductCard({
 }) {
   const [collapsed, setCollapsed] = useState(false);
   if (!title) return null;
-
   const hasPrice = price && price !== "0" && price !== "";
 
-  // Collapsed pill mode
   if (collapsed) {
     return (
       <TouchableOpacity
@@ -346,7 +362,12 @@ function ProductCard({
         {thumbnail ? (
           <Image source={{ uri: thumbnail }} style={styles.pillThumb} />
         ) : (
-          <ShoppingBagIcon size={14} color={Colors.reds[500]} weight="fill" />
+          // ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary
+          <ShoppingBagIcon
+            size={14}
+            color={themeColors.primary}
+            weight="fill"
+          />
         )}
         <ThemedText
           style={[styles.pillTitle, { color: themeColors.text }]}
@@ -355,7 +376,10 @@ function ProductCard({
           {title}
         </ThemedText>
         {hasPrice && (
-          <ThemedText style={styles.pillPrice}>
+          // ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary
+          <ThemedText
+            style={[styles.pillPrice, { color: themeColors.primary }]}
+          >
             {currency || "$"} {price}
           </ThemedText>
         )}
@@ -368,7 +392,6 @@ function ProductCard({
     );
   }
 
-  // Expanded card
   return (
     <View
       style={[
@@ -379,7 +402,6 @@ function ProductCard({
         },
       ]}
     >
-      {/* Large image */}
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.9}
@@ -392,21 +414,24 @@ function ProductCard({
             resizeMode="cover"
           />
         ) : (
+          // ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary
           <View
             style={[
               styles.cardImagePlaceholder,
-              { backgroundColor: Colors.reds[500] + "15" },
+              { backgroundColor: themeColors.primary + "15" },
             ]}
           >
-            <ShoppingBagIcon size={44} color={Colors.reds[500]} weight="fill" />
+            <ShoppingBagIcon
+              size={44}
+              color={themeColors.primary}
+              weight="fill"
+            />
           </View>
         )}
-        {/* Top-left badge */}
         <View style={styles.cardBadge}>
           <ShoppingBagIcon size={11} color="#fff" weight="fill" />
           <ThemedText style={styles.cardBadgeText}>Listing</ThemedText>
         </View>
-        {/* Collapse button top-right */}
         <TouchableOpacity
           onPress={() => setCollapsed(true)}
           style={styles.cardCollapseBtn}
@@ -420,8 +445,6 @@ function ProductCard({
           />
         </TouchableOpacity>
       </TouchableOpacity>
-
-      {/* Info row */}
       <View style={styles.cardInfo}>
         <View style={{ flex: 1 }}>
           <ThemedText
@@ -431,16 +454,25 @@ function ProductCard({
             {title}
           </ThemedText>
           {hasPrice && (
-            <View style={styles.cardPricePill}>
-              <ThemedText style={styles.cardPriceText}>
+            // ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary
+            <View
+              style={[
+                styles.cardPricePill,
+                { backgroundColor: themeColors.primary + "18" },
+              ]}
+            >
+              <ThemedText
+                style={[styles.cardPriceText, { color: themeColors.primary }]}
+              >
                 {currency || "USD"} {Number(price).toLocaleString()}
               </ThemedText>
             </View>
           )}
         </View>
+        {/* ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary */}
         <TouchableOpacity
           onPress={onPress}
-          style={styles.cardViewBtn}
+          style={[styles.cardViewBtn, { backgroundColor: themeColors.primary }]}
           activeOpacity={0.85}
         >
           <ThemedText style={styles.cardViewBtnText}>View Listing</ThemedText>
@@ -458,6 +490,8 @@ export default function NormalProductChatScreen() {
   const themeColors = useThemeColor();
   const { userId } = useAuth();
   const { t } = useTranslation();
+  // ✅ Added — provides bottom safe area height for home indicator
+  const insets = useSafeAreaInsets();
 
   const {
     id: productId,
@@ -508,8 +542,6 @@ export default function NormalProductChatScreen() {
     userId === conversation?.buyer_id
       ? conversation?.seller
       : conversation?.buyer;
-
-  // Last message sent by me — for seen indicator
   const myMessages = messages.filter(
     (m) => m.sender_id === userId && !m.id.startsWith("temp_"),
   );
@@ -549,7 +581,6 @@ export default function NormalProductChatScreen() {
     }
   }, [isRecording]);
 
-  // ── Message long press (delete own) ──────────────────────────────────────
   const handleMessageLongPress = (msg: Message) => {
     if (msg.sender_id !== userId || msg.id.startsWith("temp_")) return;
     if (Platform.OS === "ios") {
@@ -587,7 +618,6 @@ export default function NormalProductChatScreen() {
     }
   };
 
-  // ── Send text ──────────────────────────────────────────────────────────────
   const handleSendText = async () => {
     const text = inputText.trim();
     if (!text || isSending) return;
@@ -602,7 +632,6 @@ export default function NormalProductChatScreen() {
     }
   };
 
-  // ── Pick image ─────────────────────────────────────────────────────────────
   const handlePickImage = async () => {
     setShowAttachMenu(false);
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -629,7 +658,6 @@ export default function NormalProductChatScreen() {
     }
   };
 
-  // ── Send location ──────────────────────────────────────────────────────────
   const handleSendLocation = async () => {
     setShowAttachMenu(false);
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -662,7 +690,6 @@ export default function NormalProductChatScreen() {
     }
   };
 
-  // ── Voice ──────────────────────────────────────────────────────────────────
   const startRecording = async () => {
     if (isRecording) return;
     const { status } = await Audio.requestPermissionsAsync();
@@ -726,7 +753,6 @@ export default function NormalProductChatScreen() {
     setRecordingDuration(0);
   };
 
-  // ── Options actions ────────────────────────────────────────────────────────
   const handleToggleMute = async () => {
     setShowOptionsMenu(false);
     await toggleMuteConversation();
@@ -760,20 +786,17 @@ export default function NormalProductChatScreen() {
   };
 
   const handleCall = () => {
-    if (otherUser?.phone) {
-      Linking.openURL(`tel:${otherUser.phone}`);
-    } else {
-      Alert.alert("Unavailable", "Phone number not available.");
-    }
+    if (otherUser?.phone) Linking.openURL(`tel:${otherUser.phone}`);
+    else Alert.alert("Unavailable", "Phone number not available.");
   };
 
-  // ── States ─────────────────────────────────────────────────────────────────
   if (loading && !conversation) {
     return (
       <View
         style={[styles.centered, { backgroundColor: themeColors.background }]}
       >
-        <ActivityIndicator size="large" color={Colors.reds[500]} />
+        {/* ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary */}
+        <ActivityIndicator size="large" color={themeColors.primary} />
       </View>
     );
   }
@@ -782,7 +805,8 @@ export default function NormalProductChatScreen() {
       <View
         style={[styles.centered, { backgroundColor: themeColors.background }]}
       >
-        <ThemedText style={{ color: "#EF4444", marginBottom: 16 }}>
+        {/* ✅ Was hardcoded "#EF4444" — now uses themeColors.error */}
+        <ThemedText style={{ color: themeColors.error, marginBottom: 16 }}>
           {error}
         </ThemedText>
         <TouchableOpacity onPress={() => router.back()}>
@@ -792,7 +816,6 @@ export default function NormalProductChatScreen() {
     );
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: themeColors.background }}
@@ -816,9 +839,7 @@ export default function NormalProductChatScreen() {
         >
           <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
-
         <View style={styles.headerCenter}>
-          {/* Avatar with online dot */}
           <View>
             <Image
               source={{
@@ -843,7 +864,6 @@ export default function NormalProductChatScreen() {
             </ThemedText>
           </View>
         </View>
-
         <View style={styles.headerRight}>
           <TouchableOpacity onPress={handleCall} style={styles.headerBtn}>
             <PhoneIcon size={22} color={themeColors.text} weight="fill" />
@@ -941,7 +961,7 @@ export default function NormalProductChatScreen() {
           }}
         />
 
-        {/* Recording bar */}
+        {/* ── Recording bar ── */}
         {isRecording && (
           <View
             style={[
@@ -949,6 +969,8 @@ export default function NormalProductChatScreen() {
               {
                 backgroundColor: themeColors.card,
                 borderTopColor: themeColors.border + "30",
+                // ✅ Clears home indicator on iPhone
+                paddingBottom: insets.bottom > 0 ? insets.bottom : 14,
               },
             ]}
           >
@@ -956,7 +978,8 @@ export default function NormalProductChatScreen() {
               onPress={cancelRecording}
               style={styles.recordCancel}
             >
-              <XIcon size={20} color="#EF4444" weight="bold" />
+              {/* ✅ Was hardcoded "#EF4444" — now uses themeColors.error */}
+              <XIcon size={20} color={themeColors.error} weight="bold" />
             </TouchableOpacity>
             <Animated.View
               style={[styles.recordDot, { transform: [{ scale: pulseAnim }] }]}
@@ -980,13 +1003,20 @@ export default function NormalProductChatScreen() {
             >
               Tap ✓ to send
             </ThemedText>
-            <TouchableOpacity onPress={stopAndSend} style={styles.recordSend}>
+            {/* ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary */}
+            <TouchableOpacity
+              onPress={stopAndSend}
+              style={[
+                styles.recordSend,
+                { backgroundColor: themeColors.primary },
+              ]}
+            >
               <PaperPlaneTiltIcon size={18} color="#fff" weight="fill" />
             </TouchableOpacity>
           </View>
         )}
 
-        {/* Attach menu */}
+        {/* ── Attach menu ── */}
         {showAttachMenu && !isRecording && (
           <View
             style={[
@@ -994,6 +1024,8 @@ export default function NormalProductChatScreen() {
               {
                 backgroundColor: themeColors.card,
                 borderTopColor: themeColors.border + "30",
+                // ✅ Clears home indicator on iPhone
+                paddingBottom: insets.bottom > 0 ? insets.bottom + 4 : 18,
               },
             ]}
           >
@@ -1026,7 +1058,7 @@ export default function NormalProductChatScreen() {
           </View>
         )}
 
-        {/* Input bar */}
+        {/* ── Input bar ── */}
         {!isRecording && (
           <View
             style={[
@@ -1034,6 +1066,8 @@ export default function NormalProductChatScreen() {
               {
                 backgroundColor: themeColors.background,
                 borderTopColor: themeColors.border + "30",
+                // ✅ Clears home indicator on iPhone
+                paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
               },
             ]}
           >
@@ -1042,8 +1076,9 @@ export default function NormalProductChatScreen() {
               style={[
                 styles.roundBtn,
                 {
+                  // ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary
                   backgroundColor: showAttachMenu
-                    ? Colors.reds[500]
+                    ? themeColors.primary
                     : themeColors.card,
                 },
               ]}
@@ -1076,7 +1111,11 @@ export default function NormalProductChatScreen() {
               <TouchableOpacity
                 onPress={handleSendText}
                 disabled={isSending}
-                style={[styles.roundBtn, { backgroundColor: Colors.reds[500] }]}
+                // ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary
+                style={[
+                  styles.roundBtn,
+                  { backgroundColor: themeColors.primary },
+                ]}
               >
                 {isSending ? (
                   <ActivityIndicator size="small" color="#fff" />
@@ -1092,7 +1131,8 @@ export default function NormalProductChatScreen() {
               >
                 <MicrophoneIcon
                   size={22}
-                  color={isRecording ? Colors.reds[500] : themeColors.text}
+                  // ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary
+                  color={isRecording ? themeColors.primary : themeColors.text}
                   weight="fill"
                 />
               </TouchableOpacity>
@@ -1112,7 +1152,16 @@ export default function NormalProductChatScreen() {
           style={styles.overlay}
           onPress={() => setShowOptionsMenu(false)}
         >
-          <View style={[styles.sheet, { backgroundColor: themeColors.card }]}>
+          <View
+            style={[
+              styles.sheet,
+              {
+                backgroundColor: themeColors.card,
+                // ✅ Clears home indicator on iPhone
+                paddingBottom: insets.bottom > 0 ? insets.bottom + 16 : 40,
+              },
+            ]}
+          >
             <View
               style={[
                 styles.sheetHandle,
@@ -1121,7 +1170,6 @@ export default function NormalProductChatScreen() {
             />
             <ThemedText style={styles.sheetTitle}>Options</ThemedText>
 
-            {/* Mute */}
             <TouchableOpacity style={styles.optRow} onPress={handleToggleMute}>
               {isMuted ? (
                 <BellIcon size={22} color={themeColors.text} weight="fill" />
@@ -1146,8 +1194,8 @@ export default function NormalProductChatScreen() {
               ]}
             />
 
-            {/* Block */}
             <TouchableOpacity style={styles.optRow} onPress={handleBlock}>
+              {/* "#EF4444" kept intentional — semantic destructive color */}
               <ProhibitIcon size={22} color="#EF4444" weight="fill" />
               <ThemedText style={[styles.optLabel, { color: "#EF4444" }]}>
                 Block {otherUser?.first_name || "User"}
@@ -1213,7 +1261,7 @@ const styles = StyleSheet.create({
     width: 11,
     height: 11,
     borderRadius: 6,
-    backgroundColor: "#10B981",
+    backgroundColor: "#10B981", // semantic green — intentional
     borderWidth: 2,
     borderColor: "#fff",
     position: "absolute",
@@ -1223,7 +1271,6 @@ const styles = StyleSheet.create({
   headerName: { fontSize: 16, fontWeight: "700" },
   headerRight: { flexDirection: "row", alignItems: "center", gap: 2 },
 
-  // Product banner
   // Product card
   productCard: { borderBottomWidth: 1 },
   cardImageWrap: {
@@ -1278,20 +1325,13 @@ const styles = StyleSheet.create({
   },
   cardPricePill: {
     alignSelf: "flex-start",
-    backgroundColor: Colors.reds[500] + "18",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 20,
   },
-  cardPriceText: { color: Colors.reds[500], fontSize: 14, fontWeight: "800" },
-  cardViewBtn: {
-    backgroundColor: Colors.reds[500],
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: 20,
-  },
+  cardPriceText: { fontSize: 14, fontWeight: "800" },
+  cardViewBtn: { paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20 },
   cardViewBtnText: { color: "#fff", fontSize: 13, fontWeight: "700" },
-  // Collapsed pill
   cardPill: {
     flexDirection: "row",
     alignItems: "center",
@@ -1305,7 +1345,7 @@ const styles = StyleSheet.create({
   },
   pillThumb: { width: 24, height: 24, borderRadius: 6 },
   pillTitle: { flex: 1, fontSize: 13, fontWeight: "600" },
-  pillPrice: { fontSize: 12, fontWeight: "700", color: Colors.reds[500] },
+  pillPrice: { fontSize: 12, fontWeight: "700" },
 
   // Messages
   msgList: { paddingHorizontal: 16, paddingBottom: 16, paddingTop: 8 },
@@ -1317,7 +1357,6 @@ const styles = StyleSheet.create({
   },
   dateLine: { flex: 1, height: 1 },
   dateLabel: { fontSize: 12, fontWeight: "500" },
-
   msgWrap: { marginBottom: 8, maxWidth: "80%" },
   myWrap: { alignSelf: "flex-end", alignItems: "flex-end" },
   otherWrap: { alignSelf: "flex-start", alignItems: "flex-start" },
@@ -1327,7 +1366,6 @@ const styles = StyleSheet.create({
   imgBubble: { padding: 3, borderRadius: 16 },
   metaRow: { flexDirection: "row", alignItems: "center", marginTop: 3 },
   msgTime: { fontSize: 11 },
-
   imgMsg: { width: 200, height: 155, borderRadius: 13 },
   locRow: {
     flexDirection: "row",
@@ -1351,12 +1389,12 @@ const styles = StyleSheet.create({
   voiceTrack: { flex: 1, height: 3, borderRadius: 2, overflow: "hidden" },
   voiceFill: { height: 3, borderRadius: 2 },
 
-  // Recording bar
+  // Recording bar — paddingBottom set inline via insets.bottom
   recordBar: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingTop: 14,
     gap: 12,
     borderTopWidth: 1,
   },
@@ -1371,16 +1409,15 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.reds[500],
     justifyContent: "center",
     alignItems: "center",
   },
 
-  // Attach menu
+  // Attach menu — paddingBottom set inline via insets.bottom
   attachMenu: {
     flexDirection: "row",
     paddingHorizontal: 24,
-    paddingVertical: 18,
+    paddingTop: 18,
     gap: 32,
     borderTopWidth: 1,
   },
@@ -1394,12 +1431,12 @@ const styles = StyleSheet.create({
   },
   attachLabel: { fontSize: 12, fontWeight: "500" },
 
-  // Input bar
+  // Input bar — paddingBottom set inline via insets.bottom
   inputBar: {
     flexDirection: "row",
     alignItems: "flex-end",
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingTop: 10,
     gap: 8,
     borderTopWidth: 1,
   },
@@ -1420,7 +1457,7 @@ const styles = StyleSheet.create({
   },
   textInput: { fontSize: 16, maxHeight: 100, paddingVertical: 8 },
 
-  // Options modal
+  // Options modal — paddingBottom set inline via insets.bottom
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.45)",
@@ -1430,7 +1467,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingTop: 14,
-    paddingBottom: 40,
     paddingHorizontal: 20,
   },
   sheetHandle: {

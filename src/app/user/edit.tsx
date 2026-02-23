@@ -1,7 +1,6 @@
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { ThemedTextInput } from "@src/components/shared_components/ThemedTextInput";
-import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { decode } from "base64-arraybuffer";
@@ -102,7 +101,7 @@ export default function EditProfileScreen() {
       });
 
       const { error: uploadError } = await supabase.storage
-        .from("avatars") // Ensure you have an 'avatars' bucket or change to your bucket
+        .from("avatars")
         .upload(fileName, decode(base64), {
           contentType: "image/jpeg",
           upsert: true,
@@ -158,16 +157,21 @@ export default function EditProfileScreen() {
       <View
         style={[styles.center, { backgroundColor: themeColors.background }]}
       >
-        <ActivityIndicator size="small" color={Colors.reds[500]} />
+        <ActivityIndicator size="small" color={themeColors.primary} />
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFF" }} edges={["top"]}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: themeColors.background }}
+      edges={["top"]}
+    >
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={styles.header}>
+      <View
+        style={[styles.header, { backgroundColor: themeColors.background }]}
+      >
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
@@ -178,16 +182,20 @@ export default function EditProfileScreen() {
           style={styles.saveBtn}
         >
           {saving ? (
-            <ActivityIndicator size="small" color={Colors.reds[500]} />
+            <ActivityIndicator size="small" color={themeColors.primary} />
           ) : (
-            <ThemedText style={styles.saveText}>Save</ThemedText>
+            <ThemedText
+              style={[styles.saveText, { color: themeColors.primary }]}
+            >
+              Save
+            </ThemedText>
           )}
         </TouchableOpacity>
       </View>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1, backgroundColor: "#F9FAFB" }}
+        style={{ flex: 1, backgroundColor: themeColors.background }}
       >
         <ScrollView contentContainerStyle={styles.content}>
           {/* Avatar Section */}
@@ -199,21 +207,39 @@ export default function EditProfileScreen() {
                 }}
                 style={styles.avatar}
               />
-              <View style={styles.cameraIcon}>
+              <View
+                style={[
+                  styles.cameraIcon,
+                  {
+                    backgroundColor: themeColors.primary,
+                    borderColor: themeColors.background,
+                  },
+                ]}
+              >
                 <CameraIcon size={20} color="#FFF" weight="fill" />
               </View>
             </TouchableOpacity>
-            <ThemedText style={styles.changePhotoText}>
+            <ThemedText
+              style={[styles.changePhotoText, { color: themeColors.primary }]}
+            >
               Change Profile Photo
             </ThemedText>
           </View>
 
           {/* Form Fields */}
-          <View style={styles.formCard}>
+          <View
+            style={[styles.formCard, { backgroundColor: themeColors.card }]}
+          >
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>First Name</ThemedText>
               <ThemedTextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    borderColor: themeColors.border,
+                    backgroundColor: themeColors.background,
+                  },
+                ]}
                 value={formData.first_name}
                 onChangeText={(val) =>
                   setFormData((prev) => ({ ...prev, first_name: val }))
@@ -225,7 +251,13 @@ export default function EditProfileScreen() {
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Last Name</ThemedText>
               <ThemedTextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    borderColor: themeColors.border,
+                    backgroundColor: themeColors.background,
+                  },
+                ]}
                 value={formData.last_name}
                 onChangeText={(val) =>
                   setFormData((prev) => ({ ...prev, last_name: val }))
@@ -237,7 +269,13 @@ export default function EditProfileScreen() {
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Phone Number</ThemedText>
               <ThemedTextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    borderColor: themeColors.border,
+                    backgroundColor: themeColors.background,
+                  },
+                ]}
                 value={formData.phone}
                 onChangeText={(val) =>
                   setFormData((prev) => ({ ...prev, phone: val }))
@@ -250,7 +288,14 @@ export default function EditProfileScreen() {
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Bio</ThemedText>
               <ThemedTextInput
-                style={[styles.input, styles.bioInput]}
+                style={[
+                  styles.input,
+                  styles.bioInput,
+                  {
+                    borderColor: themeColors.border,
+                    backgroundColor: themeColors.background,
+                  },
+                ]}
                 value={formData.bio}
                 onChangeText={(val) =>
                   setFormData((prev) => ({ ...prev, bio: val }))
@@ -274,7 +319,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 8,
     paddingVertical: 12,
-    backgroundColor: "#FFF",
   },
   headerTitle: {
     fontSize: 18,
@@ -288,7 +332,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   saveText: {
-    color: Colors.reds[500],
     fontWeight: "700",
     fontSize: 16,
   },
@@ -316,23 +359,19 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     right: 0,
-    backgroundColor: Colors.reds[500],
     width: 32,
     height: 32,
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "#FFF",
   },
   changePhotoText: {
     marginTop: 12,
-    color: Colors.reds[500],
     fontWeight: "600",
     fontSize: 14,
   },
   formCard: {
-    backgroundColor: "#FFF",
     borderRadius: 16,
     padding: 16,
     gap: 20,
@@ -344,15 +383,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
   },
   input: {
     height: 48,
     borderRadius: 10,
     paddingHorizontal: 12,
     borderWidth: 0.5,
-    borderColor: "#E5E7EB",
-    backgroundColor: "#FAFAFA",
   },
   bioInput: {
     height: 100,

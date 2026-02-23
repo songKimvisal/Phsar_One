@@ -1,6 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
-import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { Href, Stack, useFocusEffect, useRouter } from "expo-router";
@@ -38,7 +37,6 @@ export default function BookmarksScreen() {
       const token = await getToken();
       const authSupabase = createClerkSupabaseClient(token);
 
-      // Join favorites with products and users (seller info)
       const { data, error } = await authSupabase
         .from("favorites")
         .select(
@@ -56,10 +54,9 @@ export default function BookmarksScreen() {
 
       if (error) throw error;
 
-      // Extract only the product data
       const extractedProducts = data
         ?.map((item: any) => item.product)
-        .filter((p: any) => p !== null); // Filter out any deleted products
+        .filter((p: any) => p !== null);
 
       setBookmarks(extractedProducts || []);
     } catch (error) {
@@ -90,7 +87,10 @@ export default function BookmarksScreen() {
             </ThemedText>
           </View>
 
-          <ThemedText style={[styles.listPrice, { color: Colors.reds[500] }]}>
+          {/* ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary */}
+          <ThemedText
+            style={[styles.listPrice, { color: themeColors.primary }]}
+          >
             {item.metadata?.currency === "KHR" ? "៛" : "$"}
             {item.price}
           </ThemedText>
@@ -100,10 +100,17 @@ export default function BookmarksScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFF" }} edges={["top"]}>
+    // ✅ Was hardcoded "#FFF" — now uses themeColors.background
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: themeColors.background }}
+      edges={["top"]}
+    >
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={styles.header}>
+      {/* ✅ Was hardcoded backgroundColor "#FFF" in StyleSheet — now inline via themeColors */}
+      <View
+        style={[styles.header, { backgroundColor: themeColors.background }]}
+      >
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
@@ -111,11 +118,13 @@ export default function BookmarksScreen() {
         <View style={{ width: 44 }} />
       </View>
 
-      <View style={[styles.content, { backgroundColor: "#F9FAFB" }]}>
+      <View
+        style={[styles.content, { backgroundColor: themeColors.background }]}
+      >
         {loading ? (
           <ActivityIndicator
             size="small"
-            color={Colors.reds[500]}
+            color={themeColors.primary}
             style={{ marginTop: 40 }}
           />
         ) : (
@@ -153,7 +162,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 8,
     paddingVertical: 12,
-    backgroundColor: "#FFF",
   },
   headerTitle: {
     fontSize: 18,

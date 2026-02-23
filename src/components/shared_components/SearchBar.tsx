@@ -1,5 +1,4 @@
 import { ThemedTextInput } from "@src/components/shared_components/ThemedTextInput";
-import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { MagnifyingGlassIcon } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
@@ -23,8 +22,14 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
         onChangeText={onSearch}
       />
 
-      <TouchableOpacity style={styles.iconContainer}>
-        <MagnifyingGlassIcon size={24} weight="regular" color="white" />
+      <TouchableOpacity
+        style={[styles.iconContainer, { backgroundColor: themeColors.primary }]}
+      >
+        <MagnifyingGlassIcon
+          size={24}
+          weight="regular"
+          color={themeColors.primaryButtonText}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -55,7 +60,6 @@ const styles = StyleSheet.create({
     height: 38,
     width: 52,
     borderRadius: 25,
-    backgroundColor: Colors.reds[500],
     alignItems: "center",
     justifyContent: "center",
   },

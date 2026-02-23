@@ -8,7 +8,6 @@ import {
   Modal,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -213,8 +212,21 @@ export default function LocationFilterModal({
         </ScrollView>
 
         <View style={[styles.footer, { borderTopColor: themeColors.border }]}>
-          <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
-            <Text style={styles.applyButtonText}>{t("common.apply")}</Text>
+          <TouchableOpacity
+            style={[
+              styles.applyButton,
+              { backgroundColor: themeColors.primary },
+            ]}
+            onPress={handleApply}
+          >
+            <ThemedText
+              style={[
+                styles.applyButtonText,
+                { color: themeColors.primaryButtonText },
+              ]}
+            >
+              {t("common.apply")}
+            </ThemedText>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -281,14 +293,12 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
   },
   applyButton: {
-    backgroundColor: "#007AFF", // Example tint color
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
   },
   applyButtonText: {
-    color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
   },
