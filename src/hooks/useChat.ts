@@ -371,16 +371,26 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
     if (!userId || !conversation?.id) return;
     try {
       const token = await getToken({});
-      const authSupabase = createClerkSupabaseClient(token);
       const isBuyer = userId === conversation.buyer_id;
       const currentMuteStatus = isBuyer ? conversation.buyer_muted : conversation.seller_muted;
-      const updatePayload = isBuyer ? { buyer_muted: !currentMuteStatus } : { seller_muted: !currentMuteStatus };
-      const { data, error } = await authSupabase
-        .from('conversations').update(updatePayload).eq('id', conversation.id)
-        .select('*, buyer:users!conversations_buyer_id_fkey(*), seller:users!conversations_seller_id_fkey(*), product:products(id, title, images, metadata), trade:trades(*)')
-        .single();
-      if (error) throw error;
-      setConversation(data as Conversation);
+      const newMuted = !currentMuteStatus;
+
+      // Call edge function to toggle mute (server will derive requester from token)
+      const url = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/chat-controls/mute/${conversation.id}`;
+      const resp = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : '',
+        },
+        body: JSON.stringify({ muted: newMuted }),
+      });
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(`Mute function failed: ${resp.status} ${text}`);
+      }
+      const json = await resp.json();
+      if (json?.conversation) setConversation(json.conversation as Conversation);
     } catch (err: any) {
       console.error("Error toggling mute:", err);
     }
@@ -391,13 +401,23 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
     if (!userId) throw new Error("Not authenticated.");
     if (userId === userToBlockId) throw new Error("Cannot block yourself.");
     const token = await getToken({});
-    const authSupabase = createClerkSupabaseClient(token);
 
-    // Insert into blocked_users table
-    const { error: blockError } = await authSupabase
-      .from('blocked_users')
-      .upsert({ blocker_id: userId, blocked_id: userToBlockId }, { onConflict: 'blocker_id,blocked_id' });
-    if (blockError) throw blockError;
+    // Call edge function to block user (server derives requester from token)
+    const url = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/chat-controls/block`;
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : '',
+      },
+      body: JSON.stringify({ blocked_id: userToBlockId }),
+    });
+    if (!resp.ok) {
+      const text = await resp.text();
+      throw new Error(`Block function failed: ${resp.status} ${text}`);
+    }
+    const json = await resp.json();
+    return json;
   };
 
   return {

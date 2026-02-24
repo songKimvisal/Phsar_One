@@ -1,7 +1,7 @@
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Modal, Pressable, TouchableOpacity, View } from "react-native";
+import { Alert, Modal, Pressable, TouchableOpacity, View } from "react-native";
 
 export default function ChatOptionsSheet({
   visible,
@@ -10,6 +10,7 @@ export default function ChatOptionsSheet({
   onBlock,
   themeColors,
   isMuted,
+  otherUserName,
 }: any) {
   const { t } = useTranslation();
 
@@ -24,6 +25,30 @@ export default function ChatOptionsSheet({
   };
 
   const handleBlockPress = async () => {
+    // Ask for confirmation inside the sheet so we can await the full flow
+    const confirmed: boolean = await new Promise((resolve) => {
+      Alert.alert(
+        t("chat.block_user_title"),
+        t("chat.block_user_confirmation", {
+          userName: otherUserName || "this user",
+        }),
+        [
+          {
+            text: t("common.cancel"),
+            style: "cancel",
+            onPress: () => resolve(false),
+          },
+          {
+            text: t("chat.block"),
+            style: "destructive",
+            onPress: () => resolve(true),
+          },
+        ],
+      );
+    });
+
+    if (!confirmed) return;
+
     try {
       if (onBlock) await onBlock();
     } catch (e) {

@@ -17,7 +17,7 @@ import {
   PlusIcon,
   XIcon,
 } from "phosphor-react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActionSheetIOS,
@@ -44,7 +44,6 @@ import { Colors } from "@src/constants/Colors";
 import { Message, useChat } from "@src/hooks/useChat";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { formatDuration, parseContent } from "@src/utils/chatUtils";
-
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
@@ -117,13 +116,34 @@ export default function TradeProductChatScreen() {
     if (conversation?.id && messages.length > 0) markMessagesAsRead();
   }, [conversation?.id, messages.length]);
 
-  useEffect(() => {
-    if (messages.length > 0)
-      setTimeout(
-        () => flatListRef.current?.scrollToEnd({ animated: true }),
-        80,
-      );
+  // Helper to scroll to last message
+  const scrollToLatest = useCallback(() => {
+    if (messages.length > 0) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToIndex({
+          index: messages.length - 1,
+          animated: false,
+          viewPosition: 1,
+        });
+      }, 50);
+    }
   }, [messages.length]);
+
+  // Handle scroll to index failures by falling back to scrolling to end
+  const handleScrollIndexFailed = useCallback(() => {
+    flatListRef.current?.scrollToEnd({ animated: false });
+  }, []);
+
+  useEffect(() => {
+    scrollToLatest();
+  }, [messages.length, scrollToLatest]);
+
+  // Scroll to bottom on initial load and conversation change
+  useEffect(() => {
+    if (conversation?.id && messages.length > 0 && !loading) {
+      scrollToLatest();
+    }
+  }, [conversation?.id, loading, scrollToLatest]);
 
   useEffect(() => {
     if (isRecording) {
@@ -427,10 +447,12 @@ export default function TradeProductChatScreen() {
           data={messages}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.msgList}
-          onContentSizeChange={() =>
-            flatListRef.current?.scrollToEnd({ animated: false })
-          }
-          onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
+          getItemLayout={(_, index) => ({
+            length: 80,
+            offset: 80 * index,
+            index,
+          })}
+          onScrollToIndexFailed={handleScrollIndexFailed}
           keyboardShouldPersistTaps="handled"
           ListHeaderComponent={
             <View style={styles.dateSep}>
@@ -620,6 +642,7 @@ export default function TradeProductChatScreen() {
         onBlock={handleBlock}
         isMuted={isMuted}
         themeColors={themeColors}
+        otherUserName={otherUser?.first_name || "User"}
       />
     </SafeAreaView>
   );
