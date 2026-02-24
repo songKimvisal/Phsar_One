@@ -16,7 +16,7 @@ import {
   PlusIcon,
   XIcon,
 } from "phosphor-react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActionSheetIOS,
@@ -25,7 +25,7 @@ import {
   Animated,
   FlatList,
   Image,
-  KeyboardAvoidingView,
+  Keyboard,
   Linking,
   Platform,
   Pressable,
@@ -48,8 +48,6 @@ import { Message, useChat } from "@src/hooks/useChat";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { formatDuration, parseContent } from "@src/utils/chatUtils";
 
-// ─── Main Screen (initialised below) ──────────────────────────────────────────
-
 export default function NormalProductChatScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
@@ -57,9 +55,7 @@ export default function NormalProductChatScreen() {
   const { userId } = useAuth();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-
   const [viewingImage, setViewingImage] = useState<string | null>(null);
-
   const {
     id: productId,
     sellerId,
@@ -71,7 +67,6 @@ export default function NormalProductChatScreen() {
     productPrice,
     productCurrency,
   } = params as any;
-
   const {
     conversation,
     messages,
@@ -89,7 +84,6 @@ export default function NormalProductChatScreen() {
     sellerId: sellerId as string,
     conversationId: initialConversationId as string,
   });
-
   const flatListRef = useRef<FlatList<Message>>(null);
   const [inputText, setInputText] = useState("");
   const [showAttachMenu, setShowAttachMenu] = useState(false);
@@ -100,7 +94,8 @@ export default function NormalProductChatScreen() {
   const [recordingDuration, setRecordingDuration] = useState(0);
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
-
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const hasScrolledOnMount = useRef(false);
   const isMuted =
     userId === conversation?.buyer_id
       ? conversation?.buyer_muted
@@ -114,18 +109,70 @@ export default function NormalProductChatScreen() {
   );
   const lastMyMsg = myMessages[myMessages.length - 1];
 
+  // ─── Scroll helper ─────────────────────────────────────────────────────────
+  const scrollToBottom = useCallback((animated = true) => {
+    requestAnimationFrame(() => {
+      flatListRef.current?.scrollToEnd({ animated });
+    });
+  }, []);
+
+  // ─── Mark as read ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (conversation?.id && messages.length > 0) markMessagesAsRead();
   }, [conversation?.id, messages.length]);
 
-  useEffect(() => {
-    if (messages.length > 0)
-      setTimeout(
-        () => flatListRef.current?.scrollToEnd({ animated: true }),
-        80,
-      );
+  // Helper to scroll to last message
+  const scrollToLatest = useCallback(() => {
+    if (messages.length > 0) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToIndex({
+          index: messages.length - 1,
+          animated: false,
+          viewPosition: 1,
+        });
+      }, 50);
+    }
   }, [messages.length]);
 
+  // Handle scroll to index failures by falling back to scrolling to end
+  const handleScrollIndexFailed = useCallback(() => {
+    flatListRef.current?.scrollToEnd({ animated: false });
+  }, []);
+
+  useEffect(() => {
+    scrollToLatest();
+  }, [messages.length, scrollToLatest]);
+
+  // Scroll to bottom on initial load and conversation change
+  useEffect(() => {
+    if (conversation?.id && messages.length > 0 && !loading) {
+      scrollToLatest();
+    }
+  }, [conversation?.id, loading, scrollToLatest]);
+
+  useEffect(() => {
+    const showEvent =
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent =
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      const height = e.endCoordinates.height;
+      setKeyboardHeight(height);
+      const delay = Platform.OS === "ios" ? 50 : 0;
+      setTimeout(() => scrollToBottom(true), delay);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [scrollToBottom]);
+
+  // ─── Recording pulse ───────────────────────────────────────────────────────
   useEffect(() => {
     if (isRecording) {
       Animated.loop(
@@ -148,25 +195,21 @@ export default function NormalProductChatScreen() {
     }
   }, [isRecording]);
 
+  // ─── Handlers ─────────────────────────────────────────────────────────────
   const handleMessageLongPress = (msg: Message) => {
     if (msg.sender_id !== userId || msg.id.startsWith("temp_")) return;
-
     const content = parseContent(msg.content);
-
     const typeMap: Record<string, string> = {
       text: t("chat.this_message"),
       image: t("chat.this_photo"),
       voice: t("chat.this_voice_message"),
       location: t("chat.this_location"),
     };
-
     const contentLabel = typeMap[content.type] || t("chat.this_message");
-
     const title = t("chat.delete_title");
     const confirmationMessage = t("chat.delete_confirmation_dynamic", {
       item: contentLabel,
     });
-
     const performDelete = async () => {
       try {
         await deleteMessage(msg.id);
@@ -177,7 +220,6 @@ export default function NormalProductChatScreen() {
         );
       }
     };
-
     if (Platform.OS === "ios") {
       ActionSheetIOS.showActionSheetWithOptions(
         {
@@ -192,10 +234,7 @@ export default function NormalProductChatScreen() {
       );
     } else {
       Alert.alert(title, confirmationMessage, [
-        {
-          text: t("common.cancel"),
-          style: "cancel",
-        },
+        { text: t("common.cancel"), style: "cancel" },
         {
           text: t("chat.delete_for_you"),
           style: "destructive",
@@ -313,14 +352,11 @@ export default function NormalProductChatScreen() {
     setIsSending(true);
     try {
       await recording.stopAndUnloadAsync();
-
-      //  Reset audio mode back to playback after recording stops
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         playsInSilentModeIOS: true,
         playThroughEarpieceAndroid: false,
       });
-
       const uri = recording.getURI();
       setRecording(null);
       if (!uri) throw new Error("No recording URI.");
@@ -333,6 +369,7 @@ export default function NormalProductChatScreen() {
       setIsSending(false);
     }
   };
+
   const cancelRecording = async () => {
     if (!recording) return;
     if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
@@ -378,10 +415,10 @@ export default function NormalProductChatScreen() {
     else Alert.alert(t("error"), t("chat.phone_not_available"));
   };
 
+  // ─── Chat Bubble ──────────────────────────────────────────────────────────
   function ChatBubble({
     item,
     isMe,
-    themeColors,
     isOptimistic,
     isLastFromMe,
     isRead,
@@ -557,6 +594,7 @@ export default function NormalProductChatScreen() {
     );
   }
 
+  // ─── Loading / Error ───────────────────────────────────────────────────────
   if (loading && !conversation) {
     return (
       <View
@@ -581,6 +619,7 @@ export default function NormalProductChatScreen() {
     );
   }
 
+  // ─── Render ────────────────────────────────────────────────────────────────
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: themeColors.background }}
@@ -588,7 +627,7 @@ export default function NormalProductChatScreen() {
     >
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* ── Header ── */}
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <View
         style={[
           styles.header,
@@ -650,7 +689,7 @@ export default function NormalProductChatScreen() {
         </View>
       </View>
 
-      {/* ── Product banner ── */}
+      {/* ── Product banner ──────────────────────────────────────────────────── */}
       <ProductCard
         title={(productTitle as string) || conversation?.product?.title || ""}
         thumbnail={
@@ -674,23 +713,33 @@ export default function NormalProductChatScreen() {
           )
         }
       />
-
-      {/* ── Messages ── */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+      <View
+        style={{
+          flex: 1,
+          paddingBottom: Platform.OS === "ios" ? keyboardHeight : 0,
+        }}
       >
+        {/* ── Messages ────────────────────────────────────────────────────── */}
         <FlatList
           ref={flatListRef}
           data={messages}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.msgList}
-          onContentSizeChange={() =>
-            flatListRef.current?.scrollToEnd({ animated: false })
-          }
-          onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
+          maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          getItemLayout={(_, index) => ({
+            length: 80,
+            offset: 80 * index,
+            index,
+          })}
+          onScrollToIndexFailed={handleScrollIndexFailed}
+          onLayout={() => {
+            if (!hasScrolledOnMount.current && messages.length > 0) {
+              scrollToBottom(false);
+              hasScrolledOnMount.current = true;
+            }
+          }}
           ListHeaderComponent={
             <View style={styles.dateSep}>
               <View
@@ -731,7 +780,7 @@ export default function NormalProductChatScreen() {
           }}
         />
 
-        {/* ── Recording bar ── */}
+        {/* ── Recording bar ───────────────────────────────────────────────── */}
         {isRecording && (
           <View
             style={[
@@ -783,7 +832,7 @@ export default function NormalProductChatScreen() {
           </View>
         )}
 
-        {/* ── Attach menu ── */}
+        {/* ── Attach menu ─────────────────────────────────────────────────── */}
         {showAttachMenu && !isRecording && (
           <View
             style={[
@@ -824,7 +873,7 @@ export default function NormalProductChatScreen() {
           </View>
         )}
 
-        {/* ── Input bar ── */}
+        {/* ── Input bar ───────────────────────────────────────────────────── */}
         {!isRecording && (
           <View
             style={[
@@ -832,7 +881,12 @@ export default function NormalProductChatScreen() {
               {
                 backgroundColor: themeColors.background,
                 borderTopColor: themeColors.border + "30",
-                paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
+                paddingBottom:
+                  keyboardHeight > 0 && Platform.OS === "android"
+                    ? 10
+                    : insets.bottom > 0
+                      ? insets.bottom
+                      : 10,
               },
             ]}
           >
@@ -868,6 +922,7 @@ export default function NormalProductChatScreen() {
                 }}
                 multiline
                 maxLength={2000}
+                scrollEnabled={false}
               />
             </View>
 
@@ -901,15 +956,13 @@ export default function NormalProductChatScreen() {
             )}
           </View>
         )}
-      </KeyboardAvoidingView>
+      </View>
 
-      {/* ── Image Viewer Modal (shared) ── */}
       <ImageViewerModal
         visible={!!viewingImage}
         uri={viewingImage}
         onClose={() => setViewingImage(null)}
       />
-      {/* ── Options Menu (sheet component) ── */}
       <ChatOptionsSheet
         visible={showOptionsMenu}
         onClose={() => setShowOptionsMenu(false)}
@@ -917,12 +970,13 @@ export default function NormalProductChatScreen() {
         onBlock={handleBlock}
         isMuted={isMuted}
         themeColors={themeColors}
+        otherUserName={otherUser?.first_name || "User"}
       />
     </SafeAreaView>
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// ─── Styles ────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   centered: {
     flex: 1,
@@ -931,7 +985,6 @@ const styles = StyleSheet.create({
     padding: 24,
   },
 
-  // Header
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -966,8 +1019,181 @@ const styles = StyleSheet.create({
   },
   headerName: { fontSize: 16, fontWeight: "700" },
   headerRight: { flexDirection: "row", alignItems: "center", gap: 2 },
-
-  // Product card
+  msgList: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16 },
+  dateSep: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 16,
+    gap: 10,
+  },
+  dateLine: { flex: 1, height: 1 },
+  dateLabel: { fontSize: 12, fontWeight: "500" },
+  recordBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    gap: 12,
+    borderTopWidth: 1,
+  },
+  recordCancel: { padding: 4 },
+  recordDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#EF4444",
+  },
+  recordSend: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  attachMenu: {
+    flexDirection: "row",
+    paddingHorizontal: 24,
+    paddingTop: 18,
+    gap: 32,
+    borderTopWidth: 1,
+  },
+  attachItem: { alignItems: "center", gap: 8 },
+  attachIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  attachLabel: { fontSize: 12, fontWeight: "500" },
+  inputBar: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    paddingHorizontal: 12,
+    paddingTop: 10,
+    gap: 8,
+    borderTopWidth: 1,
+  },
+  roundBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  inputWrap: {
+    flex: 1,
+    borderRadius: 22,
+    paddingHorizontal: 14,
+    paddingVertical: 4,
+    minHeight: 42,
+    justifyContent: "center",
+  },
+  textInput: { fontSize: 16, maxHeight: 100, paddingVertical: 8 },
+  msgWrap: { marginBottom: 8, maxWidth: "80%" },
+  myWrap: { alignSelf: "flex-end", alignItems: "flex-end" },
+  otherWrap: { alignSelf: "flex-start", alignItems: "flex-start" },
+  bubble: { paddingVertical: 10, paddingHorizontal: 14, borderRadius: 18 },
+  myBubble: { borderTopRightRadius: 4 },
+  otherBubble: { borderTopLeftRadius: 4 },
+  imgBubble: { padding: 3, borderRadius: 16 },
+  metaRow: { flexDirection: "row", alignItems: "center", marginTop: 3 },
+  msgTime: { fontSize: 11 },
+  imgMsg: { width: 200, height: 155, borderRadius: 13 },
+  locRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    minWidth: 150,
+    maxWidth: 220,
+  },
+  voiceRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    minWidth: 190,
+  },
+  voiceBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  voiceTrack: { flex: 1, height: 3, borderRadius: 2, overflow: "hidden" },
+  voiceFill: { height: 3, borderRadius: 2 },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.0)",
+    justifyContent: "flex-end",
+  },
+  sheet: {
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 14,
+    paddingHorizontal: 20,
+  },
+  sheetHandle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    alignSelf: "center",
+    marginBottom: 16,
+  },
+  sheetTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 12,
+  },
+  optRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    paddingVertical: 16,
+  },
+  optLabel: { fontSize: 16, fontWeight: "500" },
+  divider: { height: 1 },
+  cancelBtn: {
+    marginTop: 14,
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  imageViewerOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.95)",
+    justifyContent: "center",
+  },
+  imageViewerClose: {
+    position: "absolute",
+    right: 16,
+    zIndex: 10,
+    backgroundColor: "rgba(255,255,255,0.15)",
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  imageViewerImg: { width: "100%", height: "100%" },
+  locationCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    minWidth: 200,
+    maxWidth: 240,
+    gap: 10,
+  },
+  locationIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   productCard: { borderBottomWidth: 1 },
   cardImageWrap: {
     width: "100%",
@@ -1042,192 +1268,4 @@ const styles = StyleSheet.create({
   pillThumb: { width: 24, height: 24, borderRadius: 6 },
   pillTitle: { flex: 1, fontSize: 13, fontWeight: "600" },
   pillPrice: { fontSize: 12, fontWeight: "700" },
-
-  // Messages
-  msgList: { paddingHorizontal: 16, paddingBottom: 16, paddingTop: 8 },
-  dateSep: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 16,
-    gap: 10,
-  },
-  dateLine: { flex: 1, height: 1 },
-  dateLabel: { fontSize: 12, fontWeight: "500" },
-  msgWrap: { marginBottom: 8, maxWidth: "80%" },
-  myWrap: { alignSelf: "flex-end", alignItems: "flex-end" },
-  otherWrap: { alignSelf: "flex-start", alignItems: "flex-start" },
-  bubble: { paddingVertical: 10, paddingHorizontal: 14, borderRadius: 18 },
-  myBubble: { borderTopRightRadius: 4 },
-  otherBubble: { borderTopLeftRadius: 4 },
-  imgBubble: { padding: 3, borderRadius: 16 },
-  metaRow: { flexDirection: "row", alignItems: "center", marginTop: 3 },
-  msgTime: { fontSize: 11 },
-  imgMsg: { width: 200, height: 155, borderRadius: 13 },
-  locRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    minWidth: 150,
-    maxWidth: 220,
-  },
-  voiceRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    minWidth: 190,
-  },
-  voiceBtn: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  voiceTrack: { flex: 1, height: 3, borderRadius: 2, overflow: "hidden" },
-  voiceFill: { height: 3, borderRadius: 2 },
-
-  recordBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 14,
-    gap: 12,
-    borderTopWidth: 1,
-  },
-  recordCancel: { padding: 4 },
-  recordDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#EF4444",
-  },
-  recordSend: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  // Attach menu
-  attachMenu: {
-    flexDirection: "row",
-    paddingHorizontal: 24,
-    paddingTop: 18,
-    gap: 32,
-    borderTopWidth: 1,
-  },
-  attachItem: { alignItems: "center", gap: 8 },
-  attachIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  attachLabel: { fontSize: 12, fontWeight: "500" },
-
-  // Input bar
-  inputBar: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    paddingHorizontal: 12,
-    paddingTop: 10,
-    gap: 8,
-    borderTopWidth: 1,
-  },
-  roundBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  inputWrap: {
-    flex: 1,
-    borderRadius: 22,
-    paddingHorizontal: 14,
-    paddingVertical: 4,
-    minHeight: 42,
-    justifyContent: "center",
-  },
-  textInput: { fontSize: 16, maxHeight: 100, paddingVertical: 8 },
-
-  // Options modal
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.0)",
-    justifyContent: "flex-end",
-  },
-  sheet: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingTop: 14,
-    paddingHorizontal: 20,
-  },
-  sheetHandle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    alignSelf: "center",
-    marginBottom: 16,
-  },
-  sheetTitle: {
-    fontSize: 17,
-    fontWeight: "700",
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  optRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-    paddingVertical: 16,
-  },
-  optLabel: { fontSize: 16, fontWeight: "500" },
-  divider: { height: 1 },
-  cancelBtn: {
-    marginTop: 14,
-    borderWidth: 1,
-    borderRadius: 14,
-    paddingVertical: 14,
-    alignItems: "center",
-  }, // Image Viewer
-  imageViewerOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.95)",
-    justifyContent: "center",
-  },
-  imageViewerClose: {
-    position: "absolute",
-    right: 16,
-    zIndex: 10,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  imageViewerImg: {
-    width: "100%",
-    height: "100%",
-  },
-  locationCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    borderRadius: 14,
-    borderWidth: 1,
-    minWidth: 200,
-    maxWidth: 240,
-    gap: 10,
-  },
-
-  locationIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: "center",
-    alignItems: "center",
-  },
 });
