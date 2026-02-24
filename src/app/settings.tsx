@@ -96,7 +96,9 @@ export default function SettingsScreen() {
           >
             <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
           </TouchableOpacity>
-          <ThemedText style={styles.headerTitle}>{t("settings_screen.settings")}</ThemedText>
+          <ThemedText style={styles.headerTitle}>
+            {t("settings_screen.settings")}
+          </ThemedText>
           <View style={{ width: 44 }} />
         </View>
       </SafeAreaView>
@@ -108,8 +110,14 @@ export default function SettingsScreen() {
       >
         {/* Group 1 */}
         <View style={[styles.card, { backgroundColor: themeColors.card }]}>
-          <SettingItem icon={MapPinIcon} label={t("settings_screen.my_addresses")} />
-          <SettingItem icon={UserCircleIcon} label={t("settings_screen.account_security")} />
+          <SettingItem
+            icon={MapPinIcon}
+            label={t("settings_screen.my_addresses")}
+          />
+          <SettingItem
+            icon={UserCircleIcon}
+            label={t("settings_screen.account_security")}
+          />
           <SettingItem
             icon={CreditCardIcon}
             label={t("settings_screen.payment_settings")}
@@ -119,14 +127,27 @@ export default function SettingsScreen() {
 
         {/* Group 2 */}
         <View style={[styles.card, { backgroundColor: themeColors.card }]}>
-          <SettingItem icon={GearSixIcon} label={t("settings_screen.general")} />
-          <SettingItem icon={BellIcon} label={t("settings_screen.notifications")} />
-          <SettingItem icon={LockIcon} label={t("settings_screen.privacy")} showSeparator={false} />
+          <SettingItem
+            icon={GearSixIcon}
+            label={t("settings_screen.general")}
+          />
+          <SettingItem
+            icon={BellIcon}
+            label={t("settings_screen.notifications")}
+          />
+          <SettingItem
+            icon={LockIcon}
+            label={t("settings_screen.privacy")}
+            showSeparator={false}
+          />
         </View>
 
         {/* Group 3 */}
         <View style={[styles.card, { backgroundColor: themeColors.card }]}>
-          <SettingItem icon={HeadphonesIcon} label={t("settings_screen.help_feedback")} />
+          <SettingItem
+            icon={HeadphonesIcon}
+            label={t("settings_screen.help_feedback")}
+          />
           <SettingItem
             icon={InfoIcon}
             label={t("settings_screen.about_phsarone")}
@@ -143,9 +164,7 @@ export default function SettingsScreen() {
           ]}
           activeOpacity={0.7}
         >
-          <ThemedText
-            style={[styles.signOutText, { color: themeColors.background }]}
-          >
+          <ThemedText style={[styles.signOutText, { color: themeColors.text }]}>
             {t("settings_screen.sign_out")}
           </ThemedText>
         </TouchableOpacity>
@@ -210,6 +229,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
+
     elevation: 2,
   },
   signOutText: {
