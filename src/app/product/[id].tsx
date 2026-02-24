@@ -1,17 +1,4 @@
-import React, { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  Linking,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "@clerk/clerk-expo";
 import {
   Href,
   Stack,
@@ -19,7 +6,18 @@ import {
   useLocalSearchParams,
   useRouter,
 } from "expo-router";
-import { useAuth } from "@clerk/clerk-expo";
+import React, { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  ActivityIndicator,
+  Alert,
+  Linking,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import useThemeColor from "@/src/hooks/useThemeColor";
 import {
@@ -27,11 +25,11 @@ import {
   calculateDiscountPrice,
   formatTimeAgo,
 } from "@/src/types/productTypes";
-import { createClerkSupabaseClient, supabase } from "@src/lib/supabase";
-import { formatProductDetails } from "@src/utils/productUtils";
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import { CATEGORY_MAP } from "@src/constants/CategoryData";
 import { useProductDetails } from "@src/hooks/useProductDetails";
+import { createClerkSupabaseClient, supabase } from "@src/lib/supabase";
+import { formatProductDetails } from "@src/utils/productUtils";
 
 import BuyerSafetyGuidelines from "@src/components/productDetails_components/BuyerSafetyGuidelines";
 import ProductActionButtons from "@src/components/productDetails_components/ProductActionButtons";
@@ -43,7 +41,6 @@ import ProductInfoSection from "@src/components/productDetails_components/Produc
 import ProductLocation from "@src/components/productDetails_components/ProductLocation";
 import SellerInfoSection from "@src/components/productDetails_components/SellerInfoSection";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
-import { Colors } from "@src/constants/Colors";
 import { useConversations } from "@src/hooks/useChat";
 
 // Mapping fixed database UUIDs back to CATEGORY_MAP keys
@@ -66,11 +63,16 @@ export default function ProductDetail() {
   const router = useRouter();
 
   const [isFavorite, setIsFavorite] = useState(false);
-  const { product: rawProduct, loading: productLoading } = useProductDetails(id as string);
-  
+  const { product: rawProduct, loading: productLoading } = useProductDetails(
+    id as string,
+  );
+
   // Fetch conversations for this product if owner
   const isOwner = userId === rawProduct?.seller_id;
-  const { conversations, loading: conversationsLoading } = useConversations("regular", isOwner ? (id as string) : undefined);
+  const { conversations, loading: conversationsLoading } = useConversations(
+    "regular",
+    isOwner ? (id as string) : undefined,
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -78,7 +80,7 @@ export default function ProductDetail() {
         if (userId) checkIsFavorite();
         logView();
       }
-    }, [userId, id])
+    }, [userId, id]),
   );
 
   const logView = async () => {
@@ -86,19 +88,22 @@ export default function ProductDetail() {
       // 1. Log for public analytics (always)
       await supabase.from("analytics_views").insert({
         product_id: id as string,
-        viewer_id: userId || null
+        viewer_id: userId || null,
       });
 
       // 2. Log for private history (if user logged in)
       if (userId) {
         const token = await getToken();
         const authSupabase = createClerkSupabaseClient(token);
-        
-        await authSupabase.from("view_history").upsert({
-          user_id: userId as string,
-          product_id: id as string,
-          viewed_at: new Date().toISOString()
-        }, { onConflict: 'user_id, product_id' });
+
+        await authSupabase.from("view_history").upsert(
+          {
+            user_id: userId as string,
+            product_id: id as string,
+            viewed_at: new Date().toISOString(),
+          },
+          { onConflict: "user_id, product_id" },
+        );
       }
     } catch (error) {
       console.error("Error logging view:", error);
@@ -116,7 +121,7 @@ export default function ProductDetail() {
         .eq("user_id", userId as string)
         .eq("product_id", id as string)
         .maybeSingle();
-      
+
       if (error) throw error;
       setIsFavorite(!!data);
     } catch (error) {
@@ -146,26 +151,32 @@ export default function ProductDetail() {
         <Stack.Screen
           options={{ title: t("common.product_not_found"), headerShown: false }}
         />
-        <ThemedText style={styles.notFoundText}>{t("common.product_not_found")}</ThemedText>
+        <ThemedText style={styles.notFoundText}>
+          {t("common.product_not_found")}
+        </ThemedText>
       </View>
     );
   }
 
   // Robust category resolution
-  const dbCategory = Array.isArray(rawProduct.category) ? rawProduct.category[0] : rawProduct.category;
-  
+  const dbCategory = Array.isArray(rawProduct.category)
+    ? rawProduct.category[0]
+    : rawProduct.category;
+
   // Try to find the main category key from our constants using the UUID
   const catKey = UUID_TO_CAT_KEY[rawProduct.category_id];
   const mainCatKeyFromId = catKey ? CATEGORY_MAP[catKey]?.nameKey : "";
 
-  const mainCategory = rawProduct.metadata?.mainCategory || 
-                      (dbCategory?.parent ? dbCategory.parent.name_key : dbCategory?.name_key) || 
-                      mainCatKeyFromId || 
-                      "";
-  
-  const subCategory = rawProduct.metadata?.subCategory || 
-                     (dbCategory?.parent ? dbCategory.name_key : "") || 
-                     "";
+  const mainCategory =
+    rawProduct.metadata?.mainCategory ||
+    (dbCategory?.parent ? dbCategory.parent.name_key : dbCategory?.name_key) ||
+    mainCatKeyFromId ||
+    "";
+
+  const subCategory =
+    rawProduct.metadata?.subCategory ||
+    (dbCategory?.parent ? dbCategory.name_key : "") ||
+    "";
 
   const product: Product = {
     ...rawProduct,
@@ -205,7 +216,10 @@ export default function ProductDetail() {
 
   const handleFavorite = async () => {
     if (!userId) {
-      Alert.alert(t("common.sign_in_required"), t("common.sign_in_to_bookmark"));
+      Alert.alert(
+        t("common.sign_in_required"),
+        t("common.sign_in_to_bookmark"),
+      );
       return;
     }
 
@@ -220,7 +234,7 @@ export default function ProductDetail() {
           .delete()
           .eq("user_id", userId as string)
           .eq("product_id", id as string);
-        
+
         if (error) throw error;
         setIsFavorite(false);
       } else {
@@ -229,9 +243,9 @@ export default function ProductDetail() {
           .from("favorites")
           .upsert(
             { user_id: userId as string, product_id: id as string },
-            { onConflict: 'user_id, product_id' }
+            { onConflict: "user_id, product_id" },
           );
-        
+
         if (error) throw error;
         setIsFavorite(true);
       }
@@ -279,31 +293,30 @@ export default function ProductDetail() {
   };
 
   const handleDelete = async () => {
-    Alert.alert(
-      t("common.delete"),
-      t("common.confirm_delete"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.delete"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const token = await getToken();
-              const authSupabase = createClerkSupabaseClient(token);
-              const { error } = await authSupabase
-                .from("products")
-                .delete()
-                .eq("id", product.id);
-              if (error) throw error;
-              router.replace("/(tabs)");
-            } catch (err) {
-              Alert.alert(t("common.error"), t("common.failed_to_delete_listing"));
-            }
-          },
+    Alert.alert(t("common.delete"), t("common.confirm_delete"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("common.delete"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const token = await getToken();
+            const authSupabase = createClerkSupabaseClient(token);
+            const { error } = await authSupabase
+              .from("products")
+              .delete()
+              .eq("id", product.id);
+            if (error) throw error;
+            router.replace("/(tabs)");
+          } catch (err) {
+            Alert.alert(
+              t("common.error"),
+              t("common.failed_to_delete_listing"),
+            );
+          }
         },
-      ],
-    );
+      },
+    ]);
   };
 
   const getLocalizedLocationName = (
@@ -429,81 +442,12 @@ export default function ProductDetail() {
             activeFont={activeFont}
           />
 
-          <SellerInfoSection 
-            product={product} 
-            onViewProfile={() => router.push(`/user/${product.seller?.id}` as Href)}
+          <SellerInfoSection
+            product={product}
+            onViewProfile={() =>
+              router.push(`/user/${product.seller?.id}` as Href)
+            }
           />
-
-          {/* Conversations Section for Owners */}
-          {isOwner && conversations.length > 0 && (
-            <View style={styles.ownerChatsSection}>
-              <ThemedText style={styles.sectionTitle}>
-                {t("chat.messages")} ({conversations.length})
-              </ThemedText>
-              {conversations.map((conv) => {
-                const buyer = conv.buyer;
-                
-                // Robustly handle message content
-                const lastMsgContent = conv.last_message_content;
-                let lastMessagePreview = t("chat.start_conversation");
-                
-                if (lastMsgContent) {
-                  if (typeof lastMsgContent === 'string') {
-                    lastMessagePreview = lastMsgContent;
-                  } else if (typeof lastMsgContent === 'object') {
-                    lastMessagePreview = lastMsgContent.text || lastMsgContent.message || JSON.stringify(lastMsgContent);
-                  }
-                }
-
-                return (
-                  <TouchableOpacity
-                    key={conv.id}
-                    activeOpacity={0.7}
-                    style={[
-                      styles.ownerChatRow,
-                      { borderBottomColor: themeColors.border + "40" },
-                    ]}
-                    onPress={() =>
-                      handleChat(
-                        conv.id,
-                        buyer?.id,
-                        `${buyer?.first_name || ""} ${buyer?.last_name || ""}`.trim(),
-                        buyer?.avatar_url,
-                      )
-                    }
-                  >
-                    <Image
-                      source={{
-                        uri:
-                          buyer?.avatar_url || "https://via.placeholder.com/150",
-                      }}
-                      style={styles.buyerAvatar}
-                    />
-                    <View style={{ flex: 1 }}>
-                      <ThemedText style={styles.buyerName}>
-                        {buyer?.first_name} {buyer?.last_name}
-                      </ThemedText>
-                      <ThemedText style={styles.lastMsg} numberOfLines={1}>
-                        {lastMessagePreview}
-                      </ThemedText>
-                    </View>
-                    {!!(conv.unread_count && conv.unread_count > 0) && (
-                      <View
-                        style={[
-                          styles.unreadBadge,
-                          { backgroundColor: themeColors.tint },
-                        ]}
-                      >
-                        <ThemedText style={styles.unreadText}>
-                          {conv.unread_count}
-                        </ThemedText>
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          )}
 
           <BuyerSafetyGuidelines />
         </ScrollView>

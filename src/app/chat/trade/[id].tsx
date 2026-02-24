@@ -3,8 +3,6 @@ import {
   RecordingPresets,
   requestRecordingPermissionsAsync,
   setAudioModeAsync,
-  useAudioPlayer,
-  useAudioPlayerStatus,
   useAudioRecorder,
   useAudioRecorderState,
 } from "expo-audio";
@@ -12,21 +10,11 @@ import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
-  BellIcon,
-  BellSlashIcon,
-  CaretLeftIcon,
-  CheckIcon,
-  ChecksIcon,
-  DotsThreeVerticalIcon,
   ImageIcon,
   MapPinIcon,
   MicrophoneIcon,
   PaperPlaneTiltIcon,
-  PhoneIcon,
   PlusIcon,
-  ProhibitIcon,
-  ShoppingBagIcon,
-  StopIcon,
   XIcon,
 } from "phosphor-react-native";
 import React, { useEffect, useRef, useState } from "react";
@@ -37,323 +25,26 @@ import {
   Alert,
   Animated,
   FlatList,
-  Image,
   KeyboardAvoidingView,
   Linking,
-  Modal,
   Platform,
-  Pressable,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import Bubble from "@src/components/chat_components/Bubble";
+import ChatHeader from "@src/components/chat_components/ChatHeader";
+import ChatInputBar from "@src/components/chat_components/ChatInputBar";
+import ChatOptionsSheet from "@src/components/chat_components/ChatOptionsSheet";
+import ProductCard from "@src/components/chat_components/ProductCard";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import { Message, useChat } from "@src/hooks/useChat";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { formatDuration, parseContent } from "@src/utils/chatUtils";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatDuration(sec: number) {
-  const m = Math.floor(sec / 60)
-    .toString()
-    .padStart(2, "0");
-  const s = Math.floor(sec % 60)
-    .toString()
-    .padStart(2, "0");
-  return `${m}:${s}`;
-}
-
-function parseContent(raw: any): { type: string; [k: string]: any } {
-  if (!raw) return { type: "text", text: "" };
-  if (typeof raw === "string") {
-    try {
-      const p = JSON.parse(raw);
-      if (p && typeof p === "object") return p;
-    } catch {}
-    return { type: "text", text: raw };
-  }
-  return typeof raw === "object" ? raw : { type: "text", text: String(raw) };
-}
-
-// ─── Voice Player ─────────────────────────────────────────────────────────────
-
-function VoicePlayer({
-  url,
-  duration,
-  isMe,
-}: {
-  url: string;
-  duration?: number;
-  isMe: boolean;
-}) {
-  const player = useAudioPlayer({ uri: url }, { updateInterval: 200 });
-  const status = useAudioPlayerStatus(player);
-  const playing = status.playing;
-  const progress = status.duration > 0 ? status.currentTime / status.duration : 0;
-
-  const toggle = async () => {
-    try {
-      if (playing) {
-        player.pause();
-        return;
-      }
-      if (status.didJustFinish) await player.seekTo(0);
-      player.play();
-    } catch (e) {
-      console.error("Voice error:", e);
-    }
-  };
-
-  return (
-    <TouchableOpacity
-      onPress={toggle}
-      style={styles.voiceRow}
-      activeOpacity={0.8}
-    >
-      <View
-        style={[
-          styles.voiceBtn,
-          {
-            backgroundColor: isMe ? "rgba(255,255,255,0.25)" : Colors.reds[500],
-          },
-        ]}
-      >
-        {playing ? (
-          <StopIcon size={13} color="#fff" weight="fill" />
-        ) : (
-          <MicrophoneIcon size={13} color="#fff" weight="fill" />
-        )}
-      </View>
-      <View
-        style={[
-          styles.voiceTrack,
-          { backgroundColor: isMe ? "rgba(255,255,255,0.3)" : "#E5E7EB" },
-        ]}
-      >
-        <View
-          style={[
-            styles.voiceFill,
-            {
-              width: `${progress * 100}%`,
-              backgroundColor: isMe ? "#fff" : Colors.reds[500],
-            },
-          ]}
-        />
-      </View>
-      <ThemedText
-        style={{ color: isMe ? "#fff" : "#6B7280", fontSize: 12, minWidth: 34 }}
-      >
-        {formatDuration(duration || Math.round(status.duration || 0))}
-      </ThemedText>
-    </TouchableOpacity>
-  );
-}
-
-// ─── Message Bubble ───────────────────────────────────────────────────────────
-
-function Bubble({
-  item,
-  isMe,
-  themeColors,
-  isOptimistic,
-  isLastFromMe,
-  isRead,
-  onLongPress,
-}: {
-  item: Message;
-  isMe: boolean;
-  themeColors: any;
-  isOptimistic: boolean;
-  isLastFromMe: boolean;
-  isRead: boolean;
-  onLongPress: () => void;
-}) {
-  const content = parseContent(item.content);
-  const bubbleBg = isMe ? Colors.reds[500] : themeColors.card;
-  const textColor = isMe ? "#fff" : themeColors.text;
-  const { t } = useTranslation();
-  const inner = () => {
-    switch (content.type) {
-      case "image":
-        return (
-          <Image
-            source={{ uri: content.url }}
-            style={styles.imgMsg}
-            resizeMode="cover"
-          />
-        );
-
-      case "location":
-        return (
-          <TouchableOpacity
-            style={styles.locRow}
-            onPress={() => {
-              const u = Platform.select({
-                ios: `maps:?q=${content.label || "Location"}&ll=${content.latitude},${content.longitude}`,
-                android: `geo:${content.latitude},${content.longitude}?q=${content.label || "Location"}`,
-              });
-              if (u) Linking.openURL(u);
-            }}
-          >
-            <MapPinIcon
-              size={18}
-              color={isMe ? "#fff" : Colors.reds[500]}
-              weight="fill"
-            />
-            <ThemedText
-              style={{ color: textColor, fontSize: 14, marginLeft: 6, flex: 1 }}
-              numberOfLines={2}
-            >
-              {content.label ||
-                `${Number(content.latitude).toFixed(4)}, ${Number(content.longitude).toFixed(4)}`}
-            </ThemedText>
-          </TouchableOpacity>
-        );
-
-      case "voice":
-        return (
-          <VoicePlayer
-            url={content.url}
-            duration={content.duration}
-            isMe={isMe}
-          />
-        );
-
-      default: {
-        const text =
-          content.text ||
-          content.message ||
-          (typeof item.content === "string" ? item.content : "");
-        return (
-          <ThemedText
-            style={{ color: textColor, fontSize: 15, lineHeight: 22 }}
-          >
-            {text}
-          </ThemedText>
-        );
-      }
-    }
-  };
-
-  return (
-    <View
-      style={[
-        styles.msgWrap,
-        isMe ? styles.myWrap : styles.otherWrap,
-        isOptimistic && { opacity: 0.6 },
-      ]}
-    >
-      <Pressable
-        onLongPress={onLongPress}
-        delayLongPress={350}
-        style={[
-          styles.bubble,
-          isMe ? styles.myBubble : styles.otherBubble,
-          { backgroundColor: bubbleBg },
-          content.type === "image" && styles.imgBubble,
-        ]}
-      >
-        {inner()}
-      </Pressable>
-
-      {/* Time + seen status */}
-      <View style={styles.metaRow}>
-        <ThemedText
-          style={[styles.msgTime, { color: themeColors.text + "55" }]}
-        >
-          {isOptimistic
-            ? t("chat.sending")
-            : new Date(item.created_at || "").toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-        </ThemedText>
-        {isMe && isLastFromMe && (
-          <View style={{ marginLeft: 4 }}>
-            {isRead ? (
-              <ChecksIcon size={14} color={Colors.reds[500]} weight="bold" />
-            ) : (
-              <CheckIcon
-                size={14}
-                color={themeColors.text + "55"}
-                weight="bold"
-              />
-            )}
-          </View>
-        )}
-      </View>
-    </View>
-  );
-}
-
-// ─── Product Banner ───────────────────────────────────────────────────────────
-
-function ProductBanner({
-  title,
-  thumbnail,
-  price,
-  currency,
-  themeColors,
-  onPress,
-}: {
-  title?: string;
-  thumbnail?: string;
-  price?: string;
-  currency?: string;
-  themeColors: any;
-  onPress?: () => void;
-}) {
-  const { t } = useTranslation();
-  if (!title) return null;
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.8}
-      style={[
-        styles.productBanner,
-        {
-          backgroundColor: themeColors.card,
-          borderBottomColor: themeColors.border + "30",
-        },
-      ]}
-    >
-      <View
-        style={[
-          styles.productBannerIcon,
-          { backgroundColor: Colors.reds[500] + "18" },
-        ]}
-      >
-        {thumbnail ? (
-          <Image source={{ uri: thumbnail }} style={styles.productThumb} />
-        ) : (
-          <ShoppingBagIcon size={20} color={Colors.reds[500]} weight="fill" />
-        )}
-      </View>
-      <View style={{ flex: 1 }}>
-        <ThemedText
-          style={[styles.productBannerTitle, { color: themeColors.text }]}
-          numberOfLines={1}
-        >
-          {title}
-        </ThemedText>
-        {price ? (
-          <ThemedText style={styles.productBannerPrice}>
-            {currency || "USD"} {price}
-          </ThemedText>
-        ) : null}
-      </View>
-      <ThemedText
-        style={{ color: Colors.reds[500], fontSize: 12, fontWeight: "600" }}
-      >
-        {t("common.viewAll")}
-      </ThemedText>
-    </TouchableOpacity>
-  );
-}
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
@@ -402,7 +93,9 @@ export default function TradeProductChatScreen() {
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(recorder, 250);
   const isRecording = recorderState.isRecording;
-  const recordingDuration = Math.floor((recorderState.durationMillis || 0) / 1000);
+  const recordingDuration = Math.floor(
+    (recorderState.durationMillis || 0) / 1000,
+  );
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   const isMuted =
@@ -457,10 +150,18 @@ export default function TradeProductChatScreen() {
   // ── Message long press (delete own) ──────────────────────────────────────
   const handleMessageLongPress = (msg: Message) => {
     if (msg.sender_id !== userId || msg.id.startsWith("temp_")) return;
+
+    const content = parseContent(msg.content);
+    let deleteLabel = t("chat.delete_text");
+    if (content.type === "image") deleteLabel = t("chat.delete_image");
+    else if (content.type === "voice") deleteLabel = t("chat.delete_voice");
+    else if (content.type === "location")
+      deleteLabel = t("chat.delete_location");
+
     if (Platform.OS === "ios") {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: [t("common.cancel"), t("chat.delete_conversation")],
+          options: [t("common.cancel"), deleteLabel],
           destructiveButtonIndex: 1,
           cancelButtonIndex: 0,
         },
@@ -475,24 +176,20 @@ export default function TradeProductChatScreen() {
         },
       );
     } else {
-      Alert.alert(
-        t("chat.delete_conversation_title"),
-        t("chat.delete_conversation_confirmation"),
-        [
-          { text: t("common.cancel"), style: "cancel" },
-          {
-            text: t("common.delete"),
-            style: "destructive",
-            onPress: async () => {
-              try {
-                await deleteMessage(msg.id);
-              } catch (e: any) {
-                Alert.alert(t("error"), e.message);
-              }
-            },
+      Alert.alert(deleteLabel, t("chat.delete_message_confirmation"), [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("common.delete"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteMessage(msg.id);
+            } catch (e: any) {
+              Alert.alert(t("error"), e.message);
+            }
           },
-        ],
-      );
+        },
+      ]);
     }
   };
 
@@ -619,12 +316,10 @@ export default function TradeProductChatScreen() {
 
   // ── Options actions ────────────────────────────────────────────────────────
   const handleToggleMute = async () => {
-    setShowOptionsMenu(false);
     await toggleMuteConversation();
   };
 
   const handleBlock = () => {
-    setShowOptionsMenu(false);
     Alert.alert(
       t("chat.block_user_title"),
       t("chat.block_user_confirmation", {
@@ -690,73 +385,16 @@ export default function TradeProductChatScreen() {
     >
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* ── Header ── */}
-      <View
-        style={[
-          styles.header,
-          {
-            backgroundColor: themeColors.background,
-            borderBottomColor: themeColors.border + "25",
-          },
-        ]}
-      >
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.headerBtn}
-        >
-          <CaretLeftIcon size={28} color={themeColors.text} weight="bold" />
-        </TouchableOpacity>
+      {/* ── Header (shared) ── */}
+      <ChatHeader
+        name={sellerName as string}
+        isOnline={!!otherUserOnline}
+        themeColors={themeColors}
+        onOptionsPress={() => setShowOptionsMenu(true)}
+      />
 
-        <View style={styles.headerCenter}>
-          {/* Avatar with online dot */}
-          <View>
-            <Image
-              source={{
-                uri:
-                  (sellerAvatar as string) || "https://via.placeholder.com/150",
-              }}
-              style={styles.headerAvatar}
-            />
-            {otherUserOnline && <View style={styles.onlineDot} />}
-          </View>
-          <View style={{ flex: 1 }}>
-            <ThemedText style={styles.headerName} numberOfLines={1}>
-              {sellerName}
-            </ThemedText>
-            <ThemedText
-              style={{
-                fontSize: 12,
-                color: otherUserOnline ? "#10B981" : themeColors.text + "50",
-              }}
-            >
-              {otherUserOnline
-                ? t("chat.active_now")
-                : isMuted
-                  ? t("chat.muted")
-                  : t("chat.offline")}
-            </ThemedText>
-          </View>
-        </View>
-
-        <View style={styles.headerRight}>
-          <TouchableOpacity onPress={handleCall} style={styles.headerBtn}>
-            <PhoneIcon size={22} color={themeColors.text} weight="fill" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setShowOptionsMenu(true)}
-            style={styles.headerBtn}
-          >
-            <DotsThreeVerticalIcon
-              size={22}
-              color={themeColors.text}
-              weight="bold"
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* ── Product banner ── */}
-      <ProductBanner
+      {/* ── Product card (shared) ── */}
+      <ProductCard
         title={(productTitle as string) || conversation?.product?.title || ""}
         thumbnail={
           (productThumbnail as string) ||
@@ -918,7 +556,7 @@ export default function TradeProductChatScreen() {
           </View>
         )}
 
-        {/* Input bar */}
+        {/* Input bar (shared input component + buttons) */}
         {!isRecording && (
           <View
             style={[
@@ -947,36 +585,17 @@ export default function TradeProductChatScreen() {
               />
             </TouchableOpacity>
 
-            <View
-              style={[styles.inputWrap, { backgroundColor: themeColors.card }]}
-            >
-              <TextInput
-                style={[styles.textInput, { color: themeColors.text }]}
-                placeholder={t("chat.type_a_message")}
-                placeholderTextColor={themeColors.text + "40"}
-                value={inputText}
-                onChangeText={(v) => {
-                  setInputText(v);
-                  if (showAttachMenu) setShowAttachMenu(false);
-                }}
-                multiline
-                maxLength={2000}
-              />
-            </View>
+            <ChatInputBar
+              value={inputText}
+              onChange={(v: string) => {
+                setInputText(v);
+                if (showAttachMenu) setShowAttachMenu(false);
+              }}
+              onSend={handleSendText}
+              themeColors={themeColors}
+            />
 
-            {inputText.trim().length > 0 ? (
-              <TouchableOpacity
-                onPress={handleSendText}
-                disabled={isSending}
-                style={[styles.roundBtn, { backgroundColor: Colors.reds[500] }]}
-              >
-                {isSending ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  <PaperPlaneTiltIcon size={20} color="#fff" weight="fill" />
-                )}
-              </TouchableOpacity>
-            ) : (
+            {inputText.trim().length === 0 && (
               <TouchableOpacity
                 onPressIn={startRecording}
                 onPressOut={stopAndSend}
@@ -993,83 +612,15 @@ export default function TradeProductChatScreen() {
         )}
       </KeyboardAvoidingView>
 
-      {/* ── Options sheet ── */}
-      <Modal
+      {/* ── Options sheet (shared component) ── */}
+      <ChatOptionsSheet
         visible={showOptionsMenu}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowOptionsMenu(false)}
-      >
-        <Pressable
-          style={styles.overlay}
-          onPress={() => setShowOptionsMenu(false)}
-        >
-          <View style={[styles.sheet, { backgroundColor: themeColors.card }]}>
-            <View
-              style={[
-                styles.sheetHandle,
-                { backgroundColor: themeColors.border },
-              ]}
-            />
-            <ThemedText style={styles.sheetTitle}>
-              {t("chat.options")}
-            </ThemedText>
-
-            {/* Mute */}
-            <TouchableOpacity style={styles.optRow} onPress={handleToggleMute}>
-              {isMuted ? (
-                <BellIcon size={22} color={themeColors.text} weight="fill" />
-              ) : (
-                <BellSlashIcon
-                  size={22}
-                  color={themeColors.text}
-                  weight="fill"
-                />
-              )}
-              <ThemedText
-                style={[styles.optLabel, { color: themeColors.text }]}
-              >
-                {isMuted
-                  ? t("chat.unmute_notifications")
-                  : t("chat.mute_notifications")}
-              </ThemedText>
-            </TouchableOpacity>
-
-            <View
-              style={[
-                styles.divider,
-                { backgroundColor: themeColors.border + "40" },
-              ]}
-            />
-
-            {/* Block */}
-            <TouchableOpacity style={styles.optRow} onPress={handleBlock}>
-              <ProhibitIcon size={22} color="#EF4444" weight="fill" />
-              <ThemedText style={[styles.optLabel, { color: "#EF4444" }]}>
-                {t("chat.block")} {otherUser?.first_name || "User"}
-              </ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.cancelBtn,
-                { borderColor: themeColors.border + "60" },
-              ]}
-              onPress={() => setShowOptionsMenu(false)}
-            >
-              <ThemedText
-                style={{
-                  fontWeight: "700",
-                  fontSize: 16,
-                  color: themeColors.text,
-                }}
-              >
-                {t("common.cancel")}
-              </ThemedText>
-            </TouchableOpacity>
-          </View>
-        </Pressable>
-      </Modal>
+        onClose={() => setShowOptionsMenu(false)}
+        onMute={handleToggleMute}
+        onBlock={handleBlock}
+        isMuted={isMuted}
+        themeColors={themeColors}
+      />
     </SafeAreaView>
   );
 }

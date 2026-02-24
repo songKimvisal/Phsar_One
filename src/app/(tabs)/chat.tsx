@@ -17,6 +17,7 @@ import { Colors } from "@/src/constants/Colors";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Conversation, useConversations } from "@src/hooks/useChat";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { parseContent } from "@src/utils/chatUtils";
 import { formatTimeAgo } from "@src/utils/productUtils";
 
 export default function ChatScreen() {
@@ -68,13 +69,23 @@ export default function ChatScreen() {
     let lastMessage = t("chat.start_conversation");
 
     if (lastMsgContent) {
-      if (typeof lastMsgContent === "string") {
-        lastMessage = lastMsgContent;
-      } else if (typeof lastMsgContent === "object") {
-        lastMessage =
-          lastMsgContent.text ||
-          lastMsgContent.message ||
-          JSON.stringify(lastMsgContent);
+      const parsed = parseContent(lastMsgContent);
+      if (parsed) {
+        switch (parsed.type) {
+          case "image":
+            lastMessage = t("chat.photo") || "Image";
+            break;
+          case "location":
+            lastMessage = t("chat.location") || "Location";
+            break;
+          case "voice":
+            lastMessage =
+              t("chat.voice") || t("chat.this_voice_message") || "Voice";
+            break;
+          default:
+            lastMessage =
+              parsed.text || parsed.message || String(lastMsgContent);
+        }
       }
     }
 
