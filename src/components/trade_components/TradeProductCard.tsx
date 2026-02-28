@@ -29,7 +29,7 @@ export default function TradeProductCard({
 
   const styles = getStyles(themeColors);
   const conditionKey = product.condition.toLowerCase().replace(/\s+/g, "_");
-  const conditionLabel = t(`conditions.${conditionKey}`, {
+  const conditionLabel = t(`condition.${conditionKey}`, {
     defaultValue: product.condition,
   });
   const sellerLabel = product.seller.toLowerCase().startsWith("by ")
@@ -99,7 +99,7 @@ export default function TradeProductCard({
 const getStyles = (themeColors: ReturnType<typeof useThemeColor>) =>
   StyleSheet.create({
     cardContainer: {
-      borderRadius: 10,
+      borderRadius: 8,
       borderCurve: "continuous",
       overflow: "hidden",
       marginBottom: 12,

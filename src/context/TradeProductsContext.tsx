@@ -113,14 +113,34 @@ export function TradeProductsProvider({ children }: { children: ReactNode }) {
     try {
       const { data, error } = await supabase
         .from("trades")
-        .select("*")
+        .select(`
+          *,
+          owner:users(id, first_name, last_name, avatar_url)
+        `)
         .order("created_at", { ascending: false });
 
       if (error) {
         throw error;
       }
 
-      setProducts((data ?? []).map(mapTradeRowToTradeProduct));
+      setProducts((data ?? []).map((row: any) => {
+        const product = mapTradeRowToTradeProduct(row);
+        
+        // If we have joined user data, override the owner info
+        if (row.owner) {
+          const fullName = [row.owner.first_name, row.owner.last_name].filter(Boolean).join(" ");
+          product.owner = {
+            name: fullName || product.owner.name, // fallback to existing name if fullName is empty
+            isVerified: product.owner.isVerified,
+            avatar: row.owner.avatar_url || product.owner.avatar,
+          };
+          
+          // Also update the top-level seller field for consistency
+          product.seller = product.owner.name;
+        }
+        
+        return product;
+      }));
     } catch (error) {
       console.error("Failed to fetch trades:", error);
       setProducts([]);

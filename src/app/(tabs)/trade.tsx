@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -26,7 +27,14 @@ export default function TradeScreen() {
   const themeColors = useThemeColor();
   const [searchQuery, setSearchQuery] = useState("");
   const { t } = useTranslation();
-  const { products, loading } = useTradeProducts();
+  const { products, loading, refreshProducts } = useTradeProducts();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refreshProducts();
+    setRefreshing(false);
+  };
 
   const productsToDisplay = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -107,6 +115,14 @@ export default function TradeScreen() {
           data={productsToDisplay}
           keyExtractor={(item) => item.id}
           numColumns={2}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#E44336"
+              colors={["#E44336"]}
+            />
+          }
           renderItem={({ item }) => {
             const mappedProduct = {
               id: item.id,

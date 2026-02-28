@@ -14,6 +14,8 @@ import {
   PaperPlaneTiltIcon,
   PhoneIcon,
   PlusIcon,
+  ShoppingBagIcon,
+  StopIcon,
   XIcon,
 } from "phosphor-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -41,8 +43,6 @@ import {
 
 import ChatOptionsSheet from "@src/components/chat_components/ChatOptionsSheet";
 import ImageViewerModal from "@src/components/chat_components/ImageViewerModal";
-import ProductCard from "@src/components/chat_components/ProductCard";
-import VoicePlayer from "@src/components/chat_components/VoicePlayer";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Message, useChat } from "@src/hooks/useChat";
 import useThemeColor from "@src/hooks/useThemeColor";
@@ -837,35 +837,6 @@ export default function NormalProductChatScreen() {
     await toggleMuteConversation();
   };
 
-  const handleBlock = () => {
-    Alert.alert(
-      t("chat.block_user_title"),
-      t("chat.block_user_confirmation", {
-        userName: otherUser?.first_name || "this user",
-      }),
-      t("chat.block_user_confirmation", {
-        userName: otherUser?.first_name || "this user",
-      }),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("chat.block"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await blockUser(otherUser?.id || "");
-              Alert.alert(t("chat.block"), t("chat.user_blocked_successfully"));
-              Alert.alert(t("chat.block"), t("chat.user_blocked_successfully"));
-              router.back();
-            } catch (e: any) {
-              Alert.alert(t("error"), e.message);
-            }
-          },
-        },
-      ],
-    );
-  };
-
   const handleCall = () => {
     if (otherUser?.phone) Linking.openURL(`tel:${otherUser.phone}`);
     else Alert.alert(t("error"), t("chat.phone_not_available"));
@@ -1427,88 +1398,21 @@ export default function NormalProductChatScreen() {
       />
       <ChatOptionsSheet
         visible={showOptionsMenu}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowOptionsMenu(false)}
-      >
-        <Pressable
-          style={styles.overlay}
-          onPress={() => setShowOptionsMenu(false)}
-        >
-          <View
-            style={[
-              styles.sheet,
-              {
-                backgroundColor: themeColors.card,
-                // ✅ Clears home indicator on iPhone
-                paddingBottom: insets.bottom > 0 ? insets.bottom + 16 : 40,
-              },
-            ]}
-          >
-            <View
-              style={[
-                styles.sheetHandle,
-                { backgroundColor: themeColors.border },
-              ]}
-            />
-            <ThemedText style={styles.sheetTitle}>
-              {t("chat.options")}
-            </ThemedText>
-
-            <TouchableOpacity style={styles.optRow} onPress={handleToggleMute}>
-              {isMuted ? (
-                <BellIcon size={22} color={themeColors.text} weight="fill" />
-              ) : (
-                <BellSlashIcon
-                  size={22}
-                  color={themeColors.text}
-                  weight="fill"
-                />
-              )}
-              <ThemedText
-                style={[styles.optLabel, { color: themeColors.text }]}
-              >
-                {isMuted
-                  ? t("chat.unmute_notifications")
-                  : t("chat.mute_notifications")}
-              </ThemedText>
-            </TouchableOpacity>
-
-            <View
-              style={[
-                styles.divider,
-                { backgroundColor: themeColors.border + "40" },
-              ]}
-            />
-
-            <TouchableOpacity style={styles.optRow} onPress={handleBlock}>
-              {/* "#EF4444" kept intentional — semantic destructive color */}
-              <ProhibitIcon size={22} color="#EF4444" weight="fill" />
-              <ThemedText style={[styles.optLabel, { color: "#EF4444" }]}>
-                {t("chat.block")} {otherUser?.first_name || "User"}
-              </ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.cancelBtn,
-                { borderColor: themeColors.border + "60" },
-              ]}
-              onPress={() => setShowOptionsMenu(false)}
-            >
-              <ThemedText
-                style={{
-                  fontWeight: "700",
-                  fontSize: 16,
-                  color: themeColors.text,
-                }}
-              >
-                {t("common.cancel")}
-              </ThemedText>
-            </TouchableOpacity>
-          </View>
-        </Pressable>
-      </Modal>
+        onClose={() => setShowOptionsMenu(false)}
+        onMute={handleToggleMute}
+        onBlock={async () => {
+          try {
+            await blockUser(otherUser?.id || "");
+            Alert.alert(t("chat.block"), t("chat.user_blocked_successfully"));
+            router.back();
+          } catch (e: any) {
+            Alert.alert(t("error"), e.message);
+          }
+        }}
+        isMuted={isMuted}
+        themeColors={themeColors}
+        otherUserName={otherUser?.first_name || "User"}
+      />
     </SafeAreaView>
   );
 }

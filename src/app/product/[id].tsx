@@ -80,11 +80,6 @@ export default function ProductDetail() {
     isOwner,
   });
 
-  const { conversations, loading: conversationsLoading } = useConversations(
-    "regular",
-    isOwner ? (id as string) : undefined,
-  );
-
   useFocusEffect(
     useCallback(() => {
       if (id) {

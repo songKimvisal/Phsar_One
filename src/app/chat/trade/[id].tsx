@@ -3,6 +3,8 @@ import {
   RecordingPresets,
   requestRecordingPermissionsAsync,
   setAudioModeAsync,
+  useAudioPlayer,
+  useAudioPlayerStatus,
   useAudioRecorder,
   useAudioRecorderState,
 } from "expo-audio";
@@ -10,11 +12,15 @@ import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
+  CheckIcon,
+  ChecksIcon,
   ImageIcon,
   MapPinIcon,
   MicrophoneIcon,
   PaperPlaneTiltIcon,
   PlusIcon,
+  ShoppingBagIcon,
+  StopIcon,
   XIcon,
 } from "phosphor-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -25,16 +31,17 @@ import {
   Alert,
   Animated,
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Linking,
   Platform,
+  Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import Bubble from "@src/components/chat_components/Bubble";
 import ChatHeader from "@src/components/chat_components/ChatHeader";
 import ChatInputBar from "@src/components/chat_components/ChatInputBar";
 import ChatOptionsSheet from "@src/components/chat_components/ChatOptionsSheet";
@@ -395,9 +402,6 @@ export default function TradeProductChatScreen() {
   const recordingDuration = Math.floor(
     (recorderState.durationMillis || 0) / 1000,
   );
-  const recordingDuration = Math.floor(
-    (recorderState.durationMillis || 0) / 1000,
-  );
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   const isMuted =
@@ -640,31 +644,6 @@ export default function TradeProductChatScreen() {
   // ── Options actions ────────────────────────────────────────────────────────
   const handleToggleMute = async () => {
     await toggleMuteConversation();
-  };
-
-  const handleBlock = () => {
-    Alert.alert(
-      t("chat.block_user_title"),
-      t("chat.block_user_confirmation", {
-        userName: otherUser?.first_name || "this user",
-      }),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("chat.block"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await blockUser(otherUser?.id || "");
-              Alert.alert(t("chat.block"), t("chat.user_blocked_successfully"));
-              router.back();
-            } catch (e: any) {
-              Alert.alert(t("error"), e.message);
-            }
-          },
-        },
-      ],
-    );
   };
 
   const handleCall = () => {
@@ -942,7 +921,15 @@ export default function TradeProductChatScreen() {
         visible={showOptionsMenu}
         onClose={() => setShowOptionsMenu(false)}
         onMute={handleToggleMute}
-        onBlock={handleBlock}
+        onBlock={async () => {
+          try {
+            await blockUser(otherUser?.id || "");
+            Alert.alert(t("chat.block"), t("chat.user_blocked_successfully"));
+            router.back();
+          } catch (e: any) {
+            Alert.alert(t("error"), e.message);
+          }
+        }}
         isMuted={isMuted}
         themeColors={themeColors}
         otherUserName={otherUser?.first_name || "User"}

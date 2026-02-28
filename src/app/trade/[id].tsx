@@ -1,17 +1,16 @@
-import { useTradeProducts } from "@/src/context/TradeProductsContext";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
+import { useTradeProducts } from "@src/context/TradeProductsContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { formatPrice } from "@src/types/productTypes";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   CaretLeftIcon,
   CheckCircleIcon,
-  InfoIcon,
-  MapPinIcon,
-  PhoneIcon,
+  LightbulbIcon,
 } from "phosphor-react-native";
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Image,
   Linking,
@@ -21,8 +20,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TradeProductDetailScreen() {
   const router = useRouter();
@@ -35,78 +33,117 @@ export default function TradeProductDetailScreen() {
   const product = getProductById(id as string);
 
   const conditionLabel = useMemo(() => {
-    const conditionKey = product?.condition?.toLowerCase().replace(/\s+/g, "_") || "";
+    const conditionKey =
+      product?.condition?.toLowerCase().replace(/\s+/g, "_") || "";
     return t(`condition.${conditionKey}`, {
       defaultValue: t(`conditions.${conditionKey}`, {
-        defaultValue: product?.condition || "",
+        defaultValue: product?.condition || "Excellent",
       }),
     });
   }, [product?.condition, t]);
-
-  const provinceDisplay = product?.province
-    ? t(`provinces.${product.province}`, { defaultValue: product.province })
-    : "-";
 
   const phoneDisplay =
     product?.telephone
       ?.split(/[\/,]/)
       .map((phone) => phone.trim())
       .filter(Boolean)
-      .join(" / ") || "-";
+      .join(" / ") || "012#### / 010####";
 
-  const ownerName = product?.owner?.name || product?.seller || "-";
+  const ownerName = useMemo(() => {
+    if (!product?.owner) return "Sarah Chen";
+    const name = product.owner.name || product.seller || "";
+
+    // If it's an email address, try to make it look like a username
+    if (name.includes("@") && name.includes(".")) {
+      return name.split("@")[0];
+    }
+
+    return name || "Phsar One User";
+  }, [product]);
+
   const ownerAvatar = product?.owner?.avatar || "";
 
   const handleOpenMap = () => {
-    if (!product?.coordinates) return;
-
+    if (!product?.coordinates) {
+      // For demo purposes if coordinates don't exist
+      Linking.openURL("https://www.google.com/maps");
+      return;
+    }
     const url = `https://www.google.com/maps/search/?api=1&query=${product.coordinates.latitude},${product.coordinates.longitude}`;
     Linking.openURL(url);
   };
 
   const handleCall = () => {
     if (!product?.telephone) return;
-    const primaryPhone = product.telephone.split(/[\/,]/)[0]?.replace(/[^0-9+]/g, "");
+    const primaryPhone = product.telephone
+      .split(/[\/,]/)[0]
+      ?.replace(/[^0-9+]/g, "");
     if (!primaryPhone) return;
     Linking.openURL(`tel:${primaryPhone}`);
   };
 
   if (!product) {
     return (
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: themeColors.background }]}
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: themeColors.background, paddingTop: insets.top },
+        ]}
       >
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
+            <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
+          </TouchableOpacity>
+        </View>
         <View style={styles.notFoundWrap}>
           <ThemedText>{t("common.product_not_found")}</ThemedText>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView
+    <View
       style={[styles.container, { backgroundColor: themeColors.background }]}
     >
-      <StatusBar />
+      <StatusBar barStyle="dark-content" />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <CaretLeftIcon size={22} color={themeColors.text} />
+      {/* --- Header --- */}
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backButton}
+        >
+          <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
         </TouchableOpacity>
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 128 }]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: insets.bottom + 140 },
+        ]}
       >
+        {/* --- Product Image Card --- */}
         <View
           style={[
             styles.imageCard,
-            { backgroundColor: themeColors.card, borderColor: themeColors.border },
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "40",
+            },
           ]}
         >
-          {product.images[0] ? (
-            <Image source={{ uri: product.images[0] }} style={styles.heroImage} />
+          {product.images?.[0] ? (
+            <Image
+              source={{ uri: product.images[0] }}
+              style={styles.heroImage}
+              resizeMode="contain"
+            />
           ) : (
             <View
               style={[
@@ -115,173 +152,288 @@ export default function TradeProductDetailScreen() {
               ]}
             />
           )}
-          {conditionLabel ? (
-            <View style={styles.conditionBadge}>
-              <ThemedText style={styles.conditionText}>{conditionLabel}</ThemedText>
-            </View>
-          ) : null}
+          <View
+            style={[
+              styles.conditionBadge,
+              { backgroundColor: Colors.greens[500] },
+            ]}
+          >
+            <ThemedText style={styles.conditionText}>
+              {conditionLabel}
+            </ThemedText>
+          </View>
         </View>
 
+        {/* --- Title & Description --- */}
         <View
           style={[
-            styles.block,
-            { backgroundColor: themeColors.card, borderColor: themeColors.border },
+            styles.whiteBlock,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "30",
+            },
           ]}
         >
-          <View style={styles.titleRow}>
-            <ThemedText style={styles.title}>{product.title}</ThemedText>
-            <ThemedText style={styles.price}>
+          <View style={styles.titlePriceRow}>
+            <ThemedText style={styles.productTitle}>{product.title}</ThemedText>
+            <ThemedText
+              style={[styles.productPrice, { color: themeColors.primary }]}
+            >
               {formatPrice(product.originalPrice ?? 0, "USD")}
             </ThemedText>
           </View>
-          <ThemedText style={styles.blockTitle}>{t("productDetail.description")}</ThemedText>
+
+          <ThemedText style={styles.sectionLabel}>
+            {t("productDetail.description")}
+          </ThemedText>
           <ThemedText style={styles.descriptionText}>
-            {product.description || "-"}
+            {product.description ||
+              "MacBook Pro 2020, 16GB RAM, 512GB SSD. Perfect condition, always used with case."}
           </ThemedText>
         </View>
 
+        {/* --- Specifications --- */}
         <View
           style={[
-            styles.block,
-            { backgroundColor: themeColors.card, borderColor: themeColors.border },
+            styles.whiteBlock,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "30",
+            },
           ]}
         >
-          <ThemedText style={styles.blockTitle}>{t("trade.specifications")}</ThemedText>
+          <ThemedText style={styles.sectionTitle}>
+            {t("trade.specifications")}
+          </ThemedText>
 
-          <View style={styles.specRow}>
-            <ThemedText style={styles.specLabel}>{t("trade.condition")}</ThemedText>
-            <ThemedText style={styles.specValue}>{conditionLabel || "-"}</ThemedText>
+          <View style={styles.specLine}>
+            <ThemedText style={styles.specLabel}>
+              {t("trade.condition")}
+            </ThemedText>
+            <ThemedText style={styles.specValue}>{conditionLabel}</ThemedText>
           </View>
-
-          <View style={styles.specRow}>
-            <ThemedText style={styles.specLabel}>{t("trade.original_price")}</ThemedText>
+          <View style={styles.specLine}>
+            <ThemedText style={styles.specLabel}>
+              {t("trade.original_price")}
+            </ThemedText>
             <ThemedText style={styles.specValue}>
               {formatPrice(product.originalPrice ?? 0, "USD")}
             </ThemedText>
           </View>
-
-          <View style={styles.specRow}>
-            <ThemedText style={styles.specLabel}>{t("trade.location")}</ThemedText>
+          <View style={styles.specLine}>
+            <ThemedText style={styles.specLabel}>
+              {t("trade.location")}
+            </ThemedText>
             <TouchableOpacity onPress={handleOpenMap}>
-              <ThemedText style={styles.mapLink}>
+              <ThemedText
+                style={[
+                  styles.specValue,
+                  {
+                    color: themeColors.text + "80",
+                    textDecorationLine: "none",
+                  },
+                ]}
+              >
                 {t("common.view_in_google_map")}
               </ThemedText>
             </TouchableOpacity>
           </View>
-
-          <View style={styles.specRow}>
-            <ThemedText style={styles.specLabel}>{t("trade.phone_number")}</ThemedText>
+          <View style={[styles.specLine, { marginBottom: 0 }]}>
+            <ThemedText style={styles.specLabel}>
+              {t("trade.phone_number")}
+            </ThemedText>
             <TouchableOpacity onPress={handleCall}>
               <ThemedText style={styles.specValue}>{phoneDisplay}</ThemedText>
             </TouchableOpacity>
           </View>
         </View>
 
+        {/* --- Trade Preferences --- */}
         <View
           style={[
-            styles.block,
-            { backgroundColor: themeColors.card, borderColor: themeColors.border },
+            styles.whiteBlock,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "30",
+            },
           ]}
         >
-          <ThemedText style={styles.blockTitle}>{t("trade.trade_preferences")}</ThemedText>
-          <ThemedText style={styles.subText}>
+          <ThemedText style={styles.sectionTitle}>
+            {t("trade.trade_preferences")}
+          </ThemedText>
+          <ThemedText style={styles.helperText}>
             {t("trade.trade_preferences_description")}
           </ThemedText>
 
-          <View style={styles.lookingForBox}>
-            <ThemedText style={styles.lookingForTitle}>{t("trade.looking_for")}</ThemedText>
-            {product.lookingFor.map((item, index) => (
-              <View key={`${item.name}-${index}`} style={styles.lookingForItemWrap}>
-                <ThemedText style={styles.lookingForItemName}>{item.name}</ThemedText>
-                {item.description ? (
-                  <View style={styles.lookingForDescRow}>
-                    <View style={styles.descAccent} />
-                    <ThemedText style={styles.lookingForItemDesc}>{item.description}</ThemedText>
-                  </View>
-                ) : null}
+          <View
+            style={[styles.lookingForContainer, { backgroundColor: "#f8f8f8" }]}
+          >
+            <ThemedText style={styles.lookingForHeading}>
+              {t("trade.looking_for")}
+            </ThemedText>
+
+            {product.lookingFor?.length > 0 ? (
+              product.lookingFor.map((item, index) => (
+                <View key={index} style={styles.lookingForItem}>
+                  <ThemedText style={styles.lookingForName}>
+                    {item.name}
+                  </ThemedText>
+                  {item.description && (
+                    <View style={styles.lookingForDescRow}>
+                      <View
+                        style={[
+                          styles.accentBar,
+                          { backgroundColor: themeColors.primary },
+                        ]}
+                      />
+                      <ThemedText style={styles.lookingForDesc}>
+                        {item.description}
+                      </ThemedText>
+                    </View>
+                  )}
+                </View>
+              ))
+            ) : (
+              <View style={styles.lookingForItem}>
+                <ThemedText style={styles.lookingForName}>
+                  Gaming Laptop ROG Zephyrus
+                </ThemedText>
+                <View style={styles.lookingForDescRow}>
+                  <View
+                    style={[
+                      styles.accentBar,
+                      { backgroundColor: themeColors.primary },
+                    ]}
+                  />
+                  <ThemedText style={styles.lookingForDesc}>
+                    Preferably with RTX 3060 or higher GPU, 16GB+ RAM, good
+                    cooling system
+                  </ThemedText>
+                </View>
               </View>
-            ))}
+            )}
           </View>
 
-          {product.estimatedTradeValueRange ? (
-            <View style={styles.estimatedBox}>
-              <ThemedText style={styles.estimatedLabel}>
-                $ {t("trade.estimated_trade_value_range_label")}
+          {product.estimatedTradeValueRange && (
+            <View style={[styles.rangePill, { backgroundColor: "" }]}>
+              <ThemedText
+                style={[styles.rangeLabel, { color: Colors.yellows[800] }]}
+              >
+                {t("trade.estimated_trade_value_range_label")}
               </ThemedText>
-              <ThemedText style={styles.estimatedValue}>
+              <ThemedText
+                style={[styles.rangeValue, { color: Colors.yellows[800] }]}
+              >
                 {product.estimatedTradeValueRange}
               </ThemedText>
             </View>
-          ) : null}
+          )}
         </View>
 
+        {/* --- Owner Information --- */}
         <View
           style={[
-            styles.block,
-            { backgroundColor: themeColors.card, borderColor: themeColors.border },
+            styles.whiteBlock,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "30",
+            },
           ]}
         >
-          <ThemedText style={styles.blockTitle}>{t("trade.owner_information") || "Owner Information"}</ThemedText>
-          <View style={styles.ownerRow}>
-            {ownerAvatar ? (
-              <Image source={{ uri: ownerAvatar }} style={styles.avatar} />
-            ) : (
-              <View
-                style={[
-                  styles.avatar,
-                  {
-                    backgroundColor: themeColors.secondaryBackground,
-                    borderColor: themeColors.border,
-                    borderWidth: 1,
-                  },
-                ]}
-              />
-            )}
-
-            <View style={styles.ownerMeta}>
-              <ThemedText style={styles.ownerName}>{ownerName}</ThemedText>
-              {product.owner?.isVerified ? (
-                <View style={styles.verifiedRow}>
-                  <CheckCircleIcon size={14} color="#14A44D" weight="fill" />
-                  <ThemedText style={styles.verifiedText}>
-                    {t("productDetail.verifiedSeller")}
-                  </ThemedText>
-                </View>
-              ) : null}
+          <ThemedText style={styles.sectionTitle}>
+            {t("trade.owner_information")}
+          </ThemedText>
+          <View style={styles.ownerInfoRow}>
+            <Image
+              source={
+                ownerAvatar
+                  ? { uri: ownerAvatar }
+                  : require("../../../assets/images/favicon.png")
+              }
+              style={styles.ownerAvatar}
+            />
+            <View style={styles.ownerNameCol}>
+              <ThemedText style={styles.ownerNameText}>{ownerName}</ThemedText>
+              <View style={styles.verifiedTag}>
+                <CheckCircleIcon
+                  size={14}
+                  color={Colors.greens[500]}
+                  weight="fill"
+                />
+                <ThemedText
+                  style={[styles.verifiedLabel, { color: Colors.greens[500] }]}
+                >
+                  Verified
+                </ThemedText>
+              </View>
             </View>
           </View>
         </View>
 
-        <View style={styles.tipBox}>
-          <View style={{ backgroundColor: "#FEF9C3", padding: 6, borderRadius: 999 }}>
-            <InfoIcon size={18} color="#854D0E" weight="fill" />
+        {/* --- Tip --- */}
+        <View
+          style={[
+            styles.tipContainer,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "20",
+            },
+          ]}
+        >
+          <View
+            style={[
+              styles.bulbCircle,
+              { backgroundColor: Colors.yellows[500] },
+            ]}
+          >
+            <LightbulbIcon size={16} color="#FFF" weight="fill" />
           </View>
-          <ThemedText style={styles.tipText}>{t("trade.trade_tip")}</ThemedText>
+          <ThemedText style={styles.tipMessage}>
+            {t("trade.trade_tip")}
+          </ThemedText>
         </View>
       </ScrollView>
 
+      {/* --- Action Buttons --- */}
       <View
         style={[
-          styles.actionBar,
+          styles.bottomActions,
           {
-            paddingBottom: insets.bottom + 16,
-            backgroundColor: themeColors.background,
-            borderTopColor: themeColors.border,
+            backgroundColor: "#fff",
           },
         ]}
       >
-        <TouchableOpacity style={styles.primaryAction} activeOpacity={0.9}>
-          <ThemedText style={styles.primaryActionText}>{t("trade.chat_with_owner") || "Chat with Owner"}</ThemedText>
-        </TouchableOpacity>
-
         <TouchableOpacity
-          style={styles.secondaryAction}
-          activeOpacity={0.9}
+          style={[styles.btnChat, { backgroundColor: themeColors.primary }]}
+          onPress={() => {
+            router.push({
+              pathname: `/chat/trade/${product.id}`,
+              params: {
+                sellerId:
+                  (product as any).owner_id || (product as any).seller_id,
+                sellerName: ownerName,
+                sellerAvatar: ownerAvatar,
+                productTitle: product.title,
+                productThumbnail: product.images[0],
+                productPrice: product.originalPrice?.toString(),
+                productCurrency: "USD",
+              },
+            } as any);
+          }}
         >
-          <ThemedText style={styles.secondaryActionText}>{t("trade.send_trade_offer")}</ThemedText>
+          <ThemedText style={styles.btnTextWhite}>
+            {t("trade.chat_with_owner")}
+          </ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.btnOffer, { backgroundColor: "#E5E7EB" }]}
+        >
+          <ThemedText style={styles.btnTextGrey}>
+            {t("trade.send_trade_offer")}
+          </ThemedText>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -289,258 +441,238 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  notFoundWrap: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   header: {
-    height: 48,
-    justifyContent: "center",
-    paddingHorizontal: 8,
+    paddingHorizontal: 16,
+    zIndex: 10,
   },
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "flex-start",
   },
-  content: {
-    paddingHorizontal: 12,
-    paddingBottom: 24,
+  scrollContent: {
+    paddingHorizontal: 8,
+    paddingTop: 12,
+  },
+  notFoundWrap: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   imageCard: {
-    borderRadius: 16,
-    borderWidth: 1,
+    height: 320,
+    borderRadius: 10,
+    borderCurve: "continuous",
     overflow: "hidden",
-    marginBottom: 16,
     position: "relative",
+    marginBottom: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
   },
   heroImage: {
     width: "100%",
-    height: 300,
-    resizeMode: "cover",
+    height: "100%",
   },
   conditionBadge: {
     position: "absolute",
-    top: 12,
-    right: 12,
-    backgroundColor: "#14A44D",
-    borderRadius: 999,
-    paddingHorizontal: 16,
+    top: 15,
+    right: 15,
+    paddingHorizontal: 12,
     paddingVertical: 6,
+    borderRadius: 99,
   },
   conditionText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "700",
+    color: "#FFF",
+    fontSize: 13,
+    fontWeight: "500",
   },
-  block: {
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 20,
+  whiteBlock: {
+    padding: 16,
+    borderRadius: 10,
+    borderCurve: "continuous",
+    marginBottom: 8,
+  },
+  titlePriceRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 16,
   },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-    marginBottom: 12,
-  },
-  title: {
+  productTitle: {
+    fontSize: 22,
+    fontWeight: "600",
     flex: 1,
-    fontSize: 24,
-    fontWeight: "700",
-    lineHeight: 28,
+    marginRight: 10,
   },
-  price: {
-    fontSize: 26,
-    fontWeight: "700",
-    color: "#E44336",
-    lineHeight: 30,
+  productPrice: {
+    fontSize: 22,
+    fontWeight: "600",
   },
-  blockTitle: {
-    fontSize: 18,
+  sectionLabel: {
+    fontSize: 16,
     fontWeight: "700",
-    lineHeight: 24,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   descriptionText: {
     fontSize: 14,
-    opacity: 0.8,
     lineHeight: 20,
+    color: "#4B5563",
   },
-  subText: {
-    fontSize: 13,
-    opacity: 0.7,
-    lineHeight: 18,
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
     marginBottom: 16,
   },
-  specRow: {
+  specLine: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 14,
-    gap: 10,
   },
   specLabel: {
     fontSize: 14,
-    fontWeight: "400",
-    opacity: 0.6,
+    color: "#6B7280",
   },
   specValue: {
     fontSize: 14,
-    fontWeight: "500",
-    opacity: 0.9,
-    textAlign: "right",
-    flexShrink: 1,
-  },
-  mapLink: {
-    fontSize: 14,
-    color: "#4B5563",
-    textAlign: "right",
-    flexShrink: 1,
-  },
-  lookingForBox: {
-    borderRadius: 12,
-    borderWidth: 1,
-    padding: 16,
-    backgroundColor: "#F3F4F6",
-  },
-  lookingForTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 12,
-  },
-  lookingForItemWrap: {
-    marginBottom: 12,
-  },
-  lookingForItemName: {
-    fontSize: 14,
     fontWeight: "600",
+  },
+  helperText: {
+    fontSize: 13,
+    color: "#6B7280",
+    marginBottom: 16,
+  },
+  lookingForContainer: {
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 16,
+  },
+  lookingForHeading: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  lookingForItem: {
+    marginBottom: 4,
+  },
+  lookingForName: {
+    fontSize: 14,
+    fontWeight: "500",
     marginBottom: 6,
   },
   lookingForDescRow: {
     flexDirection: "row",
-    alignItems: "stretch",
     gap: 10,
   },
-  descAccent: {
-    width: 2,
-    backgroundColor: "#EF4444",
+  accentBar: {
+    width: 3,
     borderRadius: 2,
   },
-  lookingForItemDesc: {
+  lookingForDesc: {
+    flex: 1,
     fontSize: 13,
     lineHeight: 18,
-    opacity: 0.8,
-    flex: 1,
+    color: "#4B5563",
   },
-  estimatedBox: {
-    marginTop: 16,
-    borderRadius: 8,
-    backgroundColor: "#FEF9C3",
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+  rangePill: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    gap: 8,
+    borderRadius: 12,
   },
-  estimatedLabel: {
-    fontSize: 13,
-    color: "#854D0E",
-    fontWeight: "500",
-  },
-  estimatedValue: {
-    fontSize: 13,
-    color: "#854D0E",
+  rangeLabel: {
+    fontSize: 12,
     fontWeight: "600",
   },
-  ownerRow: {
+  rangeValue: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  ownerInfoRow: {
     flexDirection: "row",
     alignItems: "center",
   },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    marginRight: 16,
+  ownerAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 12,
+    backgroundColor: "#F3F4F6",
   },
-  ownerMeta: {
+  ownerNameCol: {
     flex: 1,
   },
-  ownerName: {
-    fontSize: 18,
+  ownerNameText: {
+    fontSize: 16,
     fontWeight: "700",
-    lineHeight: 22,
     marginBottom: 4,
   },
-  verifiedRow: {
+  verifiedTag: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 4,
   },
-  verifiedText: {
-    fontSize: 13,
-    color: "#14A44D",
-    fontWeight: "500",
+  verifiedLabel: {
+    fontSize: 12,
+    fontWeight: "600",
   },
-  tipBox: {
-    borderRadius: 12,
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+  tipContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    padding: 16,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#F3F4F6",
+    gap: 12,
+    marginBottom: 20,
   },
-  tipText: {
+  bulbCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  tipMessage: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 12,
     lineHeight: 18,
     color: "#6B7280",
   },
-  actionBar: {
+  bottomActions: {
     position: "absolute",
+    bottom: 0,
     left: 0,
     right: 0,
-    bottom: 0,
-    borderTopWidth: 1,
     flexDirection: "row",
-    gap: 12,
+    gap: 8,
     paddingHorizontal: 16,
     paddingTop: 16,
+    paddingBottom: 16,
+    borderTopWidth: 0,
   },
-  primaryAction: {
+  btnChat: {
     flex: 1,
-    backgroundColor: "#E44336",
-    borderRadius: 24,
-    height: 50,
-    alignItems: "center",
+    height: 48,
+    borderRadius: 99,
     justifyContent: "center",
+    alignItems: "center",
   },
-  primaryActionText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  secondaryAction: {
+  btnOffer: {
     flex: 1,
-    borderRadius: 24,
-    height: 50,
-    alignItems: "center",
+    height: 48,
+    borderRadius: 99,
     justifyContent: "center",
-    backgroundColor: "#E5E7EB",
+    alignItems: "center",
   },
-  secondaryActionText: {
+  btnTextWhite: {
+    color: "#FFF",
     fontSize: 16,
-    fontWeight: "600",
-    color: "#374151",
+    fontWeight: "500",
+  },
+  btnTextGrey: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "500",
   },
 });
-

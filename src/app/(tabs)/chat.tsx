@@ -244,22 +244,22 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "600",
   },
   tabContainer: {
     flexDirection: "row",
     marginHorizontal: 16,
-    gap: 12,
-    marginBottom: 20,
+    gap: 8,
+    marginBottom: 16,
   },
   tab: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 10,
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: 99,
   },
   tabText: {
-    fontWeight: "600",
+    fontWeight: "400",
     fontSize: 16,
   },
   listContent: {
