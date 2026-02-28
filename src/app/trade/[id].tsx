@@ -2,6 +2,7 @@ import { ThemedText } from "@src/components/shared_components/ThemedText";
 import TradeOfferBottomSheet from "@src/components/trade_components/TradeOfferBottomSheet";
 import { Colors } from "@src/constants/Colors";
 import { useTradeProducts } from "@src/context/TradeProductsContext";
+import { useTradeProducts } from "@src/context/TradeProductsContext";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { formatPrice } from "@src/types/productTypes";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -9,8 +10,9 @@ import {
   CaretLeftIcon,
   CheckCircleIcon,
   LightbulbIcon,
+  LightbulbIcon,
 } from "phosphor-react-native";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Image,
@@ -21,6 +23,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TradeProductDetailScreen() {
@@ -37,8 +40,11 @@ export default function TradeProductDetailScreen() {
   const conditionLabel = useMemo(() => {
     const conditionKey =
       product?.condition?.toLowerCase().replace(/\s+/g, "_") || "";
+    const conditionKey =
+      product?.condition?.toLowerCase().replace(/\s+/g, "_") || "";
     return t(`condition.${conditionKey}`, {
       defaultValue: t(`conditions.${conditionKey}`, {
+        defaultValue: product?.condition || "Excellent",
         defaultValue: product?.condition || "Excellent",
       }),
     });
@@ -50,6 +56,19 @@ export default function TradeProductDetailScreen() {
       .map((phone) => phone.trim())
       .filter(Boolean)
       .join(" / ") || "012#### / 010####";
+      .join(" / ") || "012#### / 010####";
+
+  const ownerName = useMemo(() => {
+    if (!product?.owner) return "Sarah Chen";
+    const name = product.owner.name || product.seller || "";
+
+    // If it's an email address, try to make it look like a username
+    if (name.includes("@") && name.includes(".")) {
+      return name.split("@")[0];
+    }
+
+    return name || "Phsar One User";
+  }, [product]);
 
   const ownerName = useMemo(() => {
     if (!product?.owner) return "Sarah Chen";
@@ -71,12 +90,20 @@ export default function TradeProductDetailScreen() {
       Linking.openURL("https://www.google.com/maps");
       return;
     }
+    if (!product?.coordinates) {
+      // For demo purposes if coordinates don't exist
+      Linking.openURL("https://www.google.com/maps");
+      return;
+    }
     const url = `https://www.google.com/maps/search/?api=1&query=${product.coordinates.latitude},${product.coordinates.longitude}`;
     Linking.openURL(url);
   };
 
   const handleCall = () => {
     if (!product?.telephone) return;
+    const primaryPhone = product.telephone
+      .split(/[\/,]/)[0]
+      ?.replace(/[^0-9+]/g, "");
     const primaryPhone = product.telephone
       .split(/[\/,]/)[0]
       ?.replace(/[^0-9+]/g, "");
@@ -91,7 +118,20 @@ export default function TradeProductDetailScreen() {
           styles.container,
           { backgroundColor: themeColors.background, paddingTop: insets.top },
         ]}
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: themeColors.background, paddingTop: insets.top },
+        ]}
       >
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
+            <CaretLeftIcon size={24} color={themeColors.text} weight="bold" />
+          </TouchableOpacity>
+        </View>
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => router.back()}
@@ -104,17 +144,20 @@ export default function TradeProductDetailScreen() {
           <ThemedText>{t("common.product_not_found")}</ThemedText>
         </View>
       </View>
+      </View>
     );
   }
 
   return (
     <View
+    <View
       style={[styles.container, { backgroundColor: themeColors.background }]}
     >
       <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="dark-content" />
 
       {/* --- Header --- */}
-      <View style={[styles.header, { paddingTop: 16 }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <TouchableOpacity
           onPress={() => router.back()}
           style={styles.backButton}
@@ -129,11 +172,20 @@ export default function TradeProductDetailScreen() {
           styles.scrollContent,
           { paddingBottom: insets.bottom + 140 },
         ]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: insets.bottom + 140 },
+        ]}
       >
+        {/* --- Product Image Card --- */}
         {/* --- Product Image Card --- */}
         <View
           style={[
             styles.imageCard,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "40",
+            },
             {
               backgroundColor: themeColors.card,
               borderColor: themeColors.border + "40",
@@ -144,7 +196,7 @@ export default function TradeProductDetailScreen() {
             <Image
               source={{ uri: product.images[0] }}
               style={styles.heroImage}
-              resizeMode="cover"
+              resizeMode="contain"
             />
           ) : (
             <View
@@ -164,11 +216,27 @@ export default function TradeProductDetailScreen() {
               {conditionLabel}
             </ThemedText>
           </View>
+          <View
+            style={[
+              styles.conditionBadge,
+              { backgroundColor: Colors.greens[500] },
+            ]}
+          >
+            <ThemedText style={styles.conditionText}>
+              {conditionLabel}
+            </ThemedText>
+          </View>
         </View>
 
         {/* --- Title & Description --- */}
+        {/* --- Title & Description --- */}
         <View
           style={[
+            styles.whiteBlock,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "30",
+            },
             styles.whiteBlock,
             {
               backgroundColor: themeColors.card,
@@ -181,6 +249,11 @@ export default function TradeProductDetailScreen() {
             <ThemedText
               style={[styles.productPrice, { color: themeColors.primary }]}
             >
+          <View style={styles.titlePriceRow}>
+            <ThemedText style={styles.productTitle}>{product.title}</ThemedText>
+            <ThemedText
+              style={[styles.productPrice, { color: themeColors.primary }]}
+            >
               {formatPrice(product.originalPrice ?? 0, "USD")}
             </ThemedText>
           </View>
@@ -188,15 +261,27 @@ export default function TradeProductDetailScreen() {
           <ThemedText style={styles.sectionLabel}>
             {t("productDetail.description")}
           </ThemedText>
+
+          <ThemedText style={styles.sectionLabel}>
+            {t("productDetail.description")}
+          </ThemedText>
           <ThemedText style={styles.descriptionText}>
+            {product.description ||
+              "MacBook Pro 2020, 16GB RAM, 512GB SSD. Perfect condition, always used with case."}
             {product.description ||
               "MacBook Pro 2020, 16GB RAM, 512GB SSD. Perfect condition, always used with case."}
           </ThemedText>
         </View>
 
         {/* --- Specifications --- */}
+        {/* --- Specifications --- */}
         <View
           style={[
+            styles.whiteBlock,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "30",
+            },
             styles.whiteBlock,
             {
               backgroundColor: themeColors.card,
@@ -207,13 +292,25 @@ export default function TradeProductDetailScreen() {
           <ThemedText style={styles.sectionTitle}>
             {t("trade.specifications")}
           </ThemedText>
+          <ThemedText style={styles.sectionTitle}>
+            {t("trade.specifications")}
+          </ThemedText>
 
           <View style={styles.specLine}>
             <ThemedText style={styles.specLabel}>
               {t("trade.condition")}
             </ThemedText>
             <ThemedText style={styles.specValue}>{conditionLabel}</ThemedText>
+          <View style={styles.specLine}>
+            <ThemedText style={styles.specLabel}>
+              {t("trade.condition")}
+            </ThemedText>
+            <ThemedText style={styles.specValue}>{conditionLabel}</ThemedText>
           </View>
+          <View style={styles.specLine}>
+            <ThemedText style={styles.specLabel}>
+              {t("trade.original_price")}
+            </ThemedText>
           <View style={styles.specLine}>
             <ThemedText style={styles.specLabel}>
               {t("trade.original_price")}
@@ -226,7 +323,20 @@ export default function TradeProductDetailScreen() {
             <ThemedText style={styles.specLabel}>
               {t("trade.location")}
             </ThemedText>
+          <View style={styles.specLine}>
+            <ThemedText style={styles.specLabel}>
+              {t("trade.location")}
+            </ThemedText>
             <TouchableOpacity onPress={handleOpenMap}>
+              <ThemedText
+                style={[
+                  styles.specValue,
+                  {
+                    color: themeColors.text + "80",
+                    textDecorationLine: "none",
+                  },
+                ]}
+              >
               <ThemedText
                 style={[
                   styles.specValue,
@@ -244,12 +354,17 @@ export default function TradeProductDetailScreen() {
             <ThemedText style={styles.specLabel}>
               {t("trade.phone_number")}
             </ThemedText>
+          <View style={[styles.specLine, { marginBottom: 0 }]}>
+            <ThemedText style={styles.specLabel}>
+              {t("trade.phone_number")}
+            </ThemedText>
             <TouchableOpacity onPress={handleCall}>
               <ThemedText style={styles.specValue}>{phoneDisplay}</ThemedText>
             </TouchableOpacity>
           </View>
         </View>
 
+        {/* --- Trade Preferences --- */}
         {/* --- Trade Preferences --- */}
         <View
           style={[
@@ -258,8 +373,17 @@ export default function TradeProductDetailScreen() {
               backgroundColor: themeColors.card,
               borderColor: themeColors.border + "30",
             },
+            styles.whiteBlock,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "30",
+            },
           ]}
         >
+          <ThemedText style={styles.sectionTitle}>
+            {t("trade.trade_preferences")}
+          </ThemedText>
+          <ThemedText style={styles.helperText}>
           <ThemedText style={styles.sectionTitle}>
             {t("trade.trade_preferences")}
           </ThemedText>
@@ -312,10 +436,62 @@ export default function TradeProductDetailScreen() {
                     cooling system
                   </ThemedText>
                 </View>
+          <View
+            style={[styles.lookingForContainer, { backgroundColor: "#f8f8f8" }]}
+          >
+            <ThemedText style={styles.lookingForHeading}>
+              {t("trade.looking_for")}
+            </ThemedText>
+
+            {product.lookingFor?.length > 0 ? (
+              product.lookingFor.map((item, index) => (
+                <View key={index} style={styles.lookingForItem}>
+                  <ThemedText style={styles.lookingForName}>
+                    {item.name}
+                  </ThemedText>
+                  {item.description && (
+                    <View style={styles.lookingForDescRow}>
+                      <View
+                        style={[
+                          styles.accentBar,
+                          { backgroundColor: themeColors.primary },
+                        ]}
+                      />
+                      <ThemedText style={styles.lookingForDesc}>
+                        {item.description}
+                      </ThemedText>
+                    </View>
+                  )}
+                </View>
+              ))
+            ) : (
+              <View style={styles.lookingForItem}>
+                <ThemedText style={styles.lookingForName}>
+                  Gaming Laptop ROG Zephyrus
+                </ThemedText>
+                <View style={styles.lookingForDescRow}>
+                  <View
+                    style={[
+                      styles.accentBar,
+                      { backgroundColor: themeColors.primary },
+                    ]}
+                  />
+                  <ThemedText style={styles.lookingForDesc}>
+                    Preferably with RTX 3060 or higher GPU, 16GB+ RAM, good
+                    cooling system
+                  </ThemedText>
+                </View>
               </View>
+            )}
             )}
           </View>
 
+          {product.estimatedTradeValueRange && (
+            <View style={[styles.rangePill, { backgroundColor: "" }]}>
+              <ThemedText
+                style={[styles.rangeLabel, { color: Colors.yellows[800] }]}
+              >
+                {t("trade.estimated_trade_value_range_label")}
           {product.estimatedTradeValueRange && (
             <View style={[styles.rangePill, { backgroundColor: "" }]}>
               <ThemedText
@@ -326,12 +502,17 @@ export default function TradeProductDetailScreen() {
               <ThemedText
                 style={[styles.rangeValue, { color: Colors.yellows[800] }]}
               >
+              <ThemedText
+                style={[styles.rangeValue, { color: Colors.yellows[800] }]}
+              >
                 {product.estimatedTradeValueRange}
               </ThemedText>
             </View>
           )}
+          )}
         </View>
 
+        {/* --- Owner Information --- */}
         {/* --- Owner Information --- */}
         <View
           style={[
@@ -340,8 +521,39 @@ export default function TradeProductDetailScreen() {
               backgroundColor: themeColors.card,
               borderColor: themeColors.border + "30",
             },
+            styles.whiteBlock,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "30",
+            },
           ]}
         >
+          <ThemedText style={styles.sectionTitle}>
+            {t("trade.owner_information")}
+          </ThemedText>
+          <View style={styles.ownerInfoRow}>
+            <Image
+              source={
+                ownerAvatar
+                  ? { uri: ownerAvatar }
+                  : require("../../../assets/images/favicon.png")
+              }
+              style={styles.ownerAvatar}
+            />
+            <View style={styles.ownerNameCol}>
+              <ThemedText style={styles.ownerNameText}>{ownerName}</ThemedText>
+              <View style={styles.verifiedTag}>
+                <CheckCircleIcon
+                  size={14}
+                  color={Colors.greens[500]}
+                  weight="fill"
+                />
+                <ThemedText
+                  style={[styles.verifiedLabel, { color: Colors.greens[500] }]}
+                >
+                  Verified
+                </ThemedText>
+              </View>
           <ThemedText style={styles.sectionTitle}>
             {t("trade.owner_information")}
           </ThemedText>
@@ -389,7 +601,27 @@ export default function TradeProductDetailScreen() {
             ]}
           >
             <LightbulbIcon size={16} color="#FFF" weight="fill" />
+        {/* --- Tip --- */}
+        <View
+          style={[
+            styles.tipContainer,
+            {
+              backgroundColor: themeColors.card,
+              borderColor: themeColors.border + "20",
+            },
+          ]}
+        >
+          <View
+            style={[
+              styles.bulbCircle,
+              { backgroundColor: Colors.yellows[500] },
+            ]}
+          >
+            <LightbulbIcon size={16} color="#FFF" weight="fill" />
           </View>
+          <ThemedText style={styles.tipMessage}>
+            {t("trade.trade_tip")}
+          </ThemedText>
           <ThemedText style={styles.tipMessage}>
             {t("trade.trade_tip")}
           </ThemedText>
@@ -397,10 +629,13 @@ export default function TradeProductDetailScreen() {
       </ScrollView>
 
       {/* --- Action Buttons --- */}
+      {/* --- Action Buttons --- */}
       <View
         style={[
           styles.bottomActions,
+          styles.bottomActions,
           {
+            backgroundColor: "#fff",
             backgroundColor: "#fff",
           },
         ]}
@@ -408,8 +643,19 @@ export default function TradeProductDetailScreen() {
         <TouchableOpacity
           style={[styles.btnChat, { backgroundColor: themeColors.primary }]}
           onPress={() => {
-            // Navigate to main Chat tab with Trade category selected
-            router.push("/(tabs)/chat?tab=trade");
+            router.push({
+              pathname: `/chat/trade/${product.id}`,
+              params: {
+                sellerId:
+                  (product as any).owner_id || (product as any).seller_id,
+                sellerName: ownerName,
+                sellerAvatar: ownerAvatar,
+                productTitle: product.title,
+                productThumbnail: product.images[0],
+                productPrice: product.originalPrice?.toString(),
+                productCurrency: "USD",
+              },
+            } as any);
           }}
         >
           <ThemedText style={styles.btnTextWhite}>
@@ -418,24 +664,15 @@ export default function TradeProductDetailScreen() {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.btnOffer, { backgroundColor: "#E5E7EB" }]}
-          onPress={() => setShowOfferSheet(true)}
         >
+          <ThemedText style={styles.btnTextGrey}>
+            {t("trade.send_trade_offer")}
+          </ThemedText>
           <ThemedText style={styles.btnTextGrey}>
             {t("trade.send_trade_offer")}
           </ThemedText>
         </TouchableOpacity>
       </View>
-
-      <TradeOfferBottomSheet
-        visible={showOfferSheet}
-        onClose={() => setShowOfferSheet(false)}
-        targetTradeId={product.id}
-        targetOwnerId={product.owner_id || product.seller_id}
-        onOfferSent={() => {
-          Alert.alert(t("common.success"), t("trade.offer_sent_success"));
-          router.push("/(tabs)/chat?tab=trade");
-        }}
-      />
     </View>
   );
 }
@@ -447,13 +684,24 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 16,
     zIndex: 10,
+    paddingHorizontal: 16,
+    zIndex: 10,
   },
   backButton: {
     width: 40,
     height: 40,
     justifyContent: "center",
     alignItems: "flex-start",
+    alignItems: "flex-start",
   },
+  scrollContent: {
+    paddingHorizontal: 8,
+    paddingTop: 12,
+  },
+  notFoundWrap: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   scrollContent: {
     paddingHorizontal: 8,
     paddingTop: 12,
@@ -467,14 +715,19 @@ const styles = StyleSheet.create({
     height: 320,
     borderRadius: 10,
     borderCurve: "continuous",
+    height: 320,
+    borderRadius: 10,
+    borderCurve: "continuous",
     overflow: "hidden",
     position: "relative",
     marginBottom: 8,
     justifyContent: "center",
     alignItems: "center",
+    padding: 16,
   },
   heroImage: {
     width: "100%",
+    height: "100%",
     height: "100%",
   },
   conditionBadge: {
@@ -482,10 +735,17 @@ const styles = StyleSheet.create({
     top: 15,
     right: 15,
     paddingHorizontal: 12,
+    top: 15,
+    right: 15,
+    paddingHorizontal: 12,
     paddingVertical: 6,
+    borderRadius: 99,
     borderRadius: 99,
   },
   conditionText: {
+    color: "#FFF",
+    fontSize: 13,
+    fontWeight: "500",
     color: "#FFF",
     fontSize: 13,
     fontWeight: "500",
@@ -495,38 +755,61 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderCurve: "continuous",
     marginBottom: 8,
+  whiteBlock: {
+    padding: 16,
+    borderRadius: 10,
+    borderCurve: "continuous",
+    marginBottom: 8,
   },
+  titlePriceRow: {
   titlePriceRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 16,
     alignItems: "flex-start",
     marginBottom: 16,
   },
   productTitle: {
     fontSize: 22,
     fontWeight: "600",
+  productTitle: {
+    fontSize: 22,
+    fontWeight: "600",
     flex: 1,
     marginRight: 10,
+    marginRight: 10,
   },
+  productPrice: {
+    fontSize: 22,
+    fontWeight: "600",
   productPrice: {
     fontSize: 22,
     fontWeight: "600",
   },
   sectionLabel: {
     fontSize: 16,
+  sectionLabel: {
+    fontSize: 16,
     fontWeight: "700",
+    marginBottom: 8,
     marginBottom: 8,
   },
   descriptionText: {
     fontSize: 14,
     lineHeight: 20,
     color: "#4B5563",
+    color: "#4B5563",
   },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",
     marginBottom: 16,
   },
+  specLine: {
   specLine: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -536,9 +819,16 @@ const styles = StyleSheet.create({
   specLabel: {
     fontSize: 14,
     color: "#6B7280",
+    color: "#6B7280",
   },
   specValue: {
     fontSize: 14,
+    fontWeight: "600",
+  },
+  helperText: {
+    fontSize: 13,
+    color: "#6B7280",
+    marginBottom: 16,
     fontWeight: "600",
   },
   helperText: {
@@ -550,17 +840,27 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 8,
     marginBottom: 16,
+  lookingForContainer: {
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 16,
   },
   lookingForHeading: {
+  lookingForHeading: {
     fontSize: 16,
+    fontWeight: "600",
     fontWeight: "600",
     marginBottom: 12,
   },
   lookingForItem: {
     marginBottom: 4,
+  lookingForItem: {
+    marginBottom: 4,
   },
   lookingForName: {
+  lookingForName: {
     fontSize: 14,
+    fontWeight: "500",
     fontWeight: "500",
     marginBottom: 6,
   },
@@ -570,8 +870,12 @@ const styles = StyleSheet.create({
   },
   accentBar: {
     width: 3,
+  accentBar: {
+    width: 3,
     borderRadius: 2,
   },
+  lookingForDesc: {
+    flex: 1,
   lookingForDesc: {
     flex: 1,
     fontSize: 13,
@@ -579,18 +883,28 @@ const styles = StyleSheet.create({
     color: "#4B5563",
   },
   rangePill: {
+    color: "#4B5563",
+  },
+  rangePill: {
     flexDirection: "row",
     justifyContent: "space-between",
     borderRadius: 12,
+    borderRadius: 12,
   },
+  rangeLabel: {
+    fontSize: 12,
+    fontWeight: "600",
   rangeLabel: {
     fontSize: 12,
     fontWeight: "600",
   },
   rangeValue: {
     fontSize: 12,
+  rangeValue: {
+    fontSize: 12,
     fontWeight: "600",
   },
+  ownerInfoRow: {
   ownerInfoRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -601,27 +915,44 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginRight: 12,
     backgroundColor: "#F3F4F6",
+  ownerAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 12,
+    backgroundColor: "#F3F4F6",
   },
+  ownerNameCol: {
   ownerNameCol: {
     flex: 1,
   },
+  ownerNameText: {
+    fontSize: 16,
   ownerNameText: {
     fontSize: 16,
     fontWeight: "700",
     marginBottom: 4,
   },
   verifiedTag: {
+  verifiedTag: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 4,
     gap: 4,
   },
   verifiedLabel: {
     fontSize: 12,
     fontWeight: "600",
+  verifiedLabel: {
+    fontSize: 12,
+    fontWeight: "600",
   },
+  tipContainer: {
   tipContainer: {
     flexDirection: "row",
     alignItems: "center",
+    padding: 16,
+    borderRadius: 16,
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
@@ -634,27 +965,47 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     justifyContent: "center",
     alignItems: "center",
+    gap: 12,
+    marginBottom: 20,
+  },
+  bulbCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
   },
   tipMessage: {
+  tipMessage: {
     flex: 1,
+    fontSize: 12,
     fontSize: 12,
     lineHeight: 18,
     color: "#6B7280",
   },
   bottomActions: {
+  bottomActions: {
     position: "absolute",
+    bottom: 0,
     bottom: 0,
     left: 0,
     right: 0,
     flexDirection: "row",
     gap: 8,
+    gap: 8,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 16,
     borderTopWidth: 0,
+    paddingBottom: 16,
+    borderTopWidth: 0,
   },
   btnChat: {
+  btnChat: {
     flex: 1,
+    height: 48,
+    borderRadius: 99,
+    justifyContent: "center",
     height: 48,
     borderRadius: 99,
     justifyContent: "center",
@@ -664,17 +1015,29 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderRadius: 99,
+  },
+  btnOffer: {
+    flex: 1,
+    height: 48,
+    borderRadius: 99,
     justifyContent: "center",
+    alignItems: "center",
     alignItems: "center",
   },
   btnTextWhite: {
     color: "#FFF",
+  btnTextWhite: {
+    color: "#FFF",
     fontSize: 16,
+    fontWeight: "500",
     fontWeight: "500",
   },
   btnTextGrey: {
     color: "#000",
+  btnTextGrey: {
+    color: "#000",
     fontSize: 16,
+    fontWeight: "500",
     fontWeight: "500",
   },
 });

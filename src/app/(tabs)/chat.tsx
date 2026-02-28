@@ -412,10 +412,15 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: "center",
   },
-  headerTitle: { fontSize: 18, fontWeight: "700" },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
   tabContainer: {
     flexDirection: "row",
     marginHorizontal: 16,
+    gap: 8,
+    marginBottom: 16,
     gap: 8,
     marginBottom: 16,
   },
@@ -425,35 +430,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 99,
   },
-  tabText: { fontWeight: "600", fontSize: 16 },
-  listContent: { flexGrow: 1, paddingBottom: 100 },
-  separator: { height: 1, marginHorizontal: 20 },
-
-  // Swipe
-  swipeContainer: {
-    overflow: "hidden",
-  },
-  deleteAction: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: DELETE_WIDTH,
-    backgroundColor: "#EF4444",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  deleteButton: {
-    flex: 1,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 4,
-  },
-  deleteText: {
-    color: "#fff",
-    fontSize: 11,
-    fontWeight: "600",
+  tabText: {
+    fontWeight: "400",
+    fontSize: 16,
   },
   rowContainer: {
     flex: 1,
