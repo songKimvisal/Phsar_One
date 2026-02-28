@@ -53,9 +53,11 @@ export default function NormalProductChatScreen() {
   const router = useRouter();
   const themeColors = useThemeColor();
   const { userId } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
+  const isKhmer = i18n.language === "kh";
   const [viewingImage, setViewingImage] = useState<string | null>(null);
+  const [showProfilePreview, setShowProfilePreview] = useState(false);
   const {
     id: productId,
     sellerId,
@@ -121,7 +123,6 @@ export default function NormalProductChatScreen() {
     if (conversation?.id && messages.length > 0) markMessagesAsRead();
   }, [conversation?.id, messages.length]);
 
-  // Helper to scroll to last message
   const scrollToLatest = useCallback(() => {
     if (messages.length > 0) {
       setTimeout(() => {
@@ -134,7 +135,6 @@ export default function NormalProductChatScreen() {
     }
   }, [messages.length]);
 
-  // Handle scroll to index failures by falling back to scrolling to end
   const handleScrollIndexFailed = useCallback(() => {
     flatListRef.current?.scrollToEnd({ animated: false });
   }, []);
@@ -143,7 +143,6 @@ export default function NormalProductChatScreen() {
     scrollToLatest();
   }, [messages.length, scrollToLatest]);
 
-  // Scroll to bottom on initial load and conversation change
   useEffect(() => {
     if (conversation?.id && messages.length > 0 && !loading) {
       scrollToLatest();
@@ -527,7 +526,14 @@ export default function NormalProductChatScreen() {
             (typeof item.content === "string" ? item.content : "");
           return (
             <ThemedText
-              style={{ color: textColor, fontSize: 15, lineHeight: 22 }}
+              style={{
+                color: textColor,
+                fontSize: 15,
+                lineHeight: isKhmer ? 30 : 22,
+                fontFamily: isKhmer ? "khmer-regular" : undefined,
+                includeFontPadding: false,
+                textAlignVertical: "center",
+              }}
             >
               {text}
             </ThemedText>
@@ -551,10 +557,13 @@ export default function NormalProductChatScreen() {
           delayLongPress={350}
           style={[
             {
-              paddingVertical: 10,
+              // ── Khmer fix: less vertical padding so tall glyphs don't push bubble taller ──
+              paddingVertical: isKhmer ? 6 : 10,
               paddingHorizontal: 14,
               borderRadius: 18,
               backgroundColor: bubbleBg,
+              // ── Khmer fix: ensure text sits centered inside bubble ──
+              justifyContent: "center",
             },
             content.type === "image" ? { padding: 3, borderRadius: 16 } : null,
           ]}
@@ -881,12 +890,7 @@ export default function NormalProductChatScreen() {
               {
                 backgroundColor: themeColors.background,
                 borderTopColor: themeColors.border + "30",
-                paddingBottom:
-                  keyboardHeight > 0 && Platform.OS === "android"
-                    ? 10
-                    : insets.bottom > 0
-                      ? insets.bottom
-                      : 10,
+                paddingBottom: 20,
               },
             ]}
           >
@@ -984,7 +988,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 24,
   },
-
   header: {
     flexDirection: "row",
     alignItems: "center",
