@@ -461,9 +461,15 @@
     "today": "ថ្ងៃនេះ",
     "photo": "រូបភាព",
     "location": "ទីតាំង",
-    "voice": "សំឡេង",
-    "tap_to_open_map": "ចុចដើម្បីបើកផែនទី",
-    "tap_to_send": "ចុច ✓ ដើម្បីផ្ញើ"
+    "tap_to_send": "ចុច ✓ ដើម្បីផ្ញើ",
+    "permission_photo_library": "សូមអនុញ្ញាតឱ្យមានលទ្ធភាពលើបណ្ណាល័យរូបភាព។",
+    "upload_image_failed": "មិនអាចផ្ទុករូបភាពបានទេ។",
+    "permission_location": "សូមអនុញ្ញាតឱ្យមានលទ្ធភាពលើទីតាំង។",
+    "get_location_failed": "បរាជ័យក្នុងការទទួលបានទីតាំង។",
+    "permission_microphone": "សូមអនុញ្ញាតឱ្យមានលទ្ធភាពលើមីក្រូផোន។",
+    "start_recording_failed": "បរាជ័យក្នុងការចាប់ផ្តើមការថតសម្លេង។",
+    "send_voice_failed": "មិនអាចផ្ញើសារសម្លេងបានទេ។",
+    "shared_location": "ទីតាំងដែលបានចែករំលែក"
   },
   "time_ago": {
     "minutes": "{{count}} នាទីមុន",
