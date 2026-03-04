@@ -50,6 +50,7 @@ import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import { Message, useChat } from "@src/hooks/useChat";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { getOptimizedStorageImageUrl } from "@src/utils/storageImage";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -178,7 +179,7 @@ function Bubble({
       case "image":
         return (
           <Image
-            source={{ uri: content.url }}
+            source={{ uri: getOptimizedStorageImageUrl(content.url, "chat") }}
             style={styles.imgMsg}
             resizeMode="cover"
           />
@@ -325,7 +326,10 @@ function ProductBanner({
         ]}
       >
         {thumbnail ? (
-          <Image source={{ uri: thumbnail }} style={styles.productThumb} />
+          <Image
+            source={{ uri: getOptimizedStorageImageUrl(thumbnail, "thumb") }}
+            style={styles.productThumb}
+          />
         ) : (
           <ShoppingBagIcon size={20} color={Colors.reds[500]} weight="fill" />
         )}
@@ -545,7 +549,7 @@ export default function TradeProductChatScreen() {
     }
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.75,
+      quality: 0.65,
     });
     if (result.canceled || !result.assets?.[0]) return;
     const asset = result.assets[0];

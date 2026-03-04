@@ -78,6 +78,8 @@ const mapTradeRowToTradeProduct = (row: TradeRow): TradeProduct => {
     id: row.id,
     images: row.images ?? [],
     title: row.title,
+    owner_id: row.owner_id,
+    status: row.status,
     seller: metadata.sellerName || metadata.owner?.name || row.owner_id,
     timeAgo: getTimeAgo(row.created_at),
     lookingFor: [

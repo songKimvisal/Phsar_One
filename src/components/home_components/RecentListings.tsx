@@ -94,4 +94,7 @@ const styles = StyleSheet.create({
   productItem: {
     width: "49%",
   },
+  placeholder: {
+    opacity: 0,
+  },
 });

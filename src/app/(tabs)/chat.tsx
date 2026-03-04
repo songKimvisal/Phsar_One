@@ -1,6 +1,6 @@
 import { useAuth } from "@clerk/clerk-expo";
-import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -237,7 +237,16 @@ export default function ChatScreen() {
   const themeColors = useThemeColor();
   const { userId, getToken } = useAuth();
   const { t } = useTranslation();
+  const { tab } = useLocalSearchParams<{ tab: string }>();
   const [activeTab, setActiveTab] = useState<"regular" | "trade">("regular");
+
+  useEffect(() => {
+    if (tab === "trade") {
+      setActiveTab("trade");
+    } else if (tab === "regular") {
+      setActiveTab("regular");
+    }
+  }, [tab]);
 
   const { conversations, loading, error, refresh } =
     useConversations(activeTab);

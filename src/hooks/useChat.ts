@@ -406,7 +406,11 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
     const bucket = "chat-media";
     const { data, error } = await authSupabase.storage
       .from(bucket)
-      .upload(path, arrayBuffer, { contentType, upsert: true });
+      .upload(path, arrayBuffer, {
+        contentType,
+        cacheControl: "31536000",
+        upsert: true,
+      });
 
     if (error || !data) {
       throw error || new Error("Could not upload file to 'chat-media'.");

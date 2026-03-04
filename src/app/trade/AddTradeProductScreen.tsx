@@ -14,7 +14,7 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system/legacy";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { XIcon } from "phosphor-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -37,6 +37,7 @@ export default function AddTradeProductScreen() {
   const { refreshProducts } = useTradeProducts();
   const { getToken, userId } = useAuth();
   const { user } = useUser();
+  const { isPrivate, targetUserId, tradeId } = useLocalSearchParams<{ isPrivate: string; targetUserId: string; tradeId: string }>();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -117,6 +118,7 @@ export default function AddTradeProductScreen() {
       .from("product-images")
       .upload(fileName, decode(base64), {
         contentType,
+        cacheControl: "31536000",
         upsert: true,
       });
 
@@ -229,7 +231,9 @@ export default function AddTradeProductScreen() {
 
       const estimatedRange = `$${estimatedMinValue} - $${estimatedMaxValue}`;
 
-      const { error } = await authSupabase
+      const isPrivatePost = isPrivate === "true";
+
+      const { data: newTrade, error } = await authSupabase
         .from("trades")
         .insert({
           owner_id: userId,
@@ -239,6 +243,8 @@ export default function AddTradeProductScreen() {
           looking_for: lookingForName.trim(),
           location_name: draft.province || null,
           cash_adjustment: 0,
+          is_private: isPrivatePost,
+          target_user_id: targetUserId || null,
           metadata: {
             sellerName: ownerName,
             condition: conditionLower,
@@ -257,13 +263,31 @@ export default function AddTradeProductScreen() {
               avatar: user?.imageUrl || "",
             },
           },
-          status: "active",
+          status: isPrivatePost ? "private" : "active",
         })
         .select("id")
         .single();
 
       if (error) {
         throw error;
+      }
+
+      // If we are creating a private offer for a specific trade, create the offer too
+      if (isPrivatePost && tradeId && newTrade) {
+        const { error: offerError } = await authSupabase
+          .from("trade_offers")
+          .insert({
+            trade_id: tradeId,
+            bidder_id: userId,
+            offered_trade_id: newTrade.id,
+            offered_item_desc: title.trim(),
+            status: "pending",
+          });
+
+        if (offerError) {
+          console.error("Error creating trade offer:", offerError);
+          // Don't throw, we successfully created the trade post at least
+        }
       }
 
       await refreshProducts();
@@ -356,7 +380,7 @@ export default function AddTradeProductScreen() {
             />
 
             {/* Condition */}
-            <View>
+            <View style={styles.condition_sec}>
               <ThemedText
                 style={[{ fontSize: 14, fontWeight: "500", marginBottom: 8 }]}
               >
@@ -632,6 +656,9 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
+  },
+  condition_sec: {
+    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 18,

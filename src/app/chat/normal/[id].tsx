@@ -46,6 +46,7 @@ import ImageViewerModal from "@src/components/chat_components/ImageViewerModal";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Message, useChat } from "@src/hooks/useChat";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { getOptimizedStorageImageUrl } from "@src/utils/storageImage";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -216,7 +217,7 @@ function Bubble({
       case "image":
         return (
           <Image
-            source={{ uri: content.url }}
+            source={{ uri: getOptimizedStorageImageUrl(content.url, "chat") }}
             style={styles.imgMsg}
             resizeMode="cover"
           />
@@ -346,6 +347,9 @@ function ProductCard({
   const [collapsed, setCollapsed] = useState(false);
   if (!title) return null;
   const hasPrice = price && price !== "0" && price !== "";
+  const optimizedThumbnail = thumbnail
+    ? getOptimizedStorageImageUrl(thumbnail, "thumb")
+    : "";
 
   if (collapsed) {
     return (
@@ -361,7 +365,7 @@ function ProductCard({
         ]}
       >
         {thumbnail ? (
-          <Image source={{ uri: thumbnail }} style={styles.pillThumb} />
+          <Image source={{ uri: optimizedThumbnail }} style={styles.pillThumb} />
         ) : (
           // ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary
           <ShoppingBagIcon
@@ -410,7 +414,7 @@ function ProductCard({
       >
         {thumbnail ? (
           <Image
-            source={{ uri: thumbnail }}
+            source={{ uri: optimizedThumbnail }}
             style={styles.cardImage}
             resizeMode="cover"
           />
@@ -717,7 +721,7 @@ export default function NormalProductChatScreen() {
     }
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.75,
+      quality: 0.65,
     });
     if (result.canceled || !result.assets?.[0]) return;
     const asset = result.assets[0];
@@ -864,7 +868,9 @@ export default function NormalProductChatScreen() {
               activeOpacity={0.9}
             >
               <Image
-                source={{ uri: content.url }}
+                source={{
+                  uri: getOptimizedStorageImageUrl(content.url, "chat"),
+                }}
                 style={{ width: 200, height: 155, borderRadius: 13 }}
                 resizeMode="cover"
               />
