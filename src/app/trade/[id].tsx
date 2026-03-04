@@ -12,7 +12,7 @@ import {
   LightbulbIcon,
   LightbulbIcon,
 } from "phosphor-react-native";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Image,
@@ -157,7 +157,7 @@ export default function TradeProductDetailScreen() {
       <StatusBar barStyle="dark-content" />
 
       {/* --- Header --- */}
-      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+      <View style={[styles.header, { paddingTop: 16 }]}>
         <TouchableOpacity
           onPress={() => router.back()}
           style={styles.backButton}
@@ -196,7 +196,7 @@ export default function TradeProductDetailScreen() {
             <Image
               source={{ uri: product.images[0] }}
               style={styles.heroImage}
-              resizeMode="contain"
+              resizeMode="cover"
             />
           ) : (
             <View
@@ -643,19 +643,8 @@ export default function TradeProductDetailScreen() {
         <TouchableOpacity
           style={[styles.btnChat, { backgroundColor: themeColors.primary }]}
           onPress={() => {
-            router.push({
-              pathname: `/chat/trade/${product.id}`,
-              params: {
-                sellerId:
-                  (product as any).owner_id || (product as any).seller_id,
-                sellerName: ownerName,
-                sellerAvatar: ownerAvatar,
-                productTitle: product.title,
-                productThumbnail: product.images[0],
-                productPrice: product.originalPrice?.toString(),
-                productCurrency: "USD",
-              },
-            } as any);
+            // Navigate to main Chat tab with Trade category selected
+            router.push("/(tabs)/chat?tab=trade");
           }}
         >
           <ThemedText style={styles.btnTextWhite}>
@@ -664,6 +653,7 @@ export default function TradeProductDetailScreen() {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.btnOffer, { backgroundColor: "#E5E7EB" }]}
+          onPress={() => setShowOfferSheet(true)}
         >
           <ThemedText style={styles.btnTextGrey}>
             {t("trade.send_trade_offer")}
@@ -673,6 +663,17 @@ export default function TradeProductDetailScreen() {
           </ThemedText>
         </TouchableOpacity>
       </View>
+
+      <TradeOfferBottomSheet
+        visible={showOfferSheet}
+        onClose={() => setShowOfferSheet(false)}
+        targetTradeId={product.id}
+        targetOwnerId={product.owner_id || product.seller_id}
+        onOfferSent={() => {
+          Alert.alert(t("common.success"), t("trade.offer_sent_success"));
+          router.push("/(tabs)/chat?tab=trade");
+        }}
+      />
     </View>
   );
 }
@@ -723,7 +724,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     justifyContent: "center",
     alignItems: "center",
-    padding: 16,
   },
   heroImage: {
     width: "100%",

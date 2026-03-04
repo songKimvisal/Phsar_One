@@ -218,6 +218,7 @@ function Bubble({
         return (
           <Image
             source={{ uri: getOptimizedStorageImageUrl(content.url, "chat") }}
+            source={{ uri: getOptimizedStorageImageUrl(content.url, "chat") }}
             style={styles.imgMsg}
             resizeMode="cover"
           />
@@ -350,6 +351,9 @@ function ProductCard({
   const optimizedThumbnail = thumbnail
     ? getOptimizedStorageImageUrl(thumbnail, "thumb")
     : "";
+  const optimizedThumbnail = thumbnail
+    ? getOptimizedStorageImageUrl(thumbnail, "thumb")
+    : "";
 
   if (collapsed) {
     return (
@@ -417,6 +421,7 @@ function ProductCard({
       >
         {thumbnail ? (
           <Image
+            source={{ uri: optimizedThumbnail }}
             source={{ uri: optimizedThumbnail }}
             style={styles.cardImage}
             resizeMode="cover"
@@ -725,6 +730,7 @@ export default function NormalProductChatScreen() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.65,
+      quality: 0.65,
     });
     if (result.canceled || !result.assets?.[0]) return;
     const asset = result.assets[0];
@@ -870,6 +876,9 @@ export default function NormalProductChatScreen() {
               activeOpacity={0.9}
             >
               <Image
+                source={{
+                  uri: getOptimizedStorageImageUrl(content.url, "chat"),
+                }}
                 source={{
                   uri: getOptimizedStorageImageUrl(content.url, "chat"),
                 }}

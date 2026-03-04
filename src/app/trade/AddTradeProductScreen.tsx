@@ -14,7 +14,7 @@ import useThemeColor from "@src/hooks/useThemeColor";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system/legacy";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { XIcon } from "phosphor-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
