@@ -351,9 +351,6 @@ function ProductCard({
   const optimizedThumbnail = thumbnail
     ? getOptimizedStorageImageUrl(thumbnail, "thumb")
     : "";
-  const optimizedThumbnail = thumbnail
-    ? getOptimizedStorageImageUrl(thumbnail, "thumb")
-    : "";
 
   if (collapsed) {
     return (

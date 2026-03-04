@@ -117,7 +117,7 @@ export function TradeProductsProvider({ children }: { children: ReactNode }) {
         .from("trades")
         .select(`
           *,
-          owner:users(id, first_name, last_name, avatar_url)
+          owner:users!trades_owner_id_fkey(id, first_name, last_name, avatar_url)
         `)
         .order("created_at", { ascending: false });
 

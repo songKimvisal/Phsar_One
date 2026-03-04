@@ -106,7 +106,6 @@ export default function AddTradeProductScreen() {
     }
 
     const ext = uri.split(".").pop()?.toLowerCase().split("?")[0] || "jpg";
-    const ext = uri.split(".").pop()?.toLowerCase().split("?")[0] || "jpg";
     const fileName = `${userId}/trade-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
     const base64 = await FileSystem.readAsStringAsync(uri, {
@@ -153,7 +152,6 @@ export default function AddTradeProductScreen() {
     }
     if (!lookingForName.trim()) {
       Alert.alert(t("error"), t("trade.alerts.looking_for_required"));
-      Alert.alert(t("error"), t("trade.alerts.looking_for_required"));
       return false;
     }
     if (!estimatedMinValue.trim() || !estimatedMaxValue.trim()) {
@@ -169,7 +167,6 @@ export default function AddTradeProductScreen() {
     }
     if (minVal > maxVal) {
       Alert.alert(t("error"), t("trade.alerts.min_greater_than_max"));
-      Alert.alert(t("error"), t("trade.alerts.min_greater_than_max"));
       return false;
     }
     if (!draft.province || !draft.district) {
@@ -181,9 +178,6 @@ export default function AddTradeProductScreen() {
       return false;
     }
 
-    const hasAtLeastOnePhone = phoneNumbers.some(
-      (phone) => phone.trim().length > 0,
-    );
     const hasAtLeastOnePhone = phoneNumbers.some(
       (phone) => phone.trim().length > 0,
     );
@@ -302,15 +296,6 @@ export default function AddTradeProductScreen() {
 
       await refreshProducts();
 
-      Alert.alert(t("success"), t("trade.alerts.post_success"), [
-        {
-          text: "OK",
-          onPress: () => {
-            resetDraft();
-            router.back();
-          },
-        },
-      ]);
       Alert.alert(t("success"), t("trade.alerts.post_success"), [
         {
           text: "OK",
@@ -457,7 +442,6 @@ export default function AddTradeProductScreen() {
             />
 
             <ThemedText style={[styles.sectionTitle, { marginTop: 20 }]}>
-            <ThemedText style={[styles.sectionTitle, { marginTop: 20 }]}>
               {t("trade.estimated_trade_value_range")} *
             </ThemedText>
             <ThemedText style={styles.sectionSubtitle}>
@@ -465,7 +449,6 @@ export default function AddTradeProductScreen() {
             </ThemedText>
 
             <View style={styles.valueRangeContainer}>
-              <View style={[styles.valueInputWrapper, { flex: 1 }]}>
               <View style={[styles.valueInputWrapper, { flex: 1 }]}>
                 <ThemedText
                   style={[{ fontSize: 14, fontWeight: "500", marginBottom: 8 }]}
@@ -493,7 +476,6 @@ export default function AddTradeProductScreen() {
                 <ThemedText style={styles.rangeSeparatorText}></ThemedText>
               </View>
 
-              <View style={[styles.valueInputWrapper, { flex: 1 }]}>
               <View style={[styles.valueInputWrapper, { flex: 1 }]}>
                 <ThemedText
                   style={[{ fontSize: 14, fontWeight: "500", marginBottom: 8 }]}
