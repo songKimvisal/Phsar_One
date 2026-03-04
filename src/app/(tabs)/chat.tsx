@@ -277,8 +277,8 @@ export default function ChatScreen() {
 
   const handleDelete = (item: Conversation) => {
     Alert.alert(
-      t("chat.delete_conversation") || "Delete Conversation",
-      t("chat.delete_conversation_confirm") ||
+      t("chat.delete_conversation_title") || "Delete Conversation",
+      t("chat.delete_conversation_confirmation") ||
         "Are you sure you want to delete this conversation?",
       [
         { text: t("common.cancel"), style: "cancel" },

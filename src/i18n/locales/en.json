@@ -464,7 +464,15 @@
     "voice": "Voice",
     "tap_to_open_map": "Tap To Open Map",
     "location": "Location",
-    "tap_to_send": "Tap ✓ to send"
+    "tap_to_send": "Tap ✓ to send",
+    "permission_photo_library": "Please allow photo library access.",
+    "upload_image_failed": "Could not upload image.",
+    "permission_location": "Please allow location access.",
+    "get_location_failed": "Failed to get location.",
+    "permission_microphone": "Please allow microphone access.",
+    "start_recording_failed": "Failed to start recording.",
+    "send_voice_failed": "Could not send voice message.",
+    "shared_location": "Shared location"
   },
   "time_ago": {
     "minutes": "{{count}} minutes ago",

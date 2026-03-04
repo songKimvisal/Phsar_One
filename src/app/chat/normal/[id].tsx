@@ -365,7 +365,10 @@ function ProductCard({
         ]}
       >
         {thumbnail ? (
-          <Image source={{ uri: optimizedThumbnail }} style={styles.pillThumb} />
+          <Image
+            source={{ uri: optimizedThumbnail }}
+            style={styles.pillThumb}
+          />
         ) : (
           // ✅ Was hardcoded Colors.reds[500] — now uses themeColors.primary
           <ShoppingBagIcon
@@ -716,7 +719,7 @@ export default function NormalProductChatScreen() {
     setShowAttachMenu(false);
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert(t("error"), "Please allow photo library access.");
+      Alert.alert(t("error"), t("chat.permission_photo_library"));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -732,7 +735,7 @@ export default function NormalProductChatScreen() {
       const url = await uploadFile(asset.uri, path, `image/${ext}`);
       await sendMessage({ type: "image", url });
     } catch (e: any) {
-      Alert.alert(t("error"), e.message || "Could not upload image.");
+      Alert.alert(t("error"), t("chat.upload_image_failed"));
     } finally {
       setIsSending(false);
     }
@@ -742,7 +745,7 @@ export default function NormalProductChatScreen() {
     setShowAttachMenu(false);
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert(t("error"), "Please allow location access.");
+      Alert.alert(t("error"), t("chat.permission_location"));
       return;
     }
     setIsSending(true);
@@ -764,7 +767,7 @@ export default function NormalProductChatScreen() {
         label,
       });
     } catch (e: any) {
-      Alert.alert(t("error"), e.message || "Failed to get location.");
+      Alert.alert(t("error"), e.message || t("chat.get_location_failed"));
     } finally {
       setIsSending(false);
     }
@@ -774,7 +777,7 @@ export default function NormalProductChatScreen() {
     if (isRecording) return;
     const { status } = await Audio.requestPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert(t("error"), "Please allow microphone access.");
+      Alert.alert(t("error"), t("chat.permission_microphone"));
       return;
     }
     try {
@@ -793,7 +796,7 @@ export default function NormalProductChatScreen() {
         1000,
       );
     } catch (e: any) {
-      Alert.alert(t("error"), e.message || "Failed to start recording.");
+      Alert.alert(t("error"), e.message || t("chat.start_recording_failed"));
     }
   };
 
@@ -818,8 +821,7 @@ export default function NormalProductChatScreen() {
       const url = await uploadFile(uri, path, "audio/m4a");
       await sendMessage({ type: "voice", url, duration: dur });
     } catch (e: any) {
-      Alert.alert(t("error"), e.message || "Could not send voice message.");
-      Alert.alert(t("error"), e.message || "Could not send voice message.");
+      Alert.alert(t("error"), e.message || t("chat.send_voice_failed"));
     } finally {
       setIsSending(false);
     }
@@ -923,7 +925,7 @@ export default function NormalProductChatScreen() {
                   numberOfLines={2}
                   style={{ color: textColor, fontWeight: "600", fontSize: 14 }}
                 >
-                  {content.label || "Shared location"}
+                  {content.label || t("chat.shared_location")}
                 </ThemedText>
                 <ThemedText
                   style={{ color: "#fff", fontSize: 11, marginTop: 2 }}
@@ -939,7 +941,7 @@ export default function NormalProductChatScreen() {
                     fontWeight: "500",
                   }}
                 >
-                  Tap to open map
+                  {t("chat.tap_to_open_map")}
                 </ThemedText>
               </View>
             </TouchableOpacity>
@@ -1056,7 +1058,9 @@ export default function NormalProductChatScreen() {
           {error}
         </ThemedText>
         <TouchableOpacity onPress={() => router.back()}>
-          <ThemedText style={{ color: themeColors.tint }}>Go Back</ThemedText>
+          <ThemedText style={{ color: themeColors.tint }}>
+            {t("common.go_back")}
+          </ThemedText>
         </TouchableOpacity>
       </View>
     );

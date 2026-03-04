@@ -1,15 +1,19 @@
 import { useAuth, useSignUp } from "@clerk/clerk-expo";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import {
-    Image,
-    KeyboardAvoidingView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,6 +27,15 @@ export default function SignUpScreen() {
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
+  const [error, setError] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+
+  // Email validation regex
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const onSignUpPress = async () => {
     if (!isLoaded) {
@@ -30,18 +43,35 @@ export default function SignUpScreen() {
       return;
     }
 
+    // Clear previous errors
+    setError("");
+
+    // Validation - generic messages for security
     if (!emailAddress || emailAddress.trim() === "") {
-      console.error("Email address is required");
+      const errorMsg = "Please fill in all required fields";
+      setError(errorMsg);
+      Alert.alert("Missing Information", errorMsg);
+      return;
+    }
+
+    if (!isValidEmail(emailAddress)) {
+      const errorMsg = "Please fill in all required fields";
+      setError(errorMsg);
+      Alert.alert("Missing Information", errorMsg);
       return;
     }
 
     if (!password || password.length < 8) {
-      console.error("Password must be at least 8 characters long");
+      const errorMsg = "Password must be at least 8 characters";
+      setError(errorMsg);
+      Alert.alert("Invalid Password", errorMsg);
       return;
     }
 
     if (password !== confirmPassword) {
-      console.error("Passwords do not match");
+      const errorMsg = "Passwords do not match";
+      setError(errorMsg);
+      Alert.alert("Password Mismatch", errorMsg);
       return;
     }
 
@@ -62,37 +92,44 @@ export default function SignUpScreen() {
       console.log("Email verification prepared");
       setPendingVerification(true);
     } catch (err: any) {
-      console.error("Sign up error:", err);
+      let errorMsg = "Unable to create account";
 
       // Check if it's a session_exists error
       if (
         err.errors &&
         err.errors.some((e: any) => e.code === "session_exists")
       ) {
-        console.log("Session already exists, signing out and retrying...");
         try {
           await signOut();
-          console.log("Signed out successfully, please try signing up again");
-          alert("You were already signed in. Please try signing up again.");
+          const msg = "Please try again";
+          setError(msg);
+          Alert.alert("Account Error", msg);
         } catch (signOutErr) {
-          console.error("Sign out error:", signOutErr);
-          alert("Please clear app data and try again");
+          const msg = "An error occurred. Please try again later";
+          setError(msg);
+          Alert.alert("Error", msg);
         }
         return;
       }
 
-      if (err.errors) {
-        err.errors.forEach((error: any) => {
-          console.error("Error detail:", error.message, "-", error.longMessage);
-        });
-      }
+      // Don't reveal specific field issues
+      setError(errorMsg);
+      Alert.alert("Sign Up Failed", errorMsg);
     }
   };
 
   const onVerifyPress = async () => {
     if (!isLoaded) return;
 
+    if (!code.trim()) {
+      const errorMsg = "Invalid or expired verification code";
+      setError(errorMsg);
+      Alert.alert("Verification Failed", errorMsg);
+      return;
+    }
+
     try {
+      setError("");
       const signUpAttempt = await signUp.attemptEmailAddressVerification({
         code,
       });
@@ -101,32 +138,74 @@ export default function SignUpScreen() {
         await setActive({ session: signUpAttempt.createdSessionId });
         router.replace("/(tabs)");
       } else {
-        console.error(JSON.stringify(signUpAttempt, null, 2));
+        const errorMsg = "Invalid or expired verification code";
+        setError(errorMsg);
+        Alert.alert("Verification Failed", errorMsg);
       }
-    } catch (err) {
-      console.error(JSON.stringify(err, null, 2));
+    } catch (err: any) {
+      let errorMsg = "Invalid or expired verification code";
+
+      setError(errorMsg);
+      Alert.alert("Verification Failed", errorMsg);
     }
   };
 
   if (pendingVerification) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.verifyContainer}>
-          <Text style={styles.title}>Verify your email</Text>
-          <Text style={styles.subtitle}>
-            Enter the code sent to {emailAddress}
-          </Text>
-          <TextInput
-            value={code}
-            placeholder="Enter verification code"
-            onChangeText={setCode}
-            style={styles.input}
-            keyboardType="number-pad"
-          />
-          <TouchableOpacity onPress={onVerifyPress} style={styles.button}>
-            <Text style={styles.buttonText}>Verify</Text>
-          </TouchableOpacity>
-        </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.keyboardView}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <Image
+              source={require("@src/assets/icons/Main-logo-24.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+
+            <Text style={styles.title}>Verify your email</Text>
+            <Text style={styles.subtitle}>
+              Enter the verification code sent to {emailAddress}
+            </Text>
+
+            <View style={styles.formContainer}>
+              <Text style={styles.label}>Verification Code</Text>
+              <TextInput
+                value={code}
+                placeholder="Enter 6-digit code"
+                onChangeText={setCode}
+                style={[styles.input, styles.codeInput]}
+                keyboardType="number-pad"
+                maxLength={6}
+                textAlign="center"
+              />
+
+              <Text style={styles.hint}>
+                Check your email for the verification code
+              </Text>
+
+              <TouchableOpacity onPress={onVerifyPress} style={styles.button}>
+                <Text style={styles.buttonText}>Verify</Text>
+              </TouchableOpacity>
+
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+              <View style={styles.footer}>
+                <Text style={styles.footerText}>Didn't receive a code? </Text>
+                <TouchableOpacity onPress={() => setPendingVerification(false)}>
+                  <Text style={styles.footerLink}>Try again</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }
@@ -134,9 +213,9 @@ export default function SignUpScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior="padding"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
-        keyboardVerticalOffset={0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
       >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -167,22 +246,46 @@ export default function SignUpScreen() {
             />
 
             <Text style={styles.label}>Password</Text>
-            <TextInput
-              value={password}
-              placeholder="Enter your password"
-              secureTextEntry={true}
-              onChangeText={setPassword}
-              style={styles.input}
-            />
+            <View style={styles.passwordContainer}>
+              <TextInput
+                value={password}
+                placeholder="Enter your password"
+                secureTextEntry={!showPassword}
+                onChangeText={setPassword}
+                style={styles.passwordInput}
+              />
+              <Pressable
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.passwordToggle}
+              >
+                <Ionicons
+                  name={showPassword ? "eye" : "eye-off"}
+                  size={20}
+                  color="#666"
+                />
+              </Pressable>
+            </View>
 
             <Text style={styles.label}>Confirm Password</Text>
-            <TextInput
-              value={confirmPassword}
-              placeholder="Re-enter your password"
-              secureTextEntry={true}
-              onChangeText={setConfirmPassword}
-              style={styles.input}
-            />
+            <View style={styles.passwordContainer}>
+              <TextInput
+                value={confirmPassword}
+                placeholder="Re-enter your password"
+                secureTextEntry={!showConfirmPassword}
+                onChangeText={setConfirmPassword}
+                style={styles.passwordInput}
+              />
+              <Pressable
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={styles.passwordToggle}
+              >
+                <Ionicons
+                  name={showConfirmPassword ? "eye" : "eye-off"}
+                  size={20}
+                  color="#666"
+                />
+              </Pressable>
+            </View>
 
             <Text style={styles.hint}>Must be at least 8 characters long.</Text>
 
@@ -226,14 +329,16 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 24,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
     justifyContent: "center",
   },
   logo: {
     width: 200,
     height: 60,
     alignSelf: "center",
-    marginBottom: 40,
+    marginBottom: 30,
   },
   title: {
     fontSize: 28,
@@ -246,7 +351,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     color: "#666",
-    marginBottom: 32,
+    marginBottom: 28,
   },
   formContainer: {
     width: "100%",
@@ -255,30 +360,69 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginHorizontal: 8,
   },
+  emailHighlight: {
+    fontWeight: "600",
+    color: "#E44336",
+  },
+  codeInput: {
+    fontSize: 24,
+    letterSpacing: 8,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  errorText: {
+    fontSize: 14,
+    color: "#E44336",
+    textAlign: "center",
+    marginBottom: 16,
+  },
   label: {
     fontSize: 16,
     fontWeight: "600",
-    marginBottom: 8,
+    marginBottom: 10,
     color: "#000",
   },
   input: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: "#e0e0e0",
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: 10,
+    padding: 14,
     fontSize: 16,
-    marginBottom: 16,
+    marginBottom: 20,
     backgroundColor: "#f8f8f8",
+    minHeight: 48,
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1.5,
+    borderColor: "#e0e0e0",
+    borderRadius: 10,
+    marginBottom: 20,
+    backgroundColor: "#f8f8f8",
+    paddingRight: 12,
+    minHeight: 48,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingLeft: 14,
+    paddingVertical: 12,
+    fontSize: 16,
+  },
+  passwordToggle: {
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   hint: {
     fontSize: 12,
     color: "#999",
-    marginBottom: 24,
+    marginBottom: 20,
   },
   divider: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 24,
+    marginVertical: 28,
   },
   dividerLine: {
     flex: 1,
@@ -293,9 +437,12 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#E44336",
     borderRadius: 50,
-    padding: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 28,
+    minHeight: 50,
+    justifyContent: "center",
   },
   buttonText: {
     color: "#fff",
@@ -306,6 +453,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 20,
   },
   footerText: {
     fontSize: 14,

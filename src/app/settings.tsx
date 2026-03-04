@@ -164,9 +164,13 @@ export default function SettingsScreen() {
           ]}
           activeOpacity={0.7}
         >
+<<<<<<< HEAD
           <ThemedText
             style={[styles.signOutText, { color: themeColors.background }]}
           >
+=======
+          <ThemedText style={[styles.signOutText, { color: "#fff" }]}>
+>>>>>>> 18ee908b1c196a6e208792da30ec1f6ea7dba971
             {t("settings_screen.sign_out")}
           </ThemedText>
         </TouchableOpacity>
