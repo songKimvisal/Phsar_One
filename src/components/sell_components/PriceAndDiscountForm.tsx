@@ -12,6 +12,23 @@ export default function PriceAndDiscountForm() {
   const themeColors = useThemeColor();
   useTranslation();
   const { t } = useTranslation();
+
+  const handleDiscountChange = (text: string) => {
+    updateDraft("discountValue", text);
+
+    const parsedDiscount = parseFloat(text);
+    if (
+      text.trim().length === 0 ||
+      Number.isNaN(parsedDiscount) ||
+      parsedDiscount <= 0
+    ) {
+      updateDraft("discountType", "none");
+      return;
+    }
+
+    updateDraft("discountType", "fixed");
+  };
+
   return (
     <>
       {/* Pricing Section */}
@@ -86,7 +103,7 @@ export default function PriceAndDiscountForm() {
               },
             ]}
             value={draft.discountValue}
-            onChangeText={(text) => updateDraft("discountValue", text)}
+            onChangeText={handleDiscountChange}
             keyboardType="numeric"
             placeholder="0.00"
           />
