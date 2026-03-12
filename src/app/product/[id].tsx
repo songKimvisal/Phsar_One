@@ -185,6 +185,20 @@ export default function ProductDetail() {
     (dbCategory?.parent ? dbCategory.name_key : "") ||
     "";
 
+  const rawDiscountValue = String(
+    rawProduct.metadata?.discountValue || "",
+  ).trim();
+  const parsedDiscountValue = parseFloat(rawDiscountValue);
+  const normalizedDiscountType =
+    rawProduct.metadata?.discountType === "percentage" ||
+    rawProduct.metadata?.discountType === "fixed"
+      ? rawProduct.metadata.discountType
+      : rawDiscountValue.length > 0 &&
+          !Number.isNaN(parsedDiscountValue) &&
+          parsedDiscountValue > 0
+        ? "fixed"
+        : "none";
+
   const product: Product = {
     ...rawProduct,
     id: rawProduct.id,
@@ -192,6 +206,8 @@ export default function ProductDetail() {
     createdAt: rawProduct.created_at,
     negotiable: rawProduct.is_negotiable,
     currency: rawProduct.metadata?.currency || "USD",
+    discountType: normalizedDiscountType,
+    discountValue: rawDiscountValue,
     mainCategory,
     subCategory,
     address: {
@@ -366,8 +382,7 @@ export default function ProductDetail() {
     return null;
   };
 
-  const activeFont =
-    i18n.language === "kh" ? "KantumruyPro-Regular" : "Geist";
+  const activeFont = i18n.language === "kh" ? "KantumruyPro-Regular" : "Geist";
   const productDetails = formatProductDetails(
     product.subCategory,
     product.details,

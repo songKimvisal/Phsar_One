@@ -24,6 +24,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -37,6 +38,7 @@ export default function TradeProductDetailScreen() {
   const { userId, getToken } = useAuth();
 
   const [showOfferSheet, setShowOfferSheet] = useState(false);
+  const colorScheme = useColorScheme();
 
   const product = getProductById(id as string);
 
@@ -177,7 +179,9 @@ export default function TradeProductDetailScreen() {
     <View
       style={[styles.container, { backgroundColor: themeColors.background }]}
     >
-      <StatusBar barStyle="dark-content" />
+      <StatusBar
+        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+      />
 
       {/* --- Header --- */}
       <View style={[styles.header, { paddingTop: 16 }]}>
@@ -254,7 +258,9 @@ export default function TradeProductDetailScreen() {
           <ThemedText style={styles.sectionLabel}>
             {t("productDetail.description")}
           </ThemedText>
-          <ThemedText style={styles.descriptionText}>
+          <ThemedText
+            style={[styles.descriptionText, { color: themeColors.text + "99" }]}
+          >
             {product.description ||
               "MacBook Pro 2020, 16GB RAM, 512GB SSD. Perfect condition, always used with case."}
           </ThemedText>
@@ -275,13 +281,17 @@ export default function TradeProductDetailScreen() {
           </ThemedText>
 
           <View style={styles.specLine}>
-            <ThemedText style={styles.specLabel}>
+            <ThemedText
+              style={[styles.specLabel, { color: themeColors.text + "80" }]}
+            >
               {t("trade.condition")}
             </ThemedText>
             <ThemedText style={styles.specValue}>{conditionLabel}</ThemedText>
           </View>
           <View style={styles.specLine}>
-            <ThemedText style={styles.specLabel}>
+            <ThemedText
+              style={[styles.specLabel, { color: themeColors.text + "80" }]}
+            >
               {t("trade.original_price")}
             </ThemedText>
             <ThemedText style={styles.specValue}>
@@ -289,7 +299,9 @@ export default function TradeProductDetailScreen() {
             </ThemedText>
           </View>
           <View style={styles.specLine}>
-            <ThemedText style={styles.specLabel}>
+            <ThemedText
+              style={[styles.specLabel, { color: themeColors.text + "80" }]}
+            >
               {t("trade.location")}
             </ThemedText>
             <TouchableOpacity onPress={handleOpenMap}>
@@ -307,7 +319,9 @@ export default function TradeProductDetailScreen() {
             </TouchableOpacity>
           </View>
           <View style={[styles.specLine, { marginBottom: 0 }]}>
-            <ThemedText style={styles.specLabel}>
+            <ThemedText
+              style={[styles.specLabel, { color: themeColors.text + "80" }]}
+            >
               {t("trade.phone_number")}
             </ThemedText>
             <TouchableOpacity onPress={handleCall}>
@@ -329,12 +343,17 @@ export default function TradeProductDetailScreen() {
           <ThemedText style={styles.sectionTitle}>
             {t("trade.trade_preferences")}
           </ThemedText>
-          <ThemedText style={styles.helperText}>
+          <ThemedText
+            style={[styles.helperText, { color: themeColors.text + "80" }]}
+          >
             {t("trade.trade_preferences_description")}
           </ThemedText>
 
           <View
-            style={[styles.lookingForContainer, { backgroundColor: "#f8f8f8" }]}
+            style={[
+              styles.lookingForContainer,
+              { backgroundColor: themeColors.background },
+            ]}
           >
             <ThemedText style={styles.lookingForHeading}>
               {t("trade.looking_for")}
@@ -354,7 +373,12 @@ export default function TradeProductDetailScreen() {
                           { backgroundColor: themeColors.primary },
                         ]}
                       />
-                      <ThemedText style={styles.lookingForDesc}>
+                      <ThemedText
+                        style={[
+                          styles.lookingForDesc,
+                          { color: themeColors.text + "99" },
+                        ]}
+                      >
                         {item.description}
                       </ThemedText>
                     </View>
@@ -373,7 +397,12 @@ export default function TradeProductDetailScreen() {
                       { backgroundColor: themeColors.primary },
                     ]}
                   />
-                  <ThemedText style={styles.lookingForDesc}>
+                  <ThemedText
+                    style={[
+                      styles.lookingForDesc,
+                      { color: themeColors.text + "99" },
+                    ]}
+                  >
                     Preferably with RTX 3060 or higher GPU, 16GB+ RAM, good
                     cooling system
                   </ThemedText>
@@ -418,7 +447,10 @@ export default function TradeProductDetailScreen() {
                   ? { uri: ownerAvatar }
                   : require("../../../assets/images/favicon.png")
               }
-              style={styles.ownerAvatar}
+              style={[
+                styles.ownerAvatar,
+                { backgroundColor: themeColors.secondaryBackground },
+              ]}
             />
             <View style={styles.ownerNameCol}>
               <ThemedText style={styles.ownerNameText}>{ownerName}</ThemedText>
@@ -456,7 +488,9 @@ export default function TradeProductDetailScreen() {
           >
             <LightbulbIcon size={16} color="#FFF" weight="fill" />
           </View>
-          <ThemedText style={styles.tipMessage}>
+          <ThemedText
+            style={[styles.tipMessage, { color: themeColors.text + "80" }]}
+          >
             {t("trade.trade_tip")}
           </ThemedText>
         </View>
@@ -467,7 +501,7 @@ export default function TradeProductDetailScreen() {
         style={[
           styles.bottomActions,
           {
-            backgroundColor: "#fff",
+            backgroundColor: themeColors.card,
           },
         ]}
       >
@@ -482,10 +516,15 @@ export default function TradeProductDetailScreen() {
               </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.btnOffer, { backgroundColor: "#E5E7EB" }]}
+              style={[
+                styles.btnOffer,
+                { backgroundColor: themeColors.secondaryBackground },
+              ]}
               onPress={handleDelete}
             >
-              <ThemedText style={styles.btnTextGrey}>
+              <ThemedText
+                style={[styles.btnTextGrey, { color: themeColors.text }]}
+              >
                 {t("common.delete")}
               </ThemedText>
             </TouchableOpacity>
@@ -501,10 +540,15 @@ export default function TradeProductDetailScreen() {
               </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.btnOffer, { backgroundColor: "#E5E7EB" }]}
+              style={[
+                styles.btnOffer,
+                { backgroundColor: themeColors.secondaryBackground },
+              ]}
               onPress={() => setShowOfferSheet(true)}
             >
-              <ThemedText style={styles.btnTextGrey}>
+              <ThemedText
+                style={[styles.btnTextGrey, { color: themeColors.text }]}
+              >
                 {t("trade.send_trade_offer")}
               </ThemedText>
             </TouchableOpacity>

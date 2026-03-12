@@ -2,7 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { supabase } from "@src/lib/supabase";
-import { formatPrice, Product } from "@src/types/productTypes";
+import {
+  calculateDiscountPrice,
+  formatPrice,
+  Product,
+} from "@src/types/productTypes";
 import { TFunction } from "i18next";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -24,6 +28,12 @@ const ProductInfoSection: React.FC<ProductInfoSectionProps> = ({
   const themeColors = useThemeColor();
   const { t } = useTranslation();
   const [viewCount, setViewCount] = useState(0);
+  const resolvedDiscountedPrice =
+    discountedPrice ??
+    (() => {
+      const calculated = calculateDiscountPrice(product);
+      return calculated !== null ? String(calculated) : undefined;
+    })();
 
   useEffect(() => {
     if (product.id) {
@@ -65,7 +75,7 @@ const ProductInfoSection: React.FC<ProductInfoSectionProps> = ({
 
       {/* Price */}
       <View style={styles.priceContainer}>
-        {discountedPrice ? (
+        {resolvedDiscountedPrice ? (
           <>
             <ThemedText
               style={[styles.originalPrice, { color: themeColors.text + "60" }]}
@@ -73,7 +83,7 @@ const ProductInfoSection: React.FC<ProductInfoSectionProps> = ({
               {formatPrice(product.price, product.currency)}
             </ThemedText>
             <ThemedText style={styles.price}>
-              {formatPrice(discountedPrice, product.currency)}
+              {formatPrice(resolvedDiscountedPrice, product.currency)}
             </ThemedText>
             <View style={styles.discountBadge}>
               <ThemedText style={styles.discountText}>

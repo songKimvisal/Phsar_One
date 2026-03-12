@@ -1,5 +1,5 @@
 import { POST_FIELDS_MAP } from "@src/constants/postFields";
-import { Product, Address, Location, SellerContact, ProductDraft } from "@src/types/productTypes"; // Added ProductDraft
+import { Address, Location, Product, ProductDraft, SellerContact } from "@src/types/productTypes"; // Added ProductDraft
 import i18n from "../i18n"; // Added i18n import
 
 export const getProductFields = (subCategory: string) => {
@@ -185,6 +185,17 @@ export const formatTimeAgo = (dateString: string | null | undefined, t: unknown)
 
 export const mapDatabaseProductToProduct = (dbProduct: any): Product => {
   const metadata = dbProduct.metadata || {};
+  const rawDiscountValue = String(metadata.discountValue || "").trim();
+  const parsedDiscountValue = parseFloat(rawDiscountValue);
+  const normalizedDiscountType =
+    metadata.discountType === "percentage" || metadata.discountType === "fixed"
+      ? metadata.discountType
+      : rawDiscountValue.length > 0 &&
+          !Number.isNaN(parsedDiscountValue) &&
+          parsedDiscountValue > 0
+        ? "fixed"
+        : "none";
+
   return {
     id: dbProduct.id,
     title: dbProduct.title,
@@ -195,8 +206,8 @@ export const mapDatabaseProductToProduct = (dbProduct: any): Product => {
     price: dbProduct.price?.toString() || "0",
     currency: metadata.currency || "USD",
     negotiable: dbProduct.is_negotiable || false,
-    discountType: metadata.discountType || "none",
-    discountValue: metadata.discountValue || "0",
+    discountType: normalizedDiscountType,
+    discountValue: rawDiscountValue,
     address: metadata.address || {
       province: dbProduct.location_name,
       district: metadata.district || null,

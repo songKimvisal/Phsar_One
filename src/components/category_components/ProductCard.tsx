@@ -3,7 +3,11 @@ import { Colors } from "@/src/constants/Colors";
 import useThemeColor from "@/src/hooks/useThemeColor";
 import { Product } from "@/src/types/productTypes";
 import { getLocalizedLocationName } from "@/src/utils/locationUtils";
-import { formatPrice, formatTimeAgo } from "@/src/utils/productUtils";
+import {
+  calculateDiscountPrice,
+  formatPrice,
+  formatTimeAgo,
+} from "@/src/utils/productUtils";
 import { getOptimizedStorageImageUrl } from "@/src/utils/storageImage";
 import { toCamelCase } from "@/src/utils/stringUtils";
 import { Ionicons } from "@expo/vector-icons";
@@ -32,6 +36,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
     product.photos[0] || "https://via.placeholder.com/300",
     "card",
   );
+  const discountedPrice = calculateDiscountPrice(product);
 
   // Calculate if there's a discount
   const hasDiscount = product.discountType && product.discountType !== "none";
@@ -137,11 +142,29 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 
         {/* Price Row */}
         <View style={styles.priceRow}>
-          <ThemedText
-            style={[styles.productPrice, { color: themeColors.tint }]}
-          >
-            {formatPrice(product.price, product.currency)}
-          </ThemedText>
+          {discountedPrice !== null ? (
+            <View style={styles.discountPriceGroup}>
+              <ThemedText
+                style={[
+                  styles.originalPrice,
+                  { color: themeColors.text + "70" },
+                ]}
+              >
+                {formatPrice(product.price, product.currency)}
+              </ThemedText>
+              <ThemedText
+                style={[styles.productPrice, { color: themeColors.tint }]}
+              >
+                {formatPrice(discountedPrice, product.currency)}
+              </ThemedText>
+            </View>
+          ) : (
+            <ThemedText
+              style={[styles.productPrice, { color: themeColors.tint }]}
+            >
+              {formatPrice(product.price, product.currency)}
+            </ThemedText>
+          )}
           {product.negotiable && (
             <View
               style={[
@@ -232,9 +255,18 @@ const styles = StyleSheet.create({
   },
   priceRow: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
     marginTop: 8,
     gap: 6,
+  },
+  discountPriceGroup: {
+    flexShrink: 1,
+  },
+  originalPrice: {
+    fontSize: 11,
+    textDecorationLine: "line-through",
+    marginBottom: 2,
   },
   productPrice: {
     fontSize: 15,
