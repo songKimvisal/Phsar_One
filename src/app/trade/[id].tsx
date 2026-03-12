@@ -4,6 +4,7 @@ import TradeOfferBottomSheet from "@src/components/trade_components/TradeOfferBo
 import { Colors } from "@src/constants/Colors";
 import { useTradeProducts } from "@src/context/TradeProductsContext";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { getAuthToken } from "@src/lib/auth";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { formatPrice } from "@src/types/productTypes";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -107,7 +108,7 @@ export default function TradeProductDetailScreen() {
         style: "destructive",
         onPress: async () => {
           try {
-            const token = await getToken();
+            const token = await getAuthToken(getToken, "trade delete");
             const authSupabase = createClerkSupabaseClient(token);
             const { error } = await authSupabase
               .from("trades")

@@ -1,15 +1,14 @@
 import { useAuth } from "@clerk/clerk-expo";
+import { getAuthToken } from "@src/lib/auth";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { useCurrentSubscription } from "@src/hooks/useCurrentSubscription";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
-import { Database } from "@src/types/supabase";
 import { Href, Stack, useFocusEffect, useRouter } from "expo-router";
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CaretLeftIcon } from "phosphor-react-native";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-type SubscriptionRow = Database["public"]["Tables"]["subscriptions"]["Row"];
+import React, { useCallback, useMemo, useState } from "react";
 
 type PlanId = "starter" | "pro" | "business";
 
@@ -44,52 +43,15 @@ function formatStatus(status: string | null) {
 export default function SubscriptionSettingsScreen() {
   const router = useRouter();
   const themeColors = useThemeColor();
-  const { userId, getToken } = useAuth();
-
-  const [loading, setLoading] = useState(false);
-  const [subscription, setSubscription] = useState<SubscriptionRow | null>(null);
-
-  const getTokenRef = useRef(getToken);
-
-  useEffect(() => {
-    getTokenRef.current = getToken;
-  }, [getToken]);
-
-  const fetchSubscription = useCallback(async () => {
-    if (!userId) {
-      setSubscription(null);
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const token = await getTokenRef.current({});
-      if (!token) throw new Error("Missing auth token.");
-
-      const authSupabase = createClerkSupabaseClient(token);
-      const { data, error } = await authSupabase
-        .from("subscriptions")
-        .select("*")
-        .eq("user_id", userId)
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) throw error;
-      setSubscription((data as SubscriptionRow | null) ?? null);
-    } catch (error) {
-      console.error("Error loading subscription settings:", error);
-      setSubscription(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [userId]);
+  const { getToken } = useAuth();
+  const { subscription, entitlements, loading, refresh } =
+    useCurrentSubscription();
+  const [isCanceling, setIsCanceling] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
-      fetchSubscription();
-    }, [fetchSubscription]),
+      refresh();
+    }, [refresh]),
   );
 
   const durationLabel = useMemo(() => {
@@ -102,8 +64,8 @@ export default function SubscriptionSettingsScreen() {
     return `${diffDays} day${diffDays === 1 ? "" : "s"} left`;
   }, [subscription?.current_period_end]);
 
-  const currentPlanId = String(subscription?.plan_type || "").toLowerCase();
-  const isActive = String(subscription?.status || "").toLowerCase() === "active";
+  const currentPlanId = entitlements.planType;
+  const isActive = entitlements.isSubscriptionActive;
 
   const recommendedPlan = useMemo<PlanId>(() => {
     if (currentPlanId === "starter") return "pro";
@@ -117,6 +79,65 @@ export default function SubscriptionSettingsScreen() {
     if (currentPlanId === "business") return "Manage Plan";
     return "Upgrade Plan";
   }, [currentPlanId, isActive, subscription]);
+
+  const canCancel = useMemo(() => {
+    return (
+      !!subscription &&
+      !isCanceling &&
+      currentPlanId !== "regular" &&
+      String(subscription.status || "").toLowerCase() !== "canceled" &&
+      !!subscription.current_period_end &&
+      new Date(subscription.current_period_end).getTime() > Date.now()
+    );
+  }, [currentPlanId, isCanceling, subscription]);
+
+  const cancelSubscription = useCallback(() => {
+    if (!subscription?.id || isCanceling) return;
+
+    Alert.alert(
+      "Cancel subscription?",
+      "Your plan will remain active until the current billing period ends.",
+      [
+        { text: "Keep Plan", style: "cancel" },
+        {
+          text: "Cancel Subscription",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setIsCanceling(true);
+              const token = await getAuthToken(
+                getToken,
+                "subscription cancellation",
+              );
+              const authSupabase = createClerkSupabaseClient(token);
+              const { error } = await authSupabase
+                .from("subscriptions")
+                .update({ status: "canceled" })
+                .eq("id", subscription.id);
+
+              if (error) throw error;
+
+              await refresh();
+              Alert.alert(
+                "Subscription canceled",
+                "Your plan benefits remain available until the current period ends.",
+              );
+            } catch (cancelError) {
+              console.error("Error canceling subscription:", cancelError);
+              Alert.alert(
+                "Cancellation failed",
+                cancelError instanceof Error
+                  ? cancelError.message
+                  : "Unable to cancel subscription.",
+              );
+            } finally {
+              setIsCanceling(false);
+            }
+          },
+        },
+      ],
+    );
+  }, [getToken, isCanceling, refresh, subscription?.id]);
 
   const Row = ({ label, value }: { label: string; value: string }) => (
     <View style={styles.row}>
@@ -181,6 +202,19 @@ export default function SubscriptionSettingsScreen() {
         >
           <ThemedText style={styles.actionButtonText}>{ctaLabel}</ThemedText>
         </TouchableOpacity>
+
+        {canCancel ? (
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={cancelSubscription}
+            activeOpacity={0.8}
+            disabled={isCanceling}
+          >
+            <ThemedText style={styles.secondaryButtonText}>
+              {isCanceling ? "Canceling..." : "Cancel Subscription"}
+            </ThemedText>
+          </TouchableOpacity>
+        ) : null}
       </View>
     </SafeAreaView>
   );
@@ -268,6 +302,19 @@ const styles = StyleSheet.create({
   actionButtonText: {
     color: "#fff",
     fontSize: 16,
+    fontWeight: "600",
+  },
+  secondaryButton: {
+    alignItems: "center",
+    borderColor: "#D1D5DB",
+    borderRadius: 999,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 52,
+  },
+  secondaryButtonText: {
+    color: "#991B1B",
+    fontSize: 15,
     fontWeight: "600",
   },
 });

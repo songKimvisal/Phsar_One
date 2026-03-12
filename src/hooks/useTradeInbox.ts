@@ -1,4 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
+import { getAuthToken } from "@src/lib/auth";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { formatTimeAgo } from "@src/types/productTypes";
 import { Database } from "@src/types/supabase";
@@ -80,8 +81,10 @@ export function useTradeInbox() {
     setError(null);
 
     try {
-      const token = await getTokenRef.current({});
-      if (!token) throw new Error("Could not get auth token.");
+      const token = await getAuthToken(
+        getTokenRef.current,
+        "trade inbox load",
+      );
 
       const authSupabase = createClerkSupabaseClient(token);
 
@@ -209,8 +212,10 @@ export function useTradeInbox() {
       if (!userId) return false;
 
       try {
-        const token = await getTokenRef.current({});
-        if (!token) throw new Error("Could not get auth token.");
+        const token = await getAuthToken(
+          getTokenRef.current,
+          "trade inbox update",
+        );
 
         const authSupabase = createClerkSupabaseClient(token);
 
@@ -276,4 +281,3 @@ export function useTradeInbox() {
     updateOfferStatus,
   };
 }
-

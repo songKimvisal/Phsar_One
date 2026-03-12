@@ -1,6 +1,7 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { getAuthToken } from "@src/lib/auth";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { Href, Stack, useFocusEffect, useRouter } from "expo-router";
 import { BookmarkSimpleIcon, CaretLeftIcon } from "phosphor-react-native";
@@ -36,7 +37,7 @@ export default function BookmarksScreen() {
     if (!userId) return;
     try {
       setLoading(true);
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "bookmarks fetch");
       const authSupabase = createClerkSupabaseClient(token);
 
       const { data, error } = await authSupabase

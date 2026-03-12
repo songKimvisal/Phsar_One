@@ -1,5 +1,6 @@
 import { useAuth } from '@clerk/clerk-expo';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { getAuthToken } from '../lib/auth';
 import { showIncomingChatNotification } from '../lib/notifications';
 import { createClerkSupabaseClient, supabase } from '../lib/supabase';
 import { Database } from '../types/supabase';
@@ -67,8 +68,7 @@ export function useConversations(type: "regular" | "trade", productId?: string |
     setError(null);
 
     try {
-      const token = await getToken({});
-      if (!token) throw new Error("Could not get auth token.");
+      const token = await getAuthToken(getToken, "chat conversations load");
       const authSupabase = createClerkSupabaseClient(token);
 
       let convQuery = authSupabase
@@ -197,7 +197,7 @@ export function useConversations(type: "regular" | "trade", productId?: string |
     const setupConversationsRealtime = async () => {
       try {
         console.log('[Chat] Starting realtime setup for userId:', userId);
-        const token = await getToken({});
+        const token = await getAuthToken(getToken, "chat conversations realtime");
         console.log('[Chat] Token obtained:', token ? 'YES (length: ' + token.length + ')' : 'NO - THIS IS THE PROBLEM!');
         
         if (!token || isCancelled) {
@@ -325,8 +325,7 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
     setError(null);
 
     try {
-      const token = await getToken({});
-      if (!token) throw new Error("Could not get auth token.");
+      const token = await getAuthToken(getToken, "chat detail load");
       const authSupabase = createClerkSupabaseClient(token);
       let currentConversation: Conversation | null = null;
 
@@ -440,7 +439,7 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
     const setupRealtime = async () => {
       try {
         // Realtime must use the same auth context as table queries.
-        const token = await getToken({});
+        const token = await getAuthToken(getToken, "chat detail realtime");
         if (!token || isCancelled) {
           console.error('[Chat Detail] Cannot setup realtime: token missing or cancelled');
           return;
@@ -615,7 +614,7 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
     setMessages((prev) => [...prev, optimistic]);
 
     try {
-      const token = await getToken({});
+      const token = await getAuthToken(getToken, "chat message send");
       const authSupabase = createClerkSupabaseClient(token);
       const { data, error: sendError } = await authSupabase
         .from('messages')
@@ -650,7 +649,7 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
     // Optimistically remove from UI
     setMessages(prev => prev.filter(m => m.id !== messageId));
     try {
-      const token = await getToken({});
+      const token = await getAuthToken(getToken, "chat message delete");
       const authSupabase = createClerkSupabaseClient(token);
       const { error } = await authSupabase
         .from('messages')
@@ -667,7 +666,7 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
 
   // ── uploadFile ────────────────────────────────────────────────────────────
   const uploadFile = async (uri: string, path: string, contentType: string): Promise<string> => {
-    const token = await getToken({});
+    const token = await getAuthToken(getToken, "chat upload");
     const authSupabase = createClerkSupabaseClient(token);
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -694,7 +693,7 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
   const markMessagesAsRead = async () => {
     if (!userId || !conversation?.id) return;
     try {
-      const token = await getToken({});
+      const token = await getAuthToken(getToken, "chat mark read");
       const authSupabase = createClerkSupabaseClient(token);
       await authSupabase.from('messages').update({ is_read: true })
         .eq('conversations_id', conversation.id).neq('sender_id', userId);
@@ -710,7 +709,7 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
   const toggleMuteConversation = async () => {
     if (!userId || !conversation?.id) return;
     try {
-      const token = await getToken({});
+      const token = await getAuthToken(getToken, "chat mute toggle");
       const authSupabase = createClerkSupabaseClient(token);
       const isBuyer = userId === conversation.buyer_id;
       const currentMuteStatus = isBuyer ? conversation.buyer_muted : conversation.seller_muted;
@@ -732,7 +731,7 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
   const blockUser = async (userToBlockId: string) => {
     if (!userId) throw new Error("Not authenticated.");
     if (userId === userToBlockId) throw new Error("Cannot block yourself.");
-    const token = await getToken({});
+    const token = await getAuthToken(getToken, "chat block user");
     const authSupabase = createClerkSupabaseClient(token);
 
     const { data, error } = await authSupabase.functions.invoke('chat-controls/block', {
@@ -758,4 +757,3 @@ export function useChat({ productId, sellerId, tradeId, conversationId: initialC
     blockUser,
   };
 }
-

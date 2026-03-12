@@ -7,6 +7,7 @@ import {
   TradeInboxStatus,
   useTradeInbox,
 } from "@src/hooks/useTradeInbox";
+import { getAuthToken } from "@src/lib/auth";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { Href, Stack, useRouter } from "expo-router";
 import {
@@ -103,8 +104,7 @@ export default function MyTradesScreen() {
     setOpeningChatOfferId(item.id);
 
     try {
-      const token = await getToken({});
-      if (!token) throw new Error("Could not get auth token.");
+      const token = await getAuthToken(getToken, "trade conversation open");
 
       const authSupabase = createClerkSupabaseClient(token);
 

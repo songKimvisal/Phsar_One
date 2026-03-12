@@ -1,4 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
+import { getAuthToken } from "@src/lib/auth";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { formatPrice, formatTimeAgo } from "@src/types/productTypes";
 import { Database } from "@src/types/supabase";
@@ -321,8 +322,10 @@ export function useDashboardAnalytics() {
     setError(null);
 
     try {
-      const token = await getTokenRef.current({});
-      if (!token) throw new Error("Could not get auth token.");
+      const token = await getAuthToken(
+        getTokenRef.current,
+        "dashboard analytics load",
+      );
 
       const authSupabase = createClerkSupabaseClient(token);
 
@@ -622,7 +625,6 @@ export function useDashboardAnalytics() {
     refresh,
   };
 }
-
 
 
 

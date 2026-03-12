@@ -1,9 +1,6 @@
-const LISTING_DURATION_DAYS_BY_PLAN: Record<string, number> = {
-  regular: 30,
-  starter: 30,
-  pro: 60,
-  business: 120,
-};
+import { getEntitlements, normalizePlanType } from "@src/lib/entitlements";
+
+export { normalizePlanType } from "@src/lib/entitlements";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -13,16 +10,10 @@ type ListingExpiryInput = {
   planType?: string | null;
 };
 
-export function normalizePlanType(planType?: string | null): string {
-  return String(planType || "regular").toLowerCase();
-}
-
 export function getListingDurationDays(planType?: string | null): number {
-  const normalized = normalizePlanType(planType);
-  return (
-    LISTING_DURATION_DAYS_BY_PLAN[normalized] ||
-    LISTING_DURATION_DAYS_BY_PLAN.regular
-  );
+  return getEntitlements({
+    fallbackUserType: normalizePlanType(planType),
+  }).listingDurationDays;
 }
 
 export function getListingExpiryDate(input: ListingExpiryInput): Date | null {

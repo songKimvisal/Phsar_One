@@ -3,6 +3,7 @@ import ProductCard from "@src/components/category_components/ProductCard";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { getAuthToken } from "@src/lib/auth";
 import { createClerkSupabaseClient, supabase } from "@src/lib/supabase";
 import {
   Href,
@@ -135,7 +136,7 @@ export default function PublicProfileScreen() {
 
     try {
       setTogglingFollow(true);
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "profile follow toggle");
       const authSupabase = createClerkSupabaseClient(token);
 
       if (isFollowing) {

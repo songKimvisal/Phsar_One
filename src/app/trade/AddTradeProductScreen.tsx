@@ -11,6 +11,7 @@ import { Colors } from "@src/constants/Colors";
 import { useTradeDraft } from "@src/context/TradeDraftContext";
 import { useTradeProducts } from "@src/context/TradeProductsContext";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { getAuthToken } from "@src/lib/auth";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system/legacy";
@@ -268,7 +269,7 @@ export default function AddTradeProductScreen() {
     setIsSubmitting(true);
 
     try {
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "trade creation");
       const authSupabase = createClerkSupabaseClient(token);
 
       const uploadedImages = await Promise.all(
@@ -831,4 +832,3 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
-

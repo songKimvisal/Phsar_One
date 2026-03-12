@@ -2,6 +2,7 @@ import { useAuth, useUser } from "@clerk/clerk-expo";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { ThemedTextInput } from "@src/components/shared_components/ThemedTextInput";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { getAuthToken } from "@src/lib/auth";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system/legacy";
@@ -48,7 +49,7 @@ export default function EditProfileScreen() {
     if (!userId) return;
     try {
       setLoading(true);
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "profile fetch");
       const supabase = createClerkSupabaseClient(token);
 
       const { data, error } = await supabase
@@ -92,7 +93,7 @@ export default function EditProfileScreen() {
     if (!userId) return;
     try {
       setSaving(true);
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "profile avatar upload");
       const supabase = createClerkSupabaseClient(token);
 
       const fileName = `${userId as string}/avatar-${Date.now()}.jpg`;
@@ -126,7 +127,7 @@ export default function EditProfileScreen() {
     if (!userId) return;
     try {
       setSaving(true);
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "profile save");
       const supabase = createClerkSupabaseClient(token);
 
       const { error } = await supabase

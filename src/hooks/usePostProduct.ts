@@ -2,6 +2,8 @@ import { useAuth } from "@clerk/clerk-expo";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system/legacy";
 import { useState } from "react";
+import { getAuthToken } from "../lib/auth";
+import { getEntitlements } from "../lib/entitlements";
 import { createClerkSupabaseClient } from "../lib/supabase";
 import {
   createListingExpiryFromNow,
@@ -31,6 +33,22 @@ const UUID_TO_CATEGORY_ID: Record<string, string> = Object.entries(
 export function usePostProduct() {
   const { getToken, userId } = useAuth();
   const [isPosting, setIsPosting] = useState(false);
+
+  const normalizeProductWriteError = (error: unknown) => {
+    if (
+      error &&
+      typeof error === "object" &&
+      "message" in error &&
+      typeof error.message === "string" &&
+      error.message.includes("ACTIVE_LISTING_LIMIT_REACHED")
+    ) {
+      return new Error(
+        "You have reached your active listing limit for the current plan. Upgrade your plan or free up a slot first.",
+      );
+    }
+
+    return error;
+  };
 
   const uploadImage = async (uri: string, supabase: any) => {
     // If it's already a public URL (e.g. from an existing product), skip upload
@@ -87,6 +105,40 @@ export function usePostProduct() {
     }
   };
 
+  const assertActiveListingCapacity = async (
+    supabase: any,
+    userPlanType: string,
+    productIdToExclude?: string,
+  ) => {
+    if (!userId) return;
+
+    const { maxActiveAds, planType } = getEntitlements({
+      fallbackUserType: userPlanType,
+    });
+
+    const countQuery = supabase
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("seller_id", userId)
+      .eq("status", "active");
+
+    if (productIdToExclude) {
+      countQuery.neq("id", productIdToExclude);
+    }
+
+    const { count, error } = await countQuery;
+
+    if (error) throw error;
+
+    if ((count || 0) >= maxActiveAds) {
+      const planLabel =
+        planType.charAt(0).toUpperCase() + planType.slice(1);
+      throw new Error(
+        `You have reached your ${planLabel} plan limit of ${maxActiveAds} active listings. Upgrade your plan or pause/sell another listing first.`,
+      );
+    }
+  };
+
   const prepareProductData = async (
     draft: any,
     supabase: any,
@@ -137,9 +189,10 @@ export function usePostProduct() {
     if (!userId) throw new Error("User ID is missing. Please sign in again.");
     setIsPosting(true);
     try {
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "product publish");
       const supabase = createClerkSupabaseClient(token);
       const userPlanType = await fetchUserPlanType(supabase);
+      await assertActiveListingCapacity(supabase, userPlanType);
       const productData = await prepareProductData(draft, supabase, userPlanType);
 
       const { data, error } = await supabase
@@ -150,6 +203,8 @@ export function usePostProduct() {
 
       if (error) throw error;
       return data;
+    } catch (error) {
+      throw normalizeProductWriteError(error);
     } finally {
       setIsPosting(false);
     }
@@ -159,9 +214,10 @@ export function usePostProduct() {
     if (!userId) throw new Error("User ID is missing. Please sign in again.");
     setIsPosting(true);
     try {
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "product update");
       const supabase = createClerkSupabaseClient(token);
       const userPlanType = await fetchUserPlanType(supabase);
+      await assertActiveListingCapacity(supabase, userPlanType, id);
       const productData = await prepareProductData(draft, supabase, userPlanType);
 
       const { data, error } = await supabase
@@ -173,6 +229,8 @@ export function usePostProduct() {
 
       if (error) throw error;
       return data;
+    } catch (error) {
+      throw normalizeProductWriteError(error);
     } finally {
       setIsPosting(false);
     }
@@ -180,7 +238,7 @@ export function usePostProduct() {
 
   const fetchProductForEdit = async (id: string) => {
     try {
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "product edit fetch");
       const supabase = createClerkSupabaseClient(token);
       const { data, error } = await supabase
         .from("products")

@@ -1,6 +1,7 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { getAuthToken } from "@src/lib/auth";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { Href, Stack, useFocusEffect, useRouter } from "expo-router";
 import {
@@ -40,7 +41,7 @@ export default function HistoryScreen() {
     if (!userId) return;
     try {
       setLoading(true);
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "history fetch");
       const authSupabase = createClerkSupabaseClient(token);
 
       const { data, error } = await authSupabase
@@ -87,7 +88,7 @@ export default function HistoryScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              const token = await getToken();
+              const token = await getAuthToken(getToken, "history clear item");
               const authSupabase = createClerkSupabaseClient(token);
               const { error } = await authSupabase
                 .from("view_history")

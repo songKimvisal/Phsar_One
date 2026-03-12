@@ -4,6 +4,7 @@ import { ThemedText } from "@src/components/shared_components/ThemedText";
 import PricingCard, {
   PricingPlan,
 } from "@src/components/subscription/PricingCard";
+import { getAuthToken } from "@src/lib/auth";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import * as Linking from "expo-linking";
@@ -25,6 +26,29 @@ type ConfirmPaymentResponse = {
 };
 
 const VALID_PLAN_IDS = new Set(["starter", "pro", "business"]);
+const PAYMENT_STEP_TIMEOUT_MS = 20000;
+
+async function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  label: string,
+): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(`${label} timed out. Check network and service configuration.`));
+    }, ms);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+}
 
 export default function SubscriptionPage() {
   const router = useRouter();
@@ -97,19 +121,23 @@ export default function SubscriptionPage() {
     setIsProcessingPayment(true);
 
     try {
-      const token = await getToken({});
-      if (!token) {
-        throw new Error("Could not get auth token.");
-      }
+      console.log("[Subscription] Starting checkout for plan:", selectedPlanId);
+      console.log("[Subscription] Getting Clerk token");
+      const token = await getAuthToken(getToken, "subscription checkout");
 
       const authSupabase = createClerkSupabaseClient(token);
 
+      console.log("[Subscription] Creating payment intent");
       const { data: createData, error: createError } =
-        await authSupabase.functions.invoke("create-stripe-payment-intent", {
-          body: {
-            planId: selectedPlanId,
-          },
-        });
+        await withTimeout(
+          authSupabase.functions.invoke("create-stripe-payment-intent", {
+            body: {
+              planId: selectedPlanId,
+            },
+          }),
+          PAYMENT_STEP_TIMEOUT_MS,
+          "Payment setup",
+        );
 
       if (createError) {
         throw new Error(createError.message || "Unable to start payment.");
@@ -120,33 +148,49 @@ export default function SubscriptionPage() {
         throw new Error("Payment setup failed.");
       }
 
-      const { error: initError } = await initPaymentSheet({
-        merchantDisplayName: "PhsarOne",
-        paymentIntentClientSecret: paymentSetup.clientSecret,
-        returnURL: Linking.createURL("stripe-redirect"),
-        allowsDelayedPaymentMethods: false,
-      });
+      console.log("[Subscription] Initializing payment sheet");
+      const { error: initError } = await withTimeout(
+        initPaymentSheet({
+          merchantDisplayName: "PhsarOne",
+          paymentIntentClientSecret: paymentSetup.clientSecret,
+          returnURL: Linking.createURL("stripe-redirect"),
+          allowsDelayedPaymentMethods: false,
+        }),
+        PAYMENT_STEP_TIMEOUT_MS,
+        "Payment sheet initialization",
+      );
 
       if (initError) {
         throw new Error(initError.message || "Could not initialize payment sheet.");
       }
 
-      const { error: presentError } = await presentPaymentSheet();
+      console.log("[Subscription] Presenting payment sheet");
+      const { error: presentError } = await withTimeout(
+        presentPaymentSheet(),
+        PAYMENT_STEP_TIMEOUT_MS,
+        "Payment sheet presentation",
+      );
 
       if (presentError) {
         if (presentError.code === "Canceled") {
+          console.log("[Subscription] Payment sheet canceled by user");
           return;
         }
         throw new Error(presentError.message || "Payment did not complete.");
       }
 
+      console.log("[Subscription] Confirming payment with backend");
       const { data: confirmData, error: confirmError } =
-        await authSupabase.functions.invoke("confirm-stripe-payment", {
-          body: {
-            paymentIntentId: paymentSetup.paymentIntentId,
-            planId: selectedPlanId,
-          },
-        });
+        await withTimeout(
+          authSupabase.functions.invoke("confirm-stripe-payment", {
+            body: {
+              paymentIntentId: paymentSetup.paymentIntentId,
+              planId: selectedPlanId,
+            },
+          }),
+          PAYMENT_STEP_TIMEOUT_MS,
+          "Payment confirmation",
+        );
 
       if (confirmError) {
         throw new Error(confirmError.message || "Failed to activate subscription.");
@@ -161,6 +205,7 @@ export default function SubscriptionPage() {
         "Subscription updated",
         "Your plan is active and premium features are now unlocked.",
       );
+      console.log("[Subscription] Checkout completed successfully");
       router.back();
     } catch (paymentError: unknown) {
       const message =
@@ -222,4 +267,3 @@ const styles = StyleSheet.create({
     width: 32,
   },
 });
-

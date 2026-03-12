@@ -21,6 +21,7 @@ import { Colors } from "@/src/constants/Colors";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Conversation, useConversations } from "@src/hooks/useChat";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { getAuthToken } from "@src/lib/auth";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { parseContent } from "@src/utils/chatUtils";
 import { formatTimeAgo } from "@src/utils/productUtils";
@@ -337,7 +338,7 @@ export default function ChatScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              const token = await getToken();
+              const token = await getAuthToken(getToken, "conversation delete");
               const authSupabase = createClerkSupabaseClient(token);
               const { error } = await authSupabase
                 .from("conversations")

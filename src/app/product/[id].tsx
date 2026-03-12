@@ -28,6 +28,7 @@ import {
 import { CAMBODIA_LOCATIONS } from "@src/constants/CambodiaLocations";
 import { CATEGORY_MAP } from "@src/constants/CategoryData";
 import { useProductDetails } from "@src/hooks/useProductDetails";
+import { getAuthToken } from "@src/lib/auth";
 import { createClerkSupabaseClient, supabase } from "@src/lib/supabase";
 import { formatProductDetails } from "@src/utils/productUtils";
 
@@ -99,7 +100,7 @@ export default function ProductDetail() {
 
       // 2. Log for private history (if user logged in)
       if (userId) {
-        const token = await getToken();
+        const token = await getAuthToken(getToken, "product history upsert");
         const authSupabase = createClerkSupabaseClient(token);
 
         await authSupabase.from("view_history").upsert(
@@ -119,7 +120,7 @@ export default function ProductDetail() {
   const checkIsFavorite = async () => {
     if (!userId) return;
     try {
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "favorite status check");
       const authSupabase = createClerkSupabaseClient(token);
       const { data, error } = await authSupabase
         .from("favorites")
@@ -230,7 +231,7 @@ export default function ProductDetail() {
     }
 
     try {
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "favorite toggle");
       const authSupabase = createClerkSupabaseClient(token);
 
       if (isFavorite) {
@@ -306,7 +307,7 @@ export default function ProductDetail() {
         style: "destructive",
         onPress: async () => {
           try {
-            const token = await getToken();
+            const token = await getAuthToken(getToken, "product delete");
             const authSupabase = createClerkSupabaseClient(token);
             const { error } = await authSupabase
               .from("products")

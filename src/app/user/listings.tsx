@@ -1,6 +1,8 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { getAuthToken } from "@src/lib/auth";
+import { getEntitlements } from "@src/lib/entitlements";
 import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { formatPrice, formatTimeAgo } from "@src/utils/productUtils";
 import {
@@ -48,12 +50,13 @@ export default function MyListingsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [userPlanType, setUserPlanType] = useState("regular");
+  const [activeListingCount, setActiveListingCount] = useState(0);
 
   const fetchMyProducts = async () => {
     if (!userId) return;
     try {
       setLoading(true);
-      const token = await getToken();
+      const token = await getAuthToken(getToken, "my listings fetch");
       const authSupabase = createClerkSupabaseClient(token);
 
       const [userResult, productResult] = await Promise.all([
@@ -101,6 +104,16 @@ export default function MyListingsScreen() {
         }
       }
 
+      const activeCount = allProducts.filter((item) => {
+        const effectiveStatus = getEffectiveListingStatus(item.status, {
+          createdAt: item.created_at,
+          metadata: item.metadata as Record<string, any> | null,
+          planType: normalizedPlan,
+        });
+        return effectiveStatus === "active";
+      }).length;
+      setActiveListingCount(activeCount);
+
       const requestedStatus = String(status || "active").toLowerCase();
       const filtered = allProducts.filter((item) => {
         const effectiveStatus = getEffectiveListingStatus(item.status, {
@@ -135,7 +148,25 @@ export default function MyListingsScreen() {
     item?: any,
   ) => {
     try {
-      const token = await getToken();
+      if (newStatus === "active") {
+        const { maxActiveAds, planType } = getEntitlements({
+          fallbackUserType: userPlanType,
+        });
+        const isAlreadyActive =
+          String(item?.status || "").toLowerCase() === "active";
+
+        if (!isAlreadyActive && activeListingCount >= maxActiveAds) {
+          Alert.alert(
+            "Listing limit reached",
+            `Your ${
+              planType.charAt(0).toUpperCase() + planType.slice(1)
+            } plan allows ${maxActiveAds} active listings. Upgrade your plan or free up a slot first.`,
+          );
+          return;
+        }
+      }
+
+      const token = await getAuthToken(getToken, "listing status update");
       const authSupabase = createClerkSupabaseClient(token);
 
       const updatePayload: Record<string, any> = { status: newStatus };
@@ -152,9 +183,16 @@ export default function MyListingsScreen() {
         .update(updatePayload)
         .eq("id", id);
 
-      if (!error) fetchMyProducts();
+      if (error) throw error;
+      fetchMyProducts();
     } catch (err) {
       console.error("Error updating status:", err);
+      Alert.alert(
+        "Update failed",
+        err instanceof Error
+          ? err.message
+          : "Unable to update this listing.",
+      );
     }
   };
 
@@ -169,7 +207,7 @@ export default function MyListingsScreen() {
           text: t("common.delete") || "Delete",
           style: "destructive",
           onPress: async () => {
-            const token = await getToken();
+            const token = await getAuthToken(getToken, "listing delete");
             const authSupabase = createClerkSupabaseClient(token);
             const { error } = await authSupabase
               .from("products")
@@ -631,4 +669,3 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
 });
-
