@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import io
 import os
 from datetime import datetime
 from typing import Any
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, File, HTTPException, Query, UploadFile
+from PIL import Image
 from sentence_transformers import SentenceTransformer
 from supabase import Client, create_client
+from transformers import pipeline
 
 MODEL_NAME = "BAAI/bge-small-en-v1.5"
+IMAGE_MODEL_NAME = "openai/clip-vit-base-patch32"
 
 app = FastAPI(title="PhsarOne AI Search API", version="0.1.0")
 
 _model: SentenceTransformer | None = None
 _supabase: Client | None = None
+_image_moderation_pipeline: Any | None = None
 
 
 def require_env(name: str) -> str:
@@ -43,6 +48,17 @@ def get_model() -> SentenceTransformer:
         print(f"Loading embedding model: {MODEL_NAME}")
         _model = SentenceTransformer(MODEL_NAME)
     return _model
+
+
+def get_image_moderation_pipeline():
+    global _image_moderation_pipeline
+    if _image_moderation_pipeline is None:
+        print(f"Loading image moderation model: {IMAGE_MODEL_NAME}")
+        _image_moderation_pipeline = pipeline(
+            "zero-shot-image-classification",
+            model=IMAGE_MODEL_NAME,
+        )
+    return _image_moderation_pipeline
 
 
 def vector_to_literal(values: list[float]) -> str:
@@ -91,9 +107,84 @@ def average_embeddings(rows: list[dict[str, Any]]) -> str | None:
     return vector_to_literal(averaged)
 
 
+def score_labels(image: Image.Image, labels: list[str]) -> dict[str, float]:
+    classifier = get_image_moderation_pipeline()
+    results = classifier(image, candidate_labels=labels)
+    return {
+        item["label"]: float(item["score"])
+        for item in list(results or [])
+    }
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "model": MODEL_NAME, "time": datetime.utcnow().isoformat()}
+
+
+@app.post("/moderate-image")
+async def moderate_image(file: UploadFile = File(...)) -> dict[str, Any]:
+    try:
+        raw = await file.read()
+        image = Image.open(io.BytesIO(raw)).convert("RGB")
+
+        nsfw_scores = score_labels(
+            image,
+            [
+                "safe product photo",
+                "adult content",
+                "explicit nudity",
+                "pornographic image",
+            ],
+        )
+        danger_scores = score_labels(
+            image,
+            [
+                "safe consumer product",
+                "gun or firearm",
+                "knife weapon",
+                "bomb or explosive",
+            ],
+        )
+
+        nsfw_score = max(
+            nsfw_scores.get("adult content", 0.0),
+            nsfw_scores.get("explicit nudity", 0.0),
+            nsfw_scores.get("pornographic image", 0.0),
+        )
+        danger_score = max(
+            danger_scores.get("gun or firearm", 0.0),
+            danger_scores.get("knife weapon", 0.0),
+            danger_scores.get("bomb or explosive", 0.0),
+        )
+
+        reasons: list[str] = []
+        decision = "allow"
+
+        if nsfw_score >= 0.3:
+            reasons.append("adult content")
+            decision = "block"
+
+        if danger_score >= 0.3:
+            reasons.append("dangerous item")
+            decision = "block"
+
+        if decision == "allow" and max(nsfw_score, danger_score) >= 0.18:
+            decision = "review"
+            if nsfw_score >= 0.18:
+                reasons.append("possible adult content")
+            if danger_score >= 0.18:
+                reasons.append("possible dangerous item")
+
+        return {
+            "decision": decision,
+            "reasons": reasons,
+            "scores": {
+                "nsfw": nsfw_score,
+                "dangerous_item": danger_score,
+            },
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @app.get("/semantic-search")

@@ -95,6 +95,15 @@ Endpoints:
 - `GET /health`
 - `GET /semantic-search?q=cheap%20laptop%20for%20school`
 - `GET /recommendations?user_id=<clerk_user_id>`
+- `POST /moderate-image`
+
+Image moderation:
+
+- product photos now call the same local AI API before they are accepted
+- endpoint uses a CLIP zero-shot classifier for:
+  - adult / NSFW screening
+  - dangerous item screening (gun / knife / bomb heuristic)
+- if the local AI service is not running, photo uploads fail open and continue
 
 ## Notes
 

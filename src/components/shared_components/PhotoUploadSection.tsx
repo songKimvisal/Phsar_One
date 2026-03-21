@@ -1,6 +1,7 @@
 import ImageSuggestions from "@src/components/sell_components/ImageSuggestions";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { useImageSuggestions } from "@src/hooks/useImageSuggestions";
+import { moderateImageAsset } from "@src/lib/imageModeration";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { analyzeImageQuality } from "@src/utils/imageQuality";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -39,6 +40,15 @@ export default function PhotoUploadSection({
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [moderationPrompt, setModerationPrompt] = useState<{
+    description: string;
+    title: string;
+    visible: boolean;
+  }>({
+    description: "",
+    title: "",
+    visible: false,
+  });
   const { analysis } = useImageSuggestions(photos.length);
 
   const validateImage = async (uri: string) => {
@@ -93,6 +103,22 @@ export default function PhotoUploadSection({
       for (const asset of result.assets) {
         try {
           const normalizedUri = await normalizeImage(asset);
+          try {
+            const moderation = await moderateImageAsset(normalizedUri);
+            if (moderation.decision === "block") {
+              setModerationPrompt({
+                description:
+                  moderation.reasons.length > 0
+                    ? `This image was blocked because it may contain ${moderation.reasons.join(", ")}.`
+                    : "This image was blocked by content moderation.",
+                title: "Image not allowed",
+                visible: true,
+              });
+              continue;
+            }
+          } catch (error) {
+            console.warn("Image moderation fallback warning:", error);
+          }
           const { metrics } = await validateImage(normalizedUri);
 
           if (metrics.isLowResolution || metrics.isHighFileSize || metrics.issues.aspectRatio) {
@@ -256,6 +282,42 @@ export default function PhotoUploadSection({
         />
       )}
 
+      <Modal
+        visible={moderationPrompt.visible}
+        transparent
+        animationType="fade"
+        onRequestClose={() =>
+          setModerationPrompt((current) => ({ ...current, visible: false }))
+        }
+      >
+        <View style={styles.noticeModalBg}>
+          <View
+            style={[
+              styles.previewCard,
+              { backgroundColor: themeColors.card, borderColor: themeColors.border },
+            ]}
+          >
+            <ThemedText style={styles.previewTitle}>
+              {moderationPrompt.title}
+            </ThemedText>
+            <ThemedText style={styles.previewSubtitle}>
+              {moderationPrompt.description}
+            </ThemedText>
+            <TouchableOpacity
+              style={[
+                styles.primaryAction,
+                { backgroundColor: themeColors.primary },
+              ]}
+              onPress={() =>
+                setModerationPrompt((current) => ({ ...current, visible: false }))
+              }
+            >
+              <ThemedText style={styles.primaryActionText}>OK</ThemedText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <Modal visible={previewVisible} transparent animationType="fade">
         <SafeAreaView style={styles.modalBg}>
           <TouchableOpacity
@@ -384,6 +446,40 @@ const styles = StyleSheet.create({
   modalBg: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.95)",
+  },
+  noticeModalBg: {
+    flex: 1,
+    backgroundColor: "rgba(15,23,42,0.35)",
+    justifyContent: "center",
+    padding: 24,
+  },
+  previewCard: {
+    borderRadius: 24,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    padding: 20,
+  },
+  previewTitle: {
+    fontSize: 22,
+    fontWeight: "800",
+    marginBottom: 8,
+  },
+  previewSubtitle: {
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.78,
+  },
+  primaryAction: {
+    marginTop: 18,
+    borderRadius: 999,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  primaryActionText: {
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "700",
   },
   closeModal: {
     position: "absolute",
