@@ -32,9 +32,10 @@ export default function TradeProductCard({
   const conditionLabel = t(`condition.${conditionKey}`, {
     defaultValue: product.condition,
   });
+  const sellerPrefix = t("trade.by_seller", { defaultValue: "By" });
   const sellerLabel = product.seller.toLowerCase().startsWith("by ")
     ? product.seller
-    : `By ${product.seller}`;
+    : `${sellerPrefix} ${product.seller}`;
 
   return (
     <TouchableOpacity

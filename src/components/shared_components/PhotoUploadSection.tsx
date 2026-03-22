@@ -1,7 +1,10 @@
 import ImageSuggestions from "@src/components/sell_components/ImageSuggestions";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { useImageSuggestions } from "@src/hooks/useImageSuggestions";
-import { moderateImageAsset } from "@src/lib/imageModeration";
+import {
+  moderateImageAsset,
+  shouldBlockImageModeration,
+} from "@src/lib/imageModeration";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { analyzeImageQuality } from "@src/utils/imageQuality";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -37,6 +40,10 @@ export default function PhotoUploadSection({
 }: PhotoUploadSectionProps) {
   const { t } = useTranslation();
   const themeColors = useThemeColor();
+  const okLabel = (() => {
+    const value = t("common.ok");
+    return value === "common.ok" ? "OK" : value;
+  })();
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(true);
@@ -50,6 +57,14 @@ export default function PhotoUploadSection({
     visible: false,
   });
   const { analysis } = useImageSuggestions(photos.length);
+
+  const showModerationPrompt = (title: string, description: string) => {
+    setModerationPrompt({
+      description,
+      title,
+      visible: true,
+    });
+  };
 
   const validateImage = async (uri: string) => {
     const metrics = await analyzeImageQuality(uri);
@@ -105,19 +120,22 @@ export default function PhotoUploadSection({
           const normalizedUri = await normalizeImage(asset);
           try {
             const moderation = await moderateImageAsset(normalizedUri);
-            if (moderation.decision === "block") {
-              setModerationPrompt({
-                description:
-                  moderation.reasons.length > 0
-                    ? `This image was blocked because it may contain ${moderation.reasons.join(", ")}.`
-                    : "This image was blocked by content moderation.",
-                title: "Image not allowed",
-                visible: true,
-              });
+            if (shouldBlockImageModeration(moderation)) {
+              showModerationPrompt(
+                "Image not allowed",
+                moderation.reasons.length > 0
+                  ? `This image was blocked because it may contain ${moderation.reasons.join(", ")}.`
+                  : "This image was blocked by content moderation.",
+              );
               continue;
             }
           } catch (error) {
-            console.warn("Image moderation fallback warning:", error);
+            console.warn("Image moderation warning:", error);
+            showModerationPrompt(
+              "Image could not be verified",
+              "We couldn't verify this image for safety. Please try a different image or try again.",
+            );
+            continue;
           }
           const { metrics } = await validateImage(normalizedUri);
 
@@ -132,7 +150,10 @@ export default function PhotoUploadSection({
 
           acceptedUris.push(normalizedUri);
         } catch {
-          acceptedUris.push(asset.uri);
+          showModerationPrompt(
+            "Image could not be processed",
+            "This image could not be prepared for upload. Please try a different image.",
+          );
         }
       }
 
@@ -159,7 +180,9 @@ export default function PhotoUploadSection({
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <ThemedText style={styles.sectionTitle}>Media</ThemedText>
+        <ThemedText style={styles.sectionTitle}>
+          {t("sellSection.media")}
+        </ThemedText>
         <View style={styles.headerActions}>
           <ThemedText style={styles.countText}>{photos.length}/5</ThemedText>
           {photos.length > 0 && (
@@ -211,12 +234,12 @@ export default function PhotoUploadSection({
           <ThemedText
             style={[styles.uploadText, { color: themeColors.primary }]}
           >
-            Add images
+            {t("sellSection.add_images")}
           </ThemedText>
           <ThemedText
             style={[styles.uploadHint, { color: themeColors.tabIconDefault }]}
           >
-            Pick a plan to add more media types
+            {t("sellSection.media_hint")}
           </ThemedText>
         </TouchableOpacity>
       ) : (
@@ -312,7 +335,9 @@ export default function PhotoUploadSection({
                 setModerationPrompt((current) => ({ ...current, visible: false }))
               }
             >
-              <ThemedText style={styles.primaryActionText}>OK</ThemedText>
+              <ThemedText style={styles.primaryActionText}>
+                {okLabel}
+              </ThemedText>
             </TouchableOpacity>
           </View>
         </View>

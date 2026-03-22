@@ -348,7 +348,7 @@ export default function TradeScreen() {
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search trades"
+            placeholder={t("trade.search_placeholder")}
             placeholderTextColor={themeColors.text + "80"}
             style={[styles.input, { color: themeColors.text }]}
             returnKeyType="search"
@@ -384,8 +384,8 @@ export default function TradeScreen() {
             >
               {selectedCondition
                 ? conditionOptions.find((option) => option.value === selectedCondition)
-                    ?.label || "Filter"
-                : "Filter"}
+                    ?.label || t("common.filter")
+                : t("common.filter")}
             </ThemedText>
           </View>
           {selectedCondition ? (
@@ -410,7 +410,7 @@ export default function TradeScreen() {
               style={[styles.quickFilterButtonText, { color: themeColors.text }]}
               numberOfLines={1}
             >
-              {selectedProvinceLabel ? selectedProvinceLabel : "Location"}
+              {selectedProvinceLabel ? selectedProvinceLabel : t("common.location")}
             </ThemedText>
           </View>
           {selectedProvince ? <View style={styles.quickFilterActiveDot} /> : null}
@@ -431,7 +431,7 @@ export default function TradeScreen() {
             activeOpacity={0.85}
           >
             <XIcon size={13} color={themeColors.text} />
-            <ThemedText style={styles.clearFilterText}>Clear all</ThemedText>
+            <ThemedText style={styles.clearFilterText}>{t("common.clear_all")}</ThemedText>
           </TouchableOpacity>
         </View>
       ) : null}

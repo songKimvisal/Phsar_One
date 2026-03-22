@@ -359,7 +359,7 @@ export default function SettingsSectionScreen() {
             <ActionRow
               label={t("settings_sections.account_change_password")}
               description={t("settings_sections.account_change_password_desc")}
-              onPress={() => comingSoon(t("settings_sections.account_password_feature"))}
+              onPress={() => router.push("/settings/change-password" as Href)}
             />
           </View>
         ) : null}

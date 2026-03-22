@@ -6,8 +6,9 @@ import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { Colors } from "@src/constants/Colors";
 import { useTheme } from "@src/context/ThemeContext";
 import useThemeColor from "@src/hooks/useThemeColor";
+import { getAuthToken } from "@src/lib/auth";
 import { getEntitlements } from "@src/lib/entitlements";
-import { supabase } from "@src/lib/supabase";
+import { createClerkSupabaseClient } from "@src/lib/supabase";
 import { LinearGradient } from "expo-linear-gradient";
 import { Href, useFocusEffect, useRouter } from "expo-router";
 import {
@@ -46,7 +47,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const { user: clerkUser } = useUser();
-  const { userId } = useAuth();
+  const { userId, getToken } = useAuth();
   const { i18n, t } = useTranslation();
   const { theme, setMode } = useTheme();
   const themeColors = useThemeColor();
@@ -67,6 +68,27 @@ export default function ProfileScreen() {
 
   const scrollAnim = useRef(new Animated.Value(0)).current;
   const headerOpacityAnim = useRef(new Animated.Value(1)).current;
+  const isFetchingProfileRef = useRef(false);
+  const PROFILE_CACHE_KEY = "profile:cached_user";
+
+  useEffect(() => {
+    const hydrateCachedProfile = async () => {
+      try {
+        const cached = await AsyncStorage.getItem(PROFILE_CACHE_KEY);
+        if (!cached) return;
+        const parsed = JSON.parse(cached);
+        if (parsed?.id === userId) {
+          setDbUser(parsed);
+        }
+      } catch (error) {
+        console.warn("Profile cache hydrate warning:", error);
+      }
+    };
+
+    if (userId) {
+      hydrateCachedProfile();
+    }
+  }, [userId]);
 
   // Fetch/Refresh user data from Supabase whenever this tab is focused
   useFocusEffect(
@@ -78,24 +100,37 @@ export default function ProfileScreen() {
   );
 
   const fetchSupabaseUser = async () => {
-    if (!userId) return;
+    if (!userId || isFetchingProfileRef.current) return;
     try {
-      const { data, error } = await supabase
+      isFetchingProfileRef.current = true;
+      const token = await getAuthToken(getToken, "profile tab fetch", {
+        timeoutMs: 45000,
+        retries: 2,
+      });
+      const authSupabase = createClerkSupabaseClient(token);
+      const { data, error } = await authSupabase
         .from("users")
         .select("*")
         .eq("id", userId as string)
         .single();
       if (error) throw error;
       setDbUser(data);
+      await AsyncStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(data));
     } catch (error) {
       console.warn("Profile fetch warning:", error);
+    } finally {
+      isFetchingProfileRef.current = false;
     }
   };
 
   // Use DB data first, fallback to Clerk data
-  const displayName = dbUser
-    ? `${dbUser.first_name} ${dbUser.last_name || ""}`.trim()
-    : clerkUser?.fullName || "User";
+  const dbDisplayName = dbUser
+    ? `${dbUser.first_name || ""} ${dbUser.last_name || ""}`.trim()
+    : "";
+  const clerkDisplayName = clerkUser?.fullName?.includes("@")
+    ? ""
+    : (clerkUser?.fullName ?? "").trim();
+  const displayName = dbDisplayName || clerkDisplayName || "User";
 
   const avatarUrl = dbUser?.avatar_url || clerkUser?.imageUrl;
 

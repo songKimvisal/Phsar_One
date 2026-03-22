@@ -7,6 +7,7 @@ import { useDashboardAnalytics } from "@src/hooks/useDashboardAnalytics";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Stack } from "expo-router";
 import React, { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -15,8 +16,13 @@ function pct(part: number, total: number): number {
   return Math.round((part / total) * 100);
 }
 
+function normalizeCategoryLabelToKey(label: string): string {
+  return label.toLowerCase().replace(/\s+/g, "_");
+}
+
 export default function DashboardInsightScreen() {
   const themeColors = useThemeColor();
+  const { t } = useTranslation();
   const {
     entitlements,
     loading: subscriptionLoading,
@@ -31,11 +37,11 @@ export default function DashboardInsightScreen() {
 
   const funnelSteps = useMemo(
     () => [
-      { color: "#2563EB", label: "Views", value: data.performance.listingViews },
-      { color: "#D9382C", label: "Saves", value: data.performance.savedItems },
-      { color: "#16A34A", label: "Chats", value: data.performance.chatStarts },
+      { color: "#2563EB", label: t("dashboard_insights.views"), value: data.performance.listingViews },
+      { color: "#D9382C", label: t("dashboard_insights.saves"), value: data.performance.savedItems },
+      { color: "#16A34A", label: t("dashboard_insights.chats"), value: data.performance.chatStarts },
     ],
-    [data.performance.chatStarts, data.performance.listingViews, data.performance.savedItems],
+    [data.performance.chatStarts, data.performance.listingViews, data.performance.savedItems, t],
   );
 
   const funnelBase = Math.max(...funnelSteps.map((step) => step.value), 1);
@@ -44,29 +50,40 @@ export default function DashboardInsightScreen() {
     () => [
       {
         key: "save-rate",
-        label: "Save intent",
+        label: t("dashboard_insights.save_intent"),
         value: `${pct(data.performance.savedItems, data.performance.listingViews)}%`,
-        note: "of views convert into saves",
+        note: t("dashboard_insights.save_intent_note"),
       },
       {
         key: "chat-from-views",
-        label: "Chat start rate",
+        label: t("dashboard_insights.chat_start_rate"),
         value: `${pct(data.performance.chatStarts, data.performance.listingViews)}%`,
-        note: "of views become chat starts",
+        note: t("dashboard_insights.chat_start_rate_note"),
       },
       {
         key: "chat-from-saves",
-        label: "Save to chat",
+        label: t("dashboard_insights.save_to_chat"),
         value: `${pct(data.performance.chatStarts, data.performance.savedItems)}%`,
-        note: "of saves become chat starts",
+        note: t("dashboard_insights.save_to_chat_note"),
       },
     ],
-    [data.performance.chatStarts, data.performance.listingViews, data.performance.savedItems],
+    [data.performance.chatStarts, data.performance.listingViews, data.performance.savedItems, t],
+  );
+
+  const translatedSegments = useMemo(
+    () =>
+      data.insights.segments.map((segment) => ({
+        ...segment,
+        label: t(`categories.${normalizeCategoryLabelToKey(segment.label)}`, {
+          defaultValue: segment.label,
+        }),
+      })),
+    [data.insights.segments, t],
   );
 
   const rankedSegments = useMemo(
-    () => [...data.insights.segments].sort((a, b) => b.value - a.value),
-    [data.insights.segments],
+    () => [...translatedSegments].sort((a, b) => b.value - a.value),
+    [translatedSegments],
   );
 
   const topSegments = rankedSegments.slice(0, 3);
@@ -75,22 +92,22 @@ export default function DashboardInsightScreen() {
     const list: string[] = [];
 
     if (data.performance.listingViews > 20 && data.performance.chatStarts === 0) {
-      list.push("High views but no chats. Improve title clarity and first photo.");
+      list.push(t("dashboard_insights.tip_high_views_no_chats"));
     }
 
     if (data.performance.chatStarts > 0 && data.performance.responseRate < 60) {
-      list.push("Response rate is low. Faster replies usually increase conversions.");
+      list.push(t("dashboard_insights.tip_low_response_rate"));
     }
 
     if (
       data.performance.listingViews > 30 &&
       data.performance.savedItems < Math.ceil(data.performance.listingViews * 0.05)
     ) {
-      list.push("Views are strong but saves are low. Revisit pricing and details.");
+      list.push(t("dashboard_insights.tip_low_saves"));
     }
 
     if (list.length === 0) {
-      list.push("Momentum looks healthy. Keep listings active and refresh them regularly.");
+      list.push(t("dashboard_insights.tip_healthy_momentum"));
     }
 
     return list.slice(0, 3);
@@ -99,6 +116,7 @@ export default function DashboardInsightScreen() {
     data.performance.listingViews,
     data.performance.responseRate,
     data.performance.savedItems,
+    t,
   ]);
 
   return (
@@ -108,7 +126,7 @@ export default function DashboardInsightScreen() {
     >
       <Stack.Screen options={{ headerShown: false }} />
 
-      <DashboardHeader title="Insights" />
+      <DashboardHeader title={t("dashboard_insights.title")} />
 
       {subscriptionLoading ? (
         <View style={styles.loadingWrap}>
@@ -116,8 +134,8 @@ export default function DashboardInsightScreen() {
         </View>
       ) : !canAccess ? (
         <AnalyticsLockedCard
-          title="Advanced insights unavailable"
-          description="The Insights dashboard is reserved for Business plans with advanced analytics."
+          title={t("dashboard_insights.locked_title")}
+          description={t("dashboard_insights.locked_description")}
           requiredPlan="business"
         />
       ) : (
@@ -127,9 +145,11 @@ export default function DashboardInsightScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.headingBlock}>
-            <ThemedText style={styles.headingTitle}>Marketplace Insights</ThemedText>
+            <ThemedText style={styles.headingTitle}>
+              {t("dashboard_insights.marketplace_insights")}
+            </ThemedText>
             <ThemedText style={styles.headingSubtitle}>
-              Why buyers engage this way and what to improve next.
+              {t("dashboard_insights.marketplace_insights_subtitle")}
             </ThemedText>
           </View>
 
@@ -140,9 +160,11 @@ export default function DashboardInsightScreen() {
           ) : null}
 
           <View style={[styles.sectionCard, { backgroundColor: themeColors.card }]}>
-            <ThemedText style={styles.sectionTitle}>Conversion Clues</ThemedText>
+            <ThemedText style={styles.sectionTitle}>
+              {t("dashboard_insights.conversion_clues")}
+            </ThemedText>
             <ThemedText style={styles.sectionSubtitle}>
-              Interpretation of behavior flow, not raw totals.
+              {t("dashboard_insights.conversion_clues_subtitle")}
             </ThemedText>
 
             <View style={styles.clueList}>
@@ -162,8 +184,12 @@ export default function DashboardInsightScreen() {
           </View>
 
           <View style={[styles.sectionCard, { backgroundColor: themeColors.card }]}>
-            <ThemedText style={styles.sectionTitle}>Engagement Funnel</ThemedText>
-            <ThemedText style={styles.sectionSubtitle}>Views to Saves to Chats</ThemedText>
+            <ThemedText style={styles.sectionTitle}>
+              {t("dashboard_insights.engagement_funnel")}
+            </ThemedText>
+            <ThemedText style={styles.sectionSubtitle}>
+              {t("dashboard_insights.engagement_funnel_subtitle")}
+            </ThemedText>
 
             <View style={styles.funnelWrap}>
               {funnelSteps.map((step) => {
@@ -199,9 +225,11 @@ export default function DashboardInsightScreen() {
           </View>
 
           <View style={[styles.sectionCard, { backgroundColor: themeColors.card }]}>
-            <ThemedText style={styles.sectionTitle}>Demand Mix</ThemedText>
+            <ThemedText style={styles.sectionTitle}>
+              {t("dashboard_insights.demand_mix")}
+            </ThemedText>
             <ThemedText style={styles.sectionSubtitle}>
-              Category interest from views, saves, and chats (90 days).
+              {t("dashboard_insights.demand_mix_subtitle")}
             </ThemedText>
 
             {loading ? (
@@ -209,12 +237,14 @@ export default function DashboardInsightScreen() {
                 <ActivityIndicator size="small" color={themeColors.primary} />
               </View>
             ) : (
-              <InterestsDonutChart segments={data.insights.segments} />
+              <InterestsDonutChart segments={translatedSegments} />
             )}
           </View>
 
           <View style={[styles.sectionCard, { backgroundColor: themeColors.card }]}>
-            <ThemedText style={styles.sectionTitle}>Top Demand Categories</ThemedText>
+            <ThemedText style={styles.sectionTitle}>
+              {t("dashboard_insights.top_demand_categories")}
+            </ThemedText>
             <View style={styles.rankList}>
               {topSegments.map((segment) => (
                 <View key={segment.label} style={styles.rankItem}>
@@ -244,7 +274,9 @@ export default function DashboardInsightScreen() {
           </View>
 
           <View style={[styles.sectionCard, { backgroundColor: themeColors.card }]}>
-            <ThemedText style={styles.sectionTitle}>Actionable Tips</ThemedText>
+            <ThemedText style={styles.sectionTitle}>
+              {t("dashboard_insights.actionable_tips")}
+            </ThemedText>
             <View style={styles.tipList}>
               {tips.map((tip) => (
                 <View key={tip} style={styles.tipRow}>

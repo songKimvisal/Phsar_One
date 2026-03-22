@@ -13,7 +13,7 @@ import {
   CheckCircleIcon,
   LightbulbIcon,
 } from "phosphor-react-native";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -38,9 +38,41 @@ export default function TradeProductDetailScreen() {
   const { userId, getToken } = useAuth();
 
   const [showOfferSheet, setShowOfferSheet] = useState(false);
+  const [ownerProfile, setOwnerProfile] = useState<{
+    avatar_url?: string | null;
+    first_name?: string | null;
+    last_name?: string | null;
+  } | null>(null);
   const colorScheme = useColorScheme();
 
   const product = getProductById(id as string);
+
+  useEffect(() => {
+    const fetchOwnerProfile = async () => {
+      if (!product?.owner_id) {
+        setOwnerProfile(null);
+        return;
+      }
+
+      try {
+        const token = await getAuthToken(getToken, "trade owner profile");
+        const authSupabase = createClerkSupabaseClient(token);
+        const { data, error } = await authSupabase
+          .from("users")
+          .select("first_name,last_name,avatar_url")
+          .eq("id", product.owner_id)
+          .maybeSingle();
+
+        if (error) throw error;
+        setOwnerProfile(data);
+      } catch (error) {
+        console.warn("Trade owner profile warning:", error);
+        setOwnerProfile(null);
+      }
+    };
+
+    fetchOwnerProfile();
+  }, [getToken, product?.owner_id]);
 
   const conditionLabel = useMemo(() => {
     const conditionKey =
@@ -60,6 +92,11 @@ export default function TradeProductDetailScreen() {
       .join(" / ") || "012#### / 010####";
 
   const ownerName = useMemo(() => {
+    const fullName = [ownerProfile?.first_name, ownerProfile?.last_name]
+      .filter(Boolean)
+      .join(" ")
+      .trim();
+    if (fullName) return fullName;
     if (!product?.owner) return "Sarah Chen";
     const name = product.owner.name || product.seller || "";
 
@@ -69,9 +106,9 @@ export default function TradeProductDetailScreen() {
     }
 
     return name || "Phsar One User";
-  }, [product]);
+  }, [ownerProfile?.first_name, ownerProfile?.last_name, product]);
 
-  const ownerAvatar = product?.owner?.avatar || "";
+  const ownerAvatar = ownerProfile?.avatar_url || product?.owner?.avatar || "";
   const isOwner = !!userId && product?.owner_id === userId;
 
   const handleOpenMap = () => {

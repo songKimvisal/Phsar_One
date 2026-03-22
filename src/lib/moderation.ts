@@ -2,7 +2,8 @@ const HARD_BLOCK_PATTERNS: Array<{
   label: string;
   pattern: RegExp;
 }> = [
-  { label: "guns", pattern: /\b(gun|guns|firearm|firearms|pistol|pistols|rifle|rifles|shotgun|shotguns|ammo|ammunition)\b/i },
+  { label: "guns", pattern: /\b(gun|guns)\b/i },
+  { label: "firearms", pattern: /\b(firearm|firearms|pistol|pistols|rifle|rifles|shotgun|shotguns|ammo|ammunition)\b/i },
   { label: "explosives", pattern: /\b(bomb|bombs|explosive|explosives|grenade|grenades|detonator|c4|dynamite)\b/i },
   { label: "drugs", pattern: /\b(cocaine|heroin|meth|methamphetamine|weed|marijuana|cannabis|ecstasy|mdma|opium|ketamine)\b/i },
   { label: "adult content", pattern: /\b(adult|18\+|explicit|nsfw|pornographic)\b/i },
@@ -20,6 +21,16 @@ export type ModerationResult =
   | { outcome: "allow"; matches: string[] }
   | { outcome: "review"; matches: string[] }
   | { outcome: "block"; matches: string[] };
+
+const TOY_WEAPON_CONTEXT_PATTERNS: RegExp[] = [
+  /\bnerf\b/i,
+  /\btoy gun\b/i,
+  /\btoy guns\b/i,
+  /\bwater gun\b/i,
+  /\bwater blaster\b/i,
+  /\bfoam blaster\b/i,
+  /\bdart blaster\b/i,
+];
 
 const normalizeText = (value: unknown) =>
   String(value || "")
@@ -41,9 +52,14 @@ export const moderateListingContent = (input: {
     [input.title, input.description, input.subCategory, metadataText].join(" "),
   );
 
-  const blockMatches = HARD_BLOCK_PATTERNS.filter(({ pattern }) =>
+  const hasToyWeaponContext = TOY_WEAPON_CONTEXT_PATTERNS.some((pattern) =>
     pattern.test(haystack),
-  ).map(({ label }) => label);
+  );
+
+  const blockMatches = HARD_BLOCK_PATTERNS.filter(({ pattern, label }) => {
+    if (label === "guns" && hasToyWeaponContext) return false;
+    return pattern.test(haystack);
+  }).map(({ label }) => label);
 
   if (blockMatches.length > 0) {
     return { outcome: "block", matches: blockMatches };

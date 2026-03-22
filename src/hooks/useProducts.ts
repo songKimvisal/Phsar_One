@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchBlockedUserIds, filterBlockedSellerRows } from "../lib/blockedUsers";
 import { supabase } from "../lib/supabase";
 import { Database } from "../types/supabase";
@@ -13,9 +13,12 @@ export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isFetchingRef = useRef(false);
 
   const fetchProducts = async () => {
+    if (isFetchingRef.current) return;
     try {
+      isFetchingRef.current = true;
       setLoading(true);
       const blockedSellerIds =
         userId && getToken
@@ -47,6 +50,7 @@ export function useProducts() {
     } catch (e: any) {
       setError(e.message);
     } finally {
+      isFetchingRef.current = false;
       setLoading(false);
     }
   };

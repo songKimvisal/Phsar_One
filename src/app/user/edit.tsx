@@ -1,4 +1,5 @@
 import { useAuth, useUser } from "@clerk/clerk-expo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import ActionStatusModal from "@src/components/shared_components/ActionStatusModal";
 import { ThemedText } from "@src/components/shared_components/ThemedText";
 import { ThemedTextInput } from "@src/components/shared_components/ThemedTextInput";
@@ -166,6 +167,25 @@ export default function EditProfileScreen() {
         .eq("id", userId as string);
 
       if (error) throw error;
+
+      if (clerkUser) {
+        await clerkUser.update({
+          firstName: formData.first_name || undefined,
+          lastName: formData.last_name || undefined,
+        });
+      }
+
+      await AsyncStorage.setItem(
+        "profile:cached_user",
+        JSON.stringify({
+          id: userId,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          phone: formData.phone,
+          bio: formData.bio,
+          avatar_url: formData.avatar_url,
+        }),
+      );
 
       setShowSuccessModal(true);
     } catch (error) {

@@ -10,6 +10,7 @@ import { useDashboardAnalytics } from "@src/hooks/useDashboardAnalytics";
 import useThemeColor from "@src/hooks/useThemeColor";
 import { Stack } from "expo-router";
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -21,6 +22,7 @@ function signedValue(value: number, suffix = ""): string {
 
 export default function DashboardPerformanceScreen() {
   const themeColors = useThemeColor();
+  const { t } = useTranslation();
   const {
     entitlements,
     loading: subscriptionLoading,
@@ -40,7 +42,7 @@ export default function DashboardPerformanceScreen() {
     >
       <Stack.Screen options={{ headerShown: false }} />
 
-      <DashboardHeader title="Performance" />
+      <DashboardHeader title={t("dashboard_performance.title")} />
 
       {subscriptionLoading ? (
         <View style={styles.loadingWrap}>
@@ -48,8 +50,8 @@ export default function DashboardPerformanceScreen() {
         </View>
       ) : !canAccess ? (
         <AnalyticsLockedCard
-          title="Performance analytics unavailable"
-          description="Performance analytics are available on Starter, Pro, and Business plans."
+          title={t("dashboard_performance.locked_title")}
+          description={t("dashboard_performance.locked_description")}
           requiredPlan="starter"
         />
       ) : (
@@ -72,7 +74,7 @@ export default function DashboardPerformanceScreen() {
           <View style={styles.grid}>
             <View style={styles.gridItem}>
               <DashboardStatCard
-                label="Listing Views"
+                label={t("dashboard_performance.listing_views")}
                 value={data.performance.listingViews}
                 trendText={signedValue(data.performance.listingViewsDelta)}
               />
@@ -80,7 +82,7 @@ export default function DashboardPerformanceScreen() {
 
             <View style={styles.gridItem}>
               <DashboardStatCard
-                label="Chat Starts"
+                label={t("dashboard_performance.chat_starts")}
                 value={data.performance.chatStarts}
                 trendText={signedValue(data.performance.chatStartsDelta)}
               />
@@ -88,7 +90,7 @@ export default function DashboardPerformanceScreen() {
 
             <View style={styles.gridItem}>
               <DashboardStatCard
-                label="Response Rate"
+                label={t("dashboard_performance.response_rate")}
                 value={`${data.performance.responseRate}%`}
                 trendText={signedValue(data.performance.responseRateDelta, "%")}
               />
@@ -96,7 +98,7 @@ export default function DashboardPerformanceScreen() {
 
             <View style={styles.gridItem}>
               <DashboardStatCard
-                label="Saved Items"
+                label={t("dashboard_performance.saved_items")}
                 value={data.performance.savedItems}
                 trendText={signedValue(data.performance.savedItemsDelta)}
               />
@@ -104,10 +106,10 @@ export default function DashboardPerformanceScreen() {
           </View>
 
           <RecentSellCard
-            title="Recent Sold Listings"
-            viewAllLabel="View all"
+            title={t("dashboard.recent_sold_listings")}
+            viewAllLabel={t("dashboard.view_all")}
             items={data.overview.recentSold}
-            emptyText="No sold listings yet."
+            emptyText={t("dashboard.no_sold_listings")}
           />
         </ScrollView>
       )}

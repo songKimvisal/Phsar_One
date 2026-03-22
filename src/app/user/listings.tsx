@@ -426,9 +426,9 @@ export default function MyListingsScreen() {
                 planType: userPlanType,
               });
               if (daysLeft == null) return "";
-              if (daysLeft <= 0) return "Expired";
-              if (daysLeft === 1) return "Expires in 1 day";
-              return `Expires in ${daysLeft} days`;
+              if (daysLeft <= 0) return t("listings_screen.expired_status");
+              if (daysLeft === 1) return t("listings_screen.expires_in_one_day");
+              return t("listings_screen.expires_in_days", { count: daysLeft });
             })()}
           </ThemedText>
 
@@ -441,7 +441,9 @@ export default function MyListingsScreen() {
                 </ThemedText>
               </View>
               <ThemedText style={styles.boostCountText}>
-                {`Boosts: ${Number(item.metadata?.boost_count || 0)}`}
+                {t("listings_screen.boost_count", {
+                  count: Number(item.metadata?.boost_count || 0),
+                })}
               </ThemedText>
             </View>
           ) : null}
@@ -498,9 +500,9 @@ export default function MyListingsScreen() {
             ]}
           >
             {boostingProductId === item.id
-              ? "Boosting..."
+              ? t("listings_screen.boosting")
               : item.metadata?.last_boosted_at
-                ? "Boost again"
+                ? t("listings_screen.boost_again")
                 : t("listings_screen.boost")}
           </ThemedText>
         </TouchableOpacity>
@@ -540,7 +542,10 @@ export default function MyListingsScreen() {
               {formatPrice(item.price, item.metadata?.currency || "USD")}
             </ThemedText>
             <TouchableOpacity
-              style={styles.relistBtn}
+              style={[
+                styles.relistBtn,
+                { backgroundColor: themeColors.primary },
+              ]}
               onPress={() => handleUpdateStatus(item.id, "active", item)}
             >
               <ArrowsCounterClockwiseIcon size={16} color="#fff" />
@@ -568,7 +573,7 @@ export default function MyListingsScreen() {
             {item.title || t("listings_screen.untitled_draft")}
           </ThemedText>
           <ThemedText style={styles.soldOn}>
-            Saved as draft
+            {t("listings_screen.saved_as_draft")}
           </ThemedText>
         </View>
       </View>
@@ -629,7 +634,7 @@ export default function MyListingsScreen() {
               {item.title}
             </ThemedText>
             <ThemedText style={styles.soldOn}>
-              Expired on {expiredDateLabel}
+              {t("listings_screen.expired_on", { date: expiredDateLabel })}
             </ThemedText>
 
             <View style={styles.soldPriceRow}>
@@ -645,7 +650,9 @@ export default function MyListingsScreen() {
                 ]}
                 onPress={() => handleUpdateStatus(item.id, "active", item)}
               >
-                <ThemedText style={styles.draftActionText}>Relist</ThemedText>
+                <ThemedText style={styles.draftActionText}>
+                  {t("listings_screen.relist")}
+                </ThemedText>
               </TouchableOpacity>
             </View>
           </View>
@@ -665,11 +672,11 @@ export default function MyListingsScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: themeColors.background }}>
       <UpgradePromptModal
         visible={boostUpgradePromptVisible}
-        title="Upgrade to boost listings"
+        title={t("listings_screen.upgrade_to_boost_title")}
         description={
           userPlanType === "regular"
-            ? "Boosts are available on Starter, Pro, and Business plans. Upgrade to start promoting your active listings."
-            : "You have used your monthly boost allowance. Upgrade your plan to unlock more listing boosts."
+            ? t("listings_screen.upgrade_to_boost_description")
+            : t("listings_screen.monthly_boost_limit_description")
         }
         onClose={() => setBoostUpgradePromptVisible(false)}
         onConfirm={() => {
@@ -691,7 +698,7 @@ export default function MyListingsScreen() {
         visible={boostSuccessPrompt.visible}
         title={boostSuccessPrompt.title}
         description={boostSuccessPrompt.description}
-        actionLabel="OK"
+        actionLabel={t("common.ok")}
         tone={boostSuccessPrompt.tone}
         onClose={() =>
           setBoostSuccessPrompt((current) => ({
@@ -739,7 +746,7 @@ export default function MyListingsScreen() {
                 style={[styles.summaryCard, { backgroundColor: themeColors.card }]}
               >
                 <ThemedText style={styles.summaryTitle}>
-                  Boost allowance
+                  {t("listings_screen.boost_allowance")}
                 </ThemedText>
                 <ThemedText style={styles.summaryText}>
                   {(() => {
@@ -748,11 +755,11 @@ export default function MyListingsScreen() {
                     });
 
                     if (entitlements.monthlyBoosts <= 0) {
-                      return "Upgrade to Starter or above to unlock listing boosts.";
+                      return t("listings_screen.upgrade_to_unlock_boosts");
                     }
 
                     if (entitlements.monthlyBoosts >= 9999) {
-                      return "Your Business plan includes unlimited monthly boosts.";
+                      return t("listings_screen.unlimited_monthly_boosts");
                     }
 
                     const remaining = Math.max(
@@ -760,7 +767,10 @@ export default function MyListingsScreen() {
                       0,
                     );
 
-                    return `${remaining} of ${entitlements.monthlyBoosts} boosts remaining this month.`;
+                    return t("listings_screen.boosts_remaining", {
+                      total: entitlements.monthlyBoosts,
+                      remaining,
+                    });
                   })()}
                 </ThemedText>
               </View>
@@ -936,12 +946,11 @@ const styles = StyleSheet.create({
     marginTop: "auto",
   },
   relistBtn: {
-    backgroundColor: "#3B82F6",
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
     gap: 4,
   },
   relistText: {

@@ -27,16 +27,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 type FilterKey = "received" | "sent" | "accepted" | "completed" | "declined";
-
-const FILTERS: { key: FilterKey; label: string }[] = [
-  { key: "received", label: "Received" },
-  { key: "sent", label: "Sent" },
-  { key: "accepted", label: "Accepted" },
-  { key: "completed", label: "Completed" },
-  { key: "declined", label: "Declined" },
-];
 
 function matchesFilter(
   item: { direction: "received" | "sent"; status: TradeInboxStatus },
@@ -58,6 +51,7 @@ function statusPillColors(status: TradeInboxStatus) {
 
 export default function MyTradesScreen() {
   const themeColors = useThemeColor();
+  const { t } = useTranslation();
   const router = useRouter();
   const { userId, getToken } = useAuth();
   const {
@@ -74,6 +68,14 @@ export default function MyTradesScreen() {
   const [openingChatOfferId, setOpeningChatOfferId] = useState<string | null>(
     null,
   );
+
+  const FILTERS: { key: FilterKey; label: string }[] = [
+    { key: "received", label: t("my_trades.received") },
+    { key: "sent", label: t("my_trades.sent") },
+    { key: "accepted", label: t("my_trades.accepted") },
+    { key: "completed", label: t("my_trades.completed") },
+    { key: "declined", label: t("my_trades.declined") },
+  ];
 
   const filterCounts = useMemo(() => {
     return FILTERS.reduce(
@@ -150,7 +152,10 @@ export default function MyTradesScreen() {
       );
     } catch (openError) {
       console.error("Error opening trade conversation:", openError);
-      Alert.alert("Chat unavailable", "Could not open this chat directly.");
+      Alert.alert(
+        t("my_trades.chat_unavailable"),
+        t("my_trades.chat_unavailable_description"),
+      );
       openTradeTab();
     } finally {
       setOpeningChatOfferId(null);
@@ -166,7 +171,7 @@ export default function MyTradesScreen() {
     setUpdatingOfferId(null);
 
     if (!success) {
-      Alert.alert("Error", "Failed to update trade offer status.");
+      Alert.alert(t("error"), t("my_trades.update_status_failed"));
     }
   };
 
@@ -177,7 +182,7 @@ export default function MyTradesScreen() {
     >
       <Stack.Screen options={{ headerShown: false }} />
 
-      <DashboardHeader title="My Trades" />
+      <DashboardHeader title={t("my_trades.title")} />
 
       <View style={styles.content}>
         <View
@@ -191,29 +196,39 @@ export default function MyTradesScreen() {
           <View style={styles.summaryTop}>
             <View style={styles.summaryTitleWrap}>
               <ArrowsClockwiseIcon size={16} color="#D9382C" weight="bold" />
-              <ThemedText style={styles.summaryTitle}>Trade Inbox</ThemedText>
+              <ThemedText style={styles.summaryTitle}>
+                {t("my_trades.trade_inbox")}
+              </ThemedText>
             </View>
             <ThemedText style={styles.summaryHint}>
-              Manage offers by status
+              {t("my_trades.manage_offers_by_status")}
             </ThemedText>
           </View>
 
           <View style={styles.quickRow}>
             <View style={styles.quickItem}>
               <ClockIcon size={14} color="#000" weight="fill" />
-              <ThemedText style={styles.quickLabel}>Pending</ThemedText>
+              <ThemedText style={styles.quickLabel}>
+                {t("my_trades.pending")}
+              </ThemedText>
               <ThemedText style={styles.quickValue}>{pendingCount}</ThemedText>
             </View>
             <View style={styles.quickItem}>
               <CheckIcon size={14} color="#000" weight="bold" />
-              <ThemedText style={styles.quickLabel}>Accepted</ThemedText>
+              <ThemedText style={styles.quickLabel}>
+                {t("my_trades.accepted")}
+              </ThemedText>
               <ThemedText style={styles.quickValue}>{acceptedCount}</ThemedText>
             </View>
             <View style={styles.quickItem}>
               <ChatCircleIcon size={14} color="#000" weight="fill" />
-              <ThemedText style={styles.quickLabel}>Trade Chat</ThemedText>
+              <ThemedText style={styles.quickLabel}>
+                {t("my_trades.trade_chat")}
+              </ThemedText>
               <TouchableOpacity onPress={openTradeTab} activeOpacity={0.8}>
-                <ThemedText style={styles.quickLink}>Open</ThemedText>
+                <ThemedText style={styles.quickLink}>
+                  {t("my_trades.open")}
+                </ThemedText>
               </TouchableOpacity>
             </View>
           </View>
@@ -279,11 +294,10 @@ export default function MyTradesScreen() {
               ]}
             >
               <ThemedText style={styles.emptyTitle}>
-                No trade offers yet
+                {t("my_trades.no_trade_offers")}
               </ThemedText>
               <ThemedText style={styles.emptySubtitle}>
-                Received and sent offers will appear here when users send
-                offers.
+                {t("my_trades.no_trade_offers_subtitle")}
               </ThemedText>
               <TouchableOpacity
                 style={styles.emptyCta}
@@ -291,7 +305,7 @@ export default function MyTradesScreen() {
                 activeOpacity={0.85}
               >
                 <ThemedText style={styles.emptyCtaText}>
-                  Open Trade Chat
+                  {t("my_trades.open_trade_chat")}
                 </ThemedText>
               </TouchableOpacity>
             </View>
@@ -327,7 +341,10 @@ export default function MyTradesScreen() {
                         <ThemedText
                           style={[styles.statusText, { color: colors.text }]}
                         >
-                          {item.status[0].toUpperCase() + item.status.slice(1)}
+                          {t(`my_trades.${item.status}`, {
+                            defaultValue:
+                              item.status[0].toUpperCase() + item.status.slice(1),
+                          })}
                         </ThemedText>
                       </View>
                       <ThemedText style={styles.offerTime}>
@@ -339,10 +356,10 @@ export default function MyTradesScreen() {
                       {item.ownerLabel}: {item.ownerName}
                     </ThemedText>
                     <ThemedText style={styles.offerItems}>
-                      Their item: {item.otherItem}
+                      {t("my_trades.their_item")}: {item.otherItem}
                     </ThemedText>
                     <ThemedText style={styles.offerItems}>
-                      Your item: {item.yourItem}
+                      {t("my_trades.your_item")}: {item.yourItem}
                     </ThemedText>
 
                     <View style={styles.actionRow}>
@@ -358,7 +375,7 @@ export default function MyTradesScreen() {
                           >
                             <CheckIcon size={14} color="#fff" weight="bold" />
                             <ThemedText style={styles.actionPrimaryText}>
-                              Accept
+                              {t("my_trades.accept")}
                             </ThemedText>
                           </TouchableOpacity>
 
@@ -372,7 +389,7 @@ export default function MyTradesScreen() {
                           >
                             <XIcon size={14} color="#fff" weight="bold" />
                             <ThemedText style={styles.actionPrimaryText}>
-                              Decline
+                              {t("my_trades.decline")}
                             </ThemedText>
                           </TouchableOpacity>
                         </>
@@ -391,7 +408,7 @@ export default function MyTradesScreen() {
                       >
                         {isReceivedPending ? (
                           <ThemedText style={styles.actionGhostText}>
-                            Counter in Chat
+                            {t("my_trades.counter_in_chat")}
                           </ThemedText>
                         ) : (
                           <>
@@ -401,7 +418,7 @@ export default function MyTradesScreen() {
                               weight="fill"
                             />
                             <ThemedText style={styles.actionPrimaryText}>
-                              Open Chat
+                              {t("my_trades.open_chat")}
                             </ThemedText>
                           </>
                         )}

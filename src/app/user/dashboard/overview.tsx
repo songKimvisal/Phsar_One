@@ -16,11 +16,13 @@ import {
   ShoppingBagIcon,
 } from "phosphor-react-native";
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DashboardOverviewScreen() {
   const themeColors = useThemeColor();
+  const { t } = useTranslation();
   const {
     entitlements,
     loading: subscriptionLoading,
@@ -40,7 +42,7 @@ export default function DashboardOverviewScreen() {
     >
       <Stack.Screen options={{ headerShown: false }} />
 
-      <DashboardHeader title="Overview" />
+      <DashboardHeader title={t("dashboard.overview_title")} />
 
       {subscriptionLoading ? (
         <View style={styles.loadingWrap}>
@@ -48,8 +50,8 @@ export default function DashboardOverviewScreen() {
         </View>
       ) : !canAccess ? (
         <AnalyticsLockedCard
-          title="Analytics unavailable"
-          description="Overview analytics are available on Starter, Pro, and Business plans."
+          title={t("dashboard.analytics_unavailable")}
+          description={t("dashboard.overview_locked_description")}
           requiredPlan="starter"
         />
       ) : (
@@ -73,7 +75,7 @@ export default function DashboardOverviewScreen() {
             <View style={styles.gridItem}>
               <DashboardStatCard
                 icon={<ShoppingBagIcon size={20} color="#D9382C" weight="fill" />}
-                label="Active Listings"
+                label={t("dashboard.active_listings")}
                 value={data.overview.activeListings}
               />
             </View>
@@ -83,7 +85,7 @@ export default function DashboardOverviewScreen() {
                 icon={
                   <ArrowsClockwiseIcon size={20} color="#D9382C" weight="bold" />
                 }
-                label="Sold Listings"
+                label={t("dashboard.sold_listings")}
                 value={data.overview.soldListings}
               />
             </View>
@@ -91,7 +93,7 @@ export default function DashboardOverviewScreen() {
             <View style={styles.gridItem}>
               <DashboardStatCard
                 icon={<ChatCircleIcon size={20} color="#D9382C" weight="fill" />}
-                label="Active Chats"
+                label={t("dashboard.active_chats")}
                 value={data.overview.activeChats}
               />
             </View>
@@ -101,17 +103,17 @@ export default function DashboardOverviewScreen() {
                 icon={
                   <BookmarkSimpleIcon size={20} color="#D9382C" weight="fill" />
                 }
-                label="Saved by Users"
+                label={t("dashboard.saved_by_users")}
                 value={data.overview.savedByUsers}
               />
             </View>
           </View>
 
           <RecentSellCard
-            title="Recent Sold Listings"
-            viewAllLabel="View all"
+            title={t("dashboard.recent_sold_listings")}
+            viewAllLabel={t("dashboard.view_all")}
             items={data.overview.recentSold}
-            emptyText="No sold listings yet."
+            emptyText={t("dashboard.no_sold_listings")}
           />
         </ScrollView>
       )}

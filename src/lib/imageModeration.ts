@@ -13,6 +13,18 @@ export type ImageModerationResult = {
   scores: Record<string, number>;
 };
 
+export function shouldBlockImageModeration(
+  moderation: ImageModerationResult,
+): boolean {
+  if (moderation.decision === "block") return true;
+
+  return moderation.reasons.some((reason) =>
+    ["dangerous item", "possible dangerous item", "adult content"].includes(
+      reason,
+    ),
+  );
+}
+
 export async function moderateImageAsset(uri: string): Promise<ImageModerationResult> {
   const formData = new FormData();
   formData.append("file", {
@@ -36,4 +48,3 @@ export async function moderateImageAsset(uri: string): Promise<ImageModerationRe
 
   return response.json() as Promise<ImageModerationResult>;
 }
-

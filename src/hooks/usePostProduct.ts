@@ -5,6 +5,10 @@ import { useState } from "react";
 import { POST_FIELDS_MAP } from "../constants/postFields";
 import { getAuthToken } from "../lib/auth";
 import { getEntitlements } from "../lib/entitlements";
+import {
+  moderateImageAsset,
+  shouldBlockImageModeration,
+} from "../lib/imageModeration";
 import { moderateListingContent } from "../lib/moderation";
 import { createClerkSupabaseClient } from "../lib/supabase";
 import {
@@ -216,11 +220,27 @@ export function usePostProduct() {
     }
   };
 
+  const assertImagesAllowed = async (draft: any) => {
+    const photos = Array.isArray(draft?.photos) ? draft.photos : [];
+
+    for (const uri of photos) {
+      const moderation = await moderateImageAsset(uri);
+      if (shouldBlockImageModeration(moderation)) {
+        throw new Error(
+          moderation.reasons.length > 0
+            ? `One of your images was blocked because it may contain ${moderation.reasons.join(", ")}.`
+            : "One of your images was blocked by content moderation.",
+        );
+      }
+    }
+  };
+
   const postProduct = async (draft: any) => {
     if (!userId) throw new Error("User ID is missing. Please sign in again.");
     setIsPosting(true);
     try {
       assertListingAllowed(draft);
+      await assertImagesAllowed(draft);
       const token = await getAuthToken(getToken, "product publish");
       const supabase = createClerkSupabaseClient(token);
       const userPlanType = await fetchUserPlanType(supabase);
@@ -252,6 +272,7 @@ export function usePostProduct() {
     setIsPosting(true);
     try {
       assertListingAllowed(draft);
+      await assertImagesAllowed(draft);
       const token = await getAuthToken(getToken, "product update");
       const supabase = createClerkSupabaseClient(token);
       const userPlanType = await fetchUserPlanType(supabase);
@@ -284,6 +305,7 @@ export function usePostProduct() {
     setIsPosting(true);
     try {
       assertListingAllowed(draft);
+      await assertImagesAllowed(draft);
       const token = await getAuthToken(getToken, "product draft save");
       const supabase = createClerkSupabaseClient(token);
       const userPlanType = await fetchUserPlanType(supabase);

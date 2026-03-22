@@ -1,5 +1,6 @@
 import { PaperPlaneRight } from "phosphor-react-native";
 import React, { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { TextInput, TouchableOpacity, View } from "react-native";
 
 export default function ChatInputBar({
@@ -9,6 +10,7 @@ export default function ChatInputBar({
   themeColors,
 }: any) {
   const inputRef = useRef<TextInput>(null);
+  const { t } = useTranslation();
 
   const handleSend = () => {
     if (value.trim()) {
@@ -36,7 +38,7 @@ export default function ChatInputBar({
         value={value}
         onChangeText={onChange}
         onEndEditing={() => inputRef.current?.clear()}
-        placeholder="Type a message..."
+        placeholder={t("chat.type_your_message")}
         autoCorrect={false}
         spellCheck={false}
         autoCapitalize="none"

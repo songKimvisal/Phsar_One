@@ -1,5 +1,6 @@
 import { useSignIn } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
+import ActionStatusModal from "@src/components/shared_components/ActionStatusModal";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
@@ -32,6 +33,8 @@ export default function ForgotPasswordPage() {
   const [error, setError] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [codeVerified, setCodeVerified] = React.useState(false);
+  const [showCodeSentModal, setShowCodeSentModal] = React.useState(false);
+  const [showResetSuccessModal, setShowResetSuccessModal] = React.useState(false);
 
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -59,10 +62,7 @@ export default function ForgotPasswordPage() {
       });
 
       setStep("code");
-      Alert.alert(
-        "Code Sent",
-        `A reset code has been sent to ${emailAddress}.`,
-      );
+      setShowCodeSentModal(true);
     } catch (err: any) {
       let msg = "Failed to send reset code";
       if (err.errors?.[0]?.message?.toLowerCase().includes("not found")) {
@@ -160,16 +160,7 @@ export default function ForgotPasswordPage() {
         if (result.createdSessionId) {
           await setActive({ session: result.createdSessionId });
         }
-        Alert.alert(
-          "Success! 🎉",
-          "Your password has been reset. Signing you in...",
-          [
-            {
-              text: "OK",
-              onPress: () => router.replace("/"),
-            },
-          ],
-        );
+        setShowResetSuccessModal(true);
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -219,6 +210,27 @@ export default function ForgotPasswordPage() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ActionStatusModal
+        visible={showCodeSentModal}
+        title="Code sent"
+        description={`A reset code has been sent to ${emailAddress}.`}
+        actionLabel="Continue"
+        tone="info"
+        hideHeaderTone
+        onClose={() => setShowCodeSentModal(false)}
+      />
+      <ActionStatusModal
+        visible={showResetSuccessModal}
+        title="Password updated"
+        description="Your password has been reset. Signing you in..."
+        actionLabel="Continue"
+        tone="success"
+        hideHeaderTone
+        onClose={() => {
+          setShowResetSuccessModal(false);
+          router.replace("/");
+        }}
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}

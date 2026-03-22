@@ -140,6 +140,9 @@ async def moderate_image(file: UploadFile = File(...)) -> dict[str, Any]:
             image,
             [
                 "safe consumer product",
+                "toy blaster or toy gun",
+                "water gun toy",
+                "foam dart toy",
                 "gun or firearm",
                 "knife weapon",
                 "bomb or explosive",
@@ -156,6 +159,12 @@ async def moderate_image(file: UploadFile = File(...)) -> dict[str, Any]:
             danger_scores.get("knife weapon", 0.0),
             danger_scores.get("bomb or explosive", 0.0),
         )
+        toy_score = max(
+            danger_scores.get("toy blaster or toy gun", 0.0),
+            danger_scores.get("water gun toy", 0.0),
+            danger_scores.get("foam dart toy", 0.0),
+        )
+        safe_product_score = danger_scores.get("safe consumer product", 0.0)
 
         reasons: list[str] = []
         decision = "allow"
@@ -164,11 +173,19 @@ async def moderate_image(file: UploadFile = File(...)) -> dict[str, Any]:
             reasons.append("adult content")
             decision = "block"
 
-        if danger_score >= 0.3:
+        if (
+            danger_score >= 0.3
+            and toy_score < 0.22
+            and (danger_score - max(toy_score, safe_product_score)) >= 0.08
+        ):
             reasons.append("dangerous item")
             decision = "block"
 
-        if decision == "allow" and max(nsfw_score, danger_score) >= 0.18:
+        if (
+            decision == "allow"
+            and max(nsfw_score, danger_score) >= 0.18
+            and toy_score < danger_score
+        ):
             decision = "review"
             if nsfw_score >= 0.18:
                 reasons.append("possible adult content")
@@ -181,6 +198,8 @@ async def moderate_image(file: UploadFile = File(...)) -> dict[str, Any]:
             "scores": {
                 "nsfw": nsfw_score,
                 "dangerous_item": danger_score,
+                "toy_item": toy_score,
+                "safe_product": safe_product_score,
             },
         }
     except Exception as exc:

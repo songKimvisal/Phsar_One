@@ -41,7 +41,7 @@ const HISTORY_AUTH_OPTIONS = {
   timeoutMs: 30000,
 } as const;
 
-function getHistoryBucketLabel(value: string) {
+function getHistoryBucketLabel(value: string, t: (key: string) => string) {
   const viewed = new Date(value);
   const now = new Date();
 
@@ -55,9 +55,9 @@ function getHistoryBucketLabel(value: string) {
     (today.getTime() - viewedDay.getTime()) / (1000 * 60 * 60 * 24),
   );
 
-  if (diffDays <= 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays <= 6) return "Earlier this week";
+  if (diffDays <= 0) return t("history_screen.today");
+  if (diffDays === 1) return t("history_screen.yesterday");
+  if (diffDays <= 6) return t("history_screen.earlier_this_week");
 
   return viewed.toLocaleDateString("en-GB", {
     day: "numeric",
@@ -173,7 +173,7 @@ export default function HistoryScreen() {
     const groups = new Map<string, HistoryItem[]>();
 
     for (const item of history) {
-      const label = getHistoryBucketLabel(item.viewed_at);
+      const label = getHistoryBucketLabel(item.viewed_at, t);
       const existing = groups.get(label) || [];
       existing.push(item);
       groups.set(label, existing);
@@ -198,7 +198,7 @@ export default function HistoryScreen() {
     }
 
     return nextRows;
-  }, [history]);
+  }, [history, t]);
 
   const renderProductCard = (item: HistoryItem, isPlaceholder = false) => {
     if (isPlaceholder) {
@@ -387,7 +387,9 @@ export default function HistoryScreen() {
           ListHeaderComponent={
             history.length ? (
               <View style={styles.heroBlock}>
-                <ThemedText style={styles.heroTitle}>Recently viewed</ThemedText>
+                <ThemedText style={styles.heroTitle}>
+                  {t("history_screen.recently_viewed")}
+                </ThemedText>
               </View>
             ) : null
           }
