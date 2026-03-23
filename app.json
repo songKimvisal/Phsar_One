@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "PhsarOne",
-    "slug": "phsar_One",
+    "slug": "phsarOne",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/ios-light.png",
@@ -74,8 +74,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "6abfc803-e0e0-4298-9cc7-b3301f9cdcaa"
+        "projectId": "821000fa-65d6-415d-b319-a5cc1458c283"
       }
-    }
+    },
+    "owner": "sithisak"
   }
 }
